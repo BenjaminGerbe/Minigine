@@ -1,0 +1,5 @@
+C:/Users/benja/Desktop/Opengl/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/benja/Desktop/Opengl/build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/benja/Desktop/Opengl/build/src/CMakeFiles/LOPGL.dir
+C:/Users/benja/Desktop/Opengl/build/libs/imgui/CMakeFiles/imgui.dir
+C:/Users/benja/Desktop/Opengl/build/libs/imgui/CMakeFiles/ALL_BUILD.dir

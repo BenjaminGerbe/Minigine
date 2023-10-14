@@ -1,0 +1,10 @@
+^C:\USERS\BENJA\DESKTOP\OPENGL\BUILD\CMAKEFILES\A346A920E7EAF76F79442EF50913FE46\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/benja/Desktop/Opengl -BC:/Users/benja/Desktop/Opengl/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/benja/Desktop/Opengl/build/LOPGL.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
