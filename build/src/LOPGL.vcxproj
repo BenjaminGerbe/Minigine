@@ -401,10 +401,17 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\ApplicationFile\ApplicationState.h" />
-    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\ApplicationFile\GLShader.cpp" />
-    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\ApplicationFile\GLShader.h" />
-    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\ApplicationFile\main.cpp" />
+    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\Headers\ApplicationInclude.h" />
+    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\Headers\ApplicationState.h" />
+    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\Headers\GLShader.h" />
+    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\Headers\RenderContext.h" />
+    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\Headers\Scene.h" />
+    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\Impl\ApplicationEvents.cpp" />
+    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\Impl\ApplicationState.cpp" />
+    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\Impl\GLShader.cpp" />
+    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\Impl\RenderContext.cpp" />
+    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\Impl\Scene.cpp" />
+    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\Impl\main.cpp" />
     <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\data.h" />
   </ItemGroup>
   <ItemGroup>

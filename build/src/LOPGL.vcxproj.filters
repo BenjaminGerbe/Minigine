@@ -1,18 +1,39 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\ApplicationFile\GLShader.cpp">
+    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\Impl\ApplicationEvents.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\ApplicationFile\main.cpp">
+    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\Impl\ApplicationState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\Impl\GLShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\Impl\RenderContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\Impl\Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\Impl\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\ApplicationFile\ApplicationState.h">
+    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\Headers\ApplicationInclude.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\ApplicationFile\GLShader.h">
+    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\Headers\ApplicationState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\Headers\GLShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\Headers\RenderContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\Headers\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\data.h">

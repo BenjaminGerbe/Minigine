@@ -1,4 +1,6 @@
-unsigned int indices[] = {
+#pragma once
+
+unsigned int indicesArray[] = {
     // Face avant
     0, 1, 2,
     2, 3, 0,
@@ -24,7 +26,7 @@ unsigned int indices[] = {
     7, 3, 2
 };
 
-float vertices[] = {
+float verticesArray[] = {
     // Sommets du cube
     -0.5f, -0.5f, -0.5f,  // Sommet 0
      0.5f, -0.5f, -0.5f,  // Sommet 1
