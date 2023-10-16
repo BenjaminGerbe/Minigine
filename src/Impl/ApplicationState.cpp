@@ -18,7 +18,7 @@ int ApplicationState::SetupApplication(){
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,3);
         glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
 
-        window = glfwCreateWindow(width,height,"LOPGL",NULL,NULL);
+        window = glfwCreateWindow(width,height,"Minigine",NULL,NULL);
 
         if(window == NULL){
             std::cout << "Failted to create GLFW Window" << std::endl;

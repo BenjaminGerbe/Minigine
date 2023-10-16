@@ -31,8 +31,7 @@ link_directories(../libs/GLM/build/glm/Debug)
 
 
 include_directories(${PROJECT_SOURCE_DIR})
-add_executable (LOPGL ${Classes})
-
+add_executable ( ${CMAKE_PROJECT_NAME} ${Classes})
 
 foreach(shader_file ${Shaders})
     add_custom_command(
@@ -42,6 +41,5 @@ foreach(shader_file ${Shaders})
                 $<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/${shader_name})
 endforeach()
 
-
-target_link_libraries(LOPGL ${OPENGL_gl_LIBRARY} imgui glfw3dll glew32s opengl32)
+target_link_libraries( ${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARY} imgui glfw3dll glew32s opengl32)
 
