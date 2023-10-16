@@ -125,4 +125,3 @@ int RenderContext::GetWidth(){
     return width;
 }
 
-

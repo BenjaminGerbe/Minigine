@@ -5,7 +5,7 @@ void Scene1::SetUp(int width,int height){
         this->width = width;
         this->height = height;
 
-        unsigned int VBO,EBO,FBO;
+        unsigned int VBO,EBO;
         // create buffers
 
         // cube 
@@ -60,15 +60,12 @@ void Scene1::SetUp(int width,int height){
         g_basicShaderGrid.LoadFragmentShader("FragGrid.glsl");
         g_basicShaderGrid.Create();
 
-
         programShaderWireFrame = g_basicShaderWireFrame.GetProgram();
         programShaderGrid = g_basicShaderGrid.GetProgram();
         programShader = g_basicShader.GetProgram();
 }
 
 void Scene1::Render(glm::mat4* _MVP,int debug){
-
-
         glBindVertexArray(VAO);  
         
         glUseProgram(programShader);

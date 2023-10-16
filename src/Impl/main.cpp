@@ -80,7 +80,7 @@ int main(int, char**){
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.FontGlobalScale = 2.0f;
+    io.FontGlobalScale = 1.3f;
     ImGui::StyleColorsLight();
     ImVec4* colors = ImGui::GetStyle().Colors;
     colors[ImGuiCol_TitleBg]                = ImVec4(0.94f, 0.94f, 0.94f, 1.00f);
@@ -93,8 +93,6 @@ int main(int, char**){
     ImGui::GetStyle().WindowBorderSize = 0.0f;
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 430");
-
-
 
     while(!glfwWindowShouldClose(window)){
         i += 0.1f;
@@ -124,7 +122,62 @@ int main(int, char**){
         ImGui_ImplGlfw_NewFrame();
         
         ImGui::NewFrame();
-         
+
+        ImGui::ShowStyleEditor();
+
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + 0));
+        ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, 3));
+       
+       ImGuiWindowFlags window_flags = 0
+		| ImGuiWindowFlags_NoTitleBar 
+		| ImGuiWindowFlags_NoResize 
+		| ImGuiWindowFlags_NoMove 
+		| ImGuiWindowFlags_NoScrollbar 
+		| ImGuiWindowFlags_NoSavedSettings
+		;
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f,5.0f));
+        ImGui::PushStyleColor(ImGuiCol_WindowBg,ImVec4(0.89f, 0.94f, 0.97f, 1.00f));
+
+	    ImGui::Begin("TOOLBAR", NULL, window_flags);
+	    ImGui::PopStyleVar(3);
+        ImGui::PopStyleColor(1);
+
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding,6);
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,ImVec2(3.0f,3.0f));
+        ImGui::PushStyleColor(ImGuiCol_Button,ImVec4(0.9f, 0.94f, 0.97f, 1.00f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered,ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive,ImVec4(0.9f, 0.94f, 0.97f, 1.00f));
+        static bool pressed;
+
+        if (ImGui::BeginMenuBar())
+        {
+             if (ImGui::BeginMenu("Menu"))
+            {
+                ImGui::MenuItem("Main menu bar");
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenuBar();
+        }
+        ImGui::ShowDemoWindow();
+
+        if(!ImGui::IsItemHovered() && pressed){
+            ImGui::CloseCurrentPopup();
+        }
+
+        if (ImGui::BeginPopupModal("FileOptions")) {
+            // Draw popup contents.
+            ImGui::EndPopup();
+        }
+
+        ImGui::PopStyleVar(2);
+        ImGui::PopStyleColor(3);
+        ImGui::GetStyle().WindowRounding = 6.0f;
+	    ImGui::End();
+
+       
          {
             ImGui::SetNextWindowSize(ImVec2((float)renderContext.GetWidth(),(float)renderContext.GetHeight()));
             ImGui::Begin("Wireframe game view");

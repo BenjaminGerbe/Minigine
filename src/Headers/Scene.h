@@ -18,7 +18,10 @@
 #include "../Headers/GLShader.h"
 
 class Scene{
-    
+    protected:
+    int width;
+    int height;
+
     public:
     Scene() = default;
 
@@ -39,14 +42,11 @@ class Scene1 : public Scene{
     uint32_t programShader;
     uint32_t programShaderWireFrame;
     uint32_t programShaderGrid;
-    int width;
-    int height;
+    
     public :
     virtual void SetUp(int width,int height);
-
     float i = 0;
     virtual void Render(glm::mat4* _MVP,int debug);
     virtual int VertexToRender();
-    
 };
 
