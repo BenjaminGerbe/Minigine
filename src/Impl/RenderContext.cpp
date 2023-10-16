@@ -6,6 +6,7 @@ unsigned int RenderContextShaded::RenderScene(Scene* scene){
     
  
     glBindFramebuffer(GL_FRAMEBUFFER,FBO);
+    glViewport(0,0,(int)width,(int)height);
     glClearColor(0.23f,0.23f,0.23f,1.0f);
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -21,7 +22,7 @@ unsigned int RenderContextWireFrame::RenderScene(Scene* scene){
     
     glBindFramebuffer(GL_FRAMEBUFFER,FBO);
     glViewport(0,0,(int)width,(int)height);
-    glClearColor(0.23f,0.23f,0.23f,1.0f);
+    glClearColor(1.0f,1.0f,1.0f,1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
@@ -37,16 +38,15 @@ unsigned int RenderContextShadedWireFrame::RenderScene(Scene* scene){
 
     glBindFramebuffer(GL_FRAMEBUFFER,FBO);
     glViewport(0,0,(int)width,(int)height);
-    glClearColor(1.f,1.f,1.0f,1.0f);
+    glClearColor(0.23f,0.23f,0.23f,1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-
-    glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-    scene->Render(MVP,1);
 
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
     scene->Render(MVP,0);
 
+    glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+    scene->Render(MVP,1);
 
 
     glBindFramebuffer(GL_FRAMEBUFFER,0);

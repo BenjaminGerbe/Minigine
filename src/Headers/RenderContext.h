@@ -12,7 +12,7 @@
 #include <ext/scalar_constants.hpp> // glm::pi
 #include <gtc/type_ptr.hpp>
 #include <cassert>
-
+#include <string>
 class Scene;
 
 class RenderContext{
@@ -24,12 +24,19 @@ class RenderContext{
     unsigned int Tex;
     int height;
     int width;
-
+    char* label;
     glm::mat4* MVP;
     glm::vec3 cameraPosition;
 
     public :
-    RenderContext()=default;
+    RenderContext():label(""){
+
+    };
+
+    virtual char* GetLabel(){ return label; }
+
+    virtual void SetLabel(char* label){ this->label = label;};
+
     virtual void SetUp(glm::mat4* _MVP,int width,int height);
     virtual int GetWidth();
     virtual int GetHeight();
@@ -55,6 +62,7 @@ class RenderContextWireFrame: public RenderContext{
 
 class RenderContextShadedWireFrame : public RenderContext{
     public :
+
     unsigned int RenderScene(Scene* scene);
 };
     
