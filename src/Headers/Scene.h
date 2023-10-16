@@ -34,7 +34,7 @@ class Scene{
 };
 
 class Scene1 : public Scene{
-    unsigned int VBO,EBO,VAO,UBO,FBO;
+    unsigned int VAO,UBO;
     unsigned int VAOS;
     uint32_t programShader;
     uint32_t programShaderWireFrame;

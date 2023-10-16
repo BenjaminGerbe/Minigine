@@ -40,7 +40,7 @@ RenderContextNOFramed Noframed;
 
 int main(int, char**){
 
-
+    std::cout << "Launch Minigine" << std::endl; 
    // Application Setup
     app = ApplicationState(1920,1080);
     int err = app.SetupApplication();    

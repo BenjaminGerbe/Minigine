@@ -10,7 +10,6 @@ void processInput(GLFWwindow* window){
     }
 }
 
-
 int ApplicationState::SetupApplication(){
 
         glfwInit();

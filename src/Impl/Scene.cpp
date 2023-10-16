@@ -5,6 +5,7 @@ void Scene1::SetUp(int width,int height){
         this->width = width;
         this->height = height;
 
+        unsigned int VBO,EBO,FBO;
         // create buffers
 
         // cube 
@@ -96,7 +97,6 @@ void Scene1::Render(glm::mat4* _MVP,int debug){
         cameraView *= glm::scale(glm::mat4(1.0f),glm::vec3({50,1,50}));
         cameraView *= glm::rotate(glm::mat4(1.0f), 90 * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0, 0.0));
         cameraView *= glm::translate(glm::mat4(1.0f),glm::vec3({0.,0.,0.0}));
-     
 
         matrices[0] =  cameraView;
         glBindBuffer(GL_UNIFORM_BUFFER,UBO);
