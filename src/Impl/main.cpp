@@ -61,10 +61,10 @@ int main(int, char**){
     matricesWire[0] =  glm::translate(glm::mat4(1.f), -glm::vec3({ 0.f, 0.f,3.f }));
     matricesWire[1] =  glm::perspectiveFov(glm::radians(45.0f), (float)width, (float)height, 0.5f, 1000.0f);
 
-    renderContext.SetUp(matricesWire,width/2.0f,height/2.0f);
-    renderContextShaded.SetUp(matrices,width/2.0f,height/2.0f);
-    rcShaded.SetUp(matricesWire,width/2.0f,height/2.0f);
-    Noframed.SetUp(matricesWire,width/2.0f,height/2.0f);
+    renderContext.SetUp(matricesWire,(int)(width/2.0f),(int)(height/2.0f));
+    renderContextShaded.SetUp(matrices,(int)(width/2.0f),(int)(height/2.0f));
+    rcShaded.SetUp(matricesWire,(int)(width/2.0f),(int)(height/2.0f));
+    Noframed.SetUp(matricesWire,(int)(width/2.0f),(int)(height/2.0f));
     scene.SetUp((int)width,(int)height);
 
    
@@ -92,8 +92,7 @@ int main(int, char**){
     ImGui::GetStyle().FramePadding = ImVec2(11.0f,11.0f);
     ImGui::GetStyle().WindowBorderSize = 0.0f;
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 130");
-
+    ImGui_ImplOpenGL3_Init("#version 430");
 
 
 
@@ -127,7 +126,7 @@ int main(int, char**){
         ImGui::NewFrame();
          
          {
-            ImGui::SetNextWindowSize(ImVec2(renderContext.GetWidth(),renderContext.GetHeight()));
+            ImGui::SetNextWindowSize(ImVec2((float)renderContext.GetWidth(),(float)renderContext.GetHeight()));
             ImGui::Begin("Wireframe game view");
 
                 ImGui::BeginChild("Game Render");
@@ -143,7 +142,7 @@ int main(int, char**){
         }
 
         {
-            ImGui::SetNextWindowSize(ImVec2(renderContextShaded.GetWidth(),renderContextShaded.GetHeight()));
+            ImGui::SetNextWindowSize(ImVec2((float)renderContextShaded.GetWidth(),(float)renderContextShaded.GetHeight()));
             ImGui::Begin("Shaded Wireframe game view ");
 
                 ImGui::BeginChild("Game Render");
@@ -158,10 +157,8 @@ int main(int, char**){
             ImGui::End();
         }
 
-
-
         {
-            ImGui::SetNextWindowSize(ImVec2(rcShaded.GetWidth(),rcShaded.GetHeight()));
+            ImGui::SetNextWindowSize(ImVec2((float)rcShaded.GetWidth(),(float)rcShaded.GetHeight()));
             ImGui::Begin("Shaded game view");
 
                 ImGui::BeginChild("Game Render");
