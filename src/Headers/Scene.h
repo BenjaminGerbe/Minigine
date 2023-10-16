@@ -3,12 +3,9 @@
 #include <vector>
 #include <iostream>
 
-#ifndef __ContextLibs__
-#define __ContextLibs__
-#define GLEW_STATIC 1
+//libs
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
-#endif
 
 #include <vec3.hpp> // glm::vec3
 #include <vec4.hpp> // glm::vec4
@@ -28,7 +25,7 @@ class Scene{
     virtual void SetUp(){
     }
 
-    virtual void Render(glm::mat4* _MVP){
+    virtual void Render(glm::mat4* _MVP,int debug){
     }
 
     virtual int VertexToRender(){
@@ -38,14 +35,17 @@ class Scene{
 
 class Scene1 : public Scene{
     unsigned int VBO,EBO,VAO,UBO,FBO;
+    unsigned int VAOS;
     uint32_t programShader;
+    uint32_t programShaderWireFrame;
+    uint32_t programShaderGrid;
     int width;
     int height;
     public :
     virtual void SetUp(int width,int height);
 
     float i = 0;
-    virtual void Render(glm::mat4* _MVP);
+    virtual void Render(glm::mat4* _MVP,int debug);
     virtual int VertexToRender();
     
 };

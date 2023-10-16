@@ -6,8 +6,8 @@ unsigned int indicesArray[] = {
     2, 3, 0,
 
     // Face arrière
-    4, 5, 6,
-    6, 7, 4,
+    4, 6, 5,
+    6, 4, 7,
 
     // Face gauche
     0, 3, 7,
@@ -36,4 +36,26 @@ float verticesArray[] = {
      0.5f, -0.5f,  0.5f,  // Sommet 5
      0.5f,  0.5f,  0.5f,  // Sommet 6
     -0.5f,  0.5f,  0.5f,  // Sommet 7
+};
+
+
+unsigned int squareIndices[] = {
+    // Face avant
+    0, 1, 2,
+    2, 3, 0,
+};
+
+float SquareVertices[] = {
+    // Sommets du cube
+    -0.5f, -0.5f, 0.0f,  // Sommet 0
+     0.5f, -0.5f, 0.0f,  // Sommet 1
+      0.5f,  0.5f, 0.0f,  // Sommet 2
+    -0.5f,  0.5f, 0.0f, 
+};
+
+float SquareUV[] = {
+    0.0,0.0,
+    1.0,0.0,
+    1.0,1.0,
+    0.0,1.0
 };

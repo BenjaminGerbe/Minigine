@@ -18,26 +18,92 @@ class Scene;
 class RenderContext{
 
     unsigned int UBO;
+    unsigned int FBO;
+    unsigned int Tex;
+    int height;
+    int width;
+
     glm::mat4* MVP;
     glm::vec3 cameraPosition;
 
     public :
     RenderContext()=default;
     
-    virtual void SetUp(glm::mat4* _MVP);
+    virtual void SetUp(glm::mat4* _MVP,int width,int height);
 
-    virtual void RenderScene(Scene* scene);
+    virtual int GetWidth();
+
+    virtual int GetHeight();
+
+    virtual unsigned int RenderScene(Scene* scene);
 };
 
-class RenderContextShaded{
+class RenderContextNOFramed{
     unsigned int UBO;
+    unsigned int FBO;
+    unsigned int Tex;
+    int height;
+    int width;
     glm::mat4* MVP;
     glm::vec3 cameraPosition;
 
     public :
-    virtual void SetUp(glm::mat4* _MVP );
-
-    virtual void RenderScene(Scene* scene);
+    virtual void SetUp(glm::mat4* _MVP,int width,int height);
+     int GetWidth();
+      int GetHeight();
+    virtual unsigned int RenderScene(Scene* scene);
 };
 
+class RenderContextShaded{
+
+    unsigned int UBO;
+    unsigned int FBO;
+    unsigned int Tex;
+    glm::mat4* MVP;
+    glm::vec3 cameraPosition;
+    int height;
+    int width;
+
+    public :
+    virtual void SetUp(glm::mat4* _MVP,int width,int height );
+       int GetWidth();
+      int GetHeight();
+
+    virtual unsigned int RenderScene(Scene* scene);
+};
+
+class RenderContextWireFrame{
+
+    unsigned int UBO;
+    unsigned int FBO;
+    unsigned int Tex;
+    int height;
+    int width;
+    glm::mat4* MVP;
+    glm::vec3 cameraPosition;
+
+    public :
+    virtual void SetUp(glm::mat4* _MVP,int width,int height );
+       int GetWidth();
+      int GetHeight();
+
+    virtual unsigned int RenderScene(Scene* scene);
+};
+
+class RenderContextShadedWireFrame{
+    unsigned int UBO;
+    unsigned int FBO;
+      unsigned int Tex;
+       int height;
+    int width;
+    glm::mat4* MVP;
+    glm::vec3 cameraPosition;
+
+    public :
+    virtual void SetUp(glm::mat4* _MVP,int width,int height );
+       int GetWidth();
+      int GetHeight();
+
+    virtual unsigned int RenderScene(Scene* scene);
+};
     

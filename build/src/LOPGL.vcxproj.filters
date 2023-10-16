@@ -39,6 +39,12 @@
     <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\data.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\stbload\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\stbload\stb_image_write.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="C:\Users\benja\Desktop\Opengl\src\CMakeLists.txt" />

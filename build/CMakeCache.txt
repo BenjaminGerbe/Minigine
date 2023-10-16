@@ -209,6 +209,24 @@ imgui_IS_TOP_LEVEL:STATIC=OFF
 //Value Computed by CMake
 imgui_SOURCE_DIR:STATIC=C:/Users/benja/Desktop/Opengl/libs/imgui
 
+//Value Computed by CMake
+stb_load_BINARY_DIR:STATIC=C:/Users/benja/Desktop/Opengl/build/libs/stbload
+
+//Value Computed by CMake
+stb_load_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+stb_load_SOURCE_DIR:STATIC=C:/Users/benja/Desktop/Opengl/libs/stbload
+
+//Value Computed by CMake
+stbload_BINARY_DIR:STATIC=C:/Users/benja/Desktop/Opengl/build/libs/stbload
+
+//Value Computed by CMake
+stbload_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+stbload_SOURCE_DIR:STATIC=C:/Users/benja/Desktop/Opengl/libs/stbload
+
 
 ########################
 # INTERNAL cache entries

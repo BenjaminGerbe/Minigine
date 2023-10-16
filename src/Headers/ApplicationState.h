@@ -16,9 +16,10 @@ class ApplicationState{
     int width;
 
    public:
-    ApplicationState(){
-        height = 1080;
-        width = 1920;
+
+    ApplicationState() = default;
+
+    ApplicationState(int _width,int _height):width(_width),height(_height){
     }
 
     ~ApplicationState(){

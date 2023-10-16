@@ -86,7 +86,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\stb_load;C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -104,10 +104,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\stb_load;C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\stb_load;C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -115,8 +115,26 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <PreBuildEvent>
-      <Message>	</Message>
+      <Message>				</Message>
       <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/FragGrid.glsl C:/Users/benja/Desktop/Opengl/build/src/Debug/
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/FragWireFrame.glsl C:/Users/benja/Desktop/Opengl/build/src/Debug/
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
 "C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/frag.glsl C:/Users/benja/Desktop/Opengl/build/src/Debug/
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
@@ -127,6 +145,15 @@ exit /b %1
 if %errorlevel% neq 0 goto :VCEnd
 setlocal
 "C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/vs.glsl C:/Users/benja/Desktop/Opengl/build/src/Debug/
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/vsGrid.glsl C:/Users/benja/Desktop/Opengl/build/src/Debug/
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -151,7 +178,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\stb_load;C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -169,10 +196,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\stb_load;C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\stb_load;C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -180,8 +207,26 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <PreBuildEvent>
-      <Message>	</Message>
+      <Message>				</Message>
       <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/FragGrid.glsl C:/Users/benja/Desktop/Opengl/build/src/Release/
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/FragWireFrame.glsl C:/Users/benja/Desktop/Opengl/build/src/Release/
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
 "C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/frag.glsl C:/Users/benja/Desktop/Opengl/build/src/Release/
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
@@ -192,6 +237,15 @@ exit /b %1
 if %errorlevel% neq 0 goto :VCEnd
 setlocal
 "C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/vs.glsl C:/Users/benja/Desktop/Opengl/build/src/Release/
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/vsGrid.glsl C:/Users/benja/Desktop/Opengl/build/src/Release/
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -216,7 +270,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\stb_load;C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
@@ -234,10 +288,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\stb_load;C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\stb_load;C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -245,8 +299,26 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <PreBuildEvent>
-      <Message>	</Message>
+      <Message>				</Message>
       <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/FragGrid.glsl C:/Users/benja/Desktop/Opengl/build/src/MinSizeRel/
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/FragWireFrame.glsl C:/Users/benja/Desktop/Opengl/build/src/MinSizeRel/
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
 "C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/frag.glsl C:/Users/benja/Desktop/Opengl/build/src/MinSizeRel/
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
@@ -257,6 +329,15 @@ exit /b %1
 if %errorlevel% neq 0 goto :VCEnd
 setlocal
 "C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/vs.glsl C:/Users/benja/Desktop/Opengl/build/src/MinSizeRel/
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/vsGrid.glsl C:/Users/benja/Desktop/Opengl/build/src/MinSizeRel/
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -281,7 +362,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\stb_load;C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -298,10 +379,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\stb_load;C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\benja\Desktop\Opengl\src\stb_load;C:\Users\benja\Desktop\Opengl\src\..\libs\GLEW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLFW\include;C:\Users\benja\Desktop\Opengl\src\..\libs\GLM;C:\Users\benja\Desktop\Opengl;C:\Users\benja\Desktop\Opengl\libs\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -309,8 +390,26 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <PreBuildEvent>
-      <Message>	</Message>
+      <Message>				</Message>
       <Command>setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/FragGrid.glsl C:/Users/benja/Desktop/Opengl/build/src/RelWithDebInfo/
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/FragWireFrame.glsl C:/Users/benja/Desktop/Opengl/build/src/RelWithDebInfo/
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
 "C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/frag.glsl C:/Users/benja/Desktop/Opengl/build/src/RelWithDebInfo/
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
@@ -321,6 +420,15 @@ exit /b %1
 if %errorlevel% neq 0 goto :VCEnd
 setlocal
 "C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/vs.glsl C:/Users/benja/Desktop/Opengl/build/src/RelWithDebInfo/
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E copy C:/Users/benja/Desktop/Opengl/src/Shaders/vsGrid.glsl C:/Users/benja/Desktop/Opengl/build/src/RelWithDebInfo/
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -413,6 +521,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\Impl\Scene.cpp" />
     <ClCompile Include="C:\Users\benja\Desktop\Opengl\src\Impl\main.cpp" />
     <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\data.h" />
+    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\stbload\stb_image.h" />
+    <ClInclude Include="C:\Users\benja\Desktop\Opengl\src\stbload\stb_image_write.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Users\benja\Desktop\Opengl\build\ZERO_CHECK.vcxproj">
