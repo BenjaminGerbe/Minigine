@@ -4,7 +4,31 @@ bool isToDelete(RenderContextDisplay *element){
     return !element->GetOpen();
 }
 
+void DisplayerManager::MachineState(){
+    if(!openMachineState) return;
+    ImGui::Begin("Machine State",&openMachineState);
+        MEMORYSTATUSEX memInfo;
+        memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+        GlobalMemoryStatusEx(&memInfo);
+        DWORDLONG totalVirtualMem = memInfo.ullTotalPageFile;
+        PROCESS_MEMORY_COUNTERS_EX pmc;
+        GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
+        SIZE_T virtualMemUsedByMe = pmc.PrivateUsage;
 
+        DWORDLONG physMemUsed = memInfo.ullTotalPhys - memInfo.ullAvailPhys;
+        SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
+        
+        float max = totalVirtualMem;
+        float value  = virtualMemUsedByMe;
+        value /= 1000000;
+        memoryUsage.push_back(value);
+        memoryUsage.erase(memoryUsage.begin());
+        char buffer[64];
+        int ret = snprintf(buffer, sizeof buffer, "%f", value);
+        ImGui::PlotLines("Memory Usage",&memoryUsage[0],500,0,buffer,0,300.0f,ImVec2(0,65.0f));
+
+    ImGui::End();
+}
 
 void DisplayerManager::RenderAllRenderWindows(int width,int height,Scene* scene){
 
@@ -48,6 +72,9 @@ void DisplayerManager::RenderAppOptions(){
             {
                 if (ImGui::MenuItem("Scene View",NULL)) {
                     AddRenderContextDisplay(new RenderContextDisplay(*this->renderContextDisplay));
+                }
+                if (ImGui::MenuItem("Machine State",NULL)) {
+                    openMachineState = true;
                 }
                 ImGui::EndMenu();
             }

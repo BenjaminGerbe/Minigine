@@ -48,7 +48,7 @@ int main(int, char**){
 
     std::cout << "Launch Minigine" << std::endl; 
    // Application Setup
-    app = ApplicationState((int)(1920),(int)(1080));
+    app = ApplicationState((int)(1920*1.5f),(int)(1080*1.5f));
     int err = app.SetupApplication();    
 
     if(err == 1){
@@ -56,18 +56,18 @@ int main(int, char**){
     }
 
     Mesh* m_Cube = new Mesh(verticesArray,sizeof(verticesArray),indicesArray,sizeof(indicesArray),3);
-    //Mesh* m_Dragon = new Mesh(DragonVertices,sizeof(DragonVertices),DragonIndices,sizeof(DragonIndices),8);
+    Mesh* m_Dragon = new Mesh(DragonVertices,sizeof(DragonVertices),DragonIndices,sizeof(DragonIndices),8);
     Object cube1(m_Cube);
     Object cube2(m_Cube);
-  //  Object Dragon(m_Dragon);
+    Object Dragon(m_Dragon);
     
     cube1.SetTransformation(glm::translate(glm::mat4(1.f), glm::vec3({ 2.f, 1.f,0.f })));
     cube2.SetTransformation(glm::translate(glm::mat4(1.f), glm::vec3({ -2.f, 1.f,0.f })));
-    //Dragon.SetTransformation(glm::scale(glm::mat4(1.f), glm::vec3({ .2f, .2f,.2f })));
+    Dragon.SetTransformation(glm::scale(glm::mat4(1.f), glm::vec3({ .2f, .2f,.2f })));
 
     scene.AddObjectScene(cube1);
     scene.AddObjectScene(cube2);
-   // scene.AddObjectScene(Dragon);
+    scene.AddObjectScene(Dragon);
 
     renderContextDisplay.AddRender(&rcShaded);
     renderContextDisplay.AddRender(&renderContext);
@@ -130,7 +130,7 @@ int main(int, char**){
         glClearColor(0.98f,0.95f,0.94f,1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        matricesWire[0] =  glm::translate(glm::mat4(1.f), -glm::vec3({ 0.f, .5f,3.f }));
+        matricesWire[0] =  glm::translate(glm::mat4(1.f), -glm::vec3({ 0.f, .6f,5.f }));
         matricesWire[0] *= glm::rotate(glm::mat4(1.0f), 15 * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0, 0.0));
         matricesWire[0] *= glm::rotate(glm::mat4(1.0f), i * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 1.0, 0.0));
     
@@ -147,7 +147,7 @@ int main(int, char**){
         ImGui::ShowDemoWindow();
 
         displayerManager.RenderAppOptions();
-        //displayerManager.MachineState();
+        displayerManager.MachineState();
 
         ImGui::Render();
 

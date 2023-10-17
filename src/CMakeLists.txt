@@ -41,5 +41,7 @@ foreach(shader_file ${Shaders})
                 $<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/${shader_name})
 endforeach()
 
+set_source_files_properties("Headers/data.h" PROPERTIES COMPILE_FLAGS "-w")
+
 target_link_libraries( ${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARY} imgui glfw3dll glew32s opengl32)
 

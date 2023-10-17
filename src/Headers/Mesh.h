@@ -3,17 +3,35 @@
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 #include <iostream>
+
+
+
+#include <vec3.hpp> // glm::vec3
+#include <vec4.hpp> // glm::vec4
+#include <mat4x4.hpp> // glm::mat4
+#include <ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
+#include <ext/matrix_clip_space.hpp> // glm::perspective
+#include <ext/scalar_constants.hpp> // glm::pi
+#include <gtc/type_ptr.hpp>
+
+struct Vertex
+{
+    glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec2 texcoords;
+};
+
 class Mesh{
     unsigned int VAO;
     unsigned int* indices;
-    double* vertices;
+    float* vertices;
     float* uv;
     int lenV;
     int lenI;
 
     public :
 
-    Mesh(double* _vertices,int lenV,unsigned int* _indices,int lenI,int stride):indices(_indices),vertices(_vertices){
+    Mesh(float* _vertices,int lenV,unsigned int* _indices,int lenI,int stride):indices(_indices),vertices(_vertices){
         unsigned int VBO,EBO;
         glGenBuffers(1,&VBO);
         glGenBuffers(1,&EBO);
@@ -23,7 +41,7 @@ class Mesh{
         glBufferData(GL_ARRAY_BUFFER,lenV,_vertices,GL_STATIC_DRAW);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,lenI,_indices,GL_STATIC_DRAW);
-        glVertexAttribPointer(0,3,GL_DOUBLE,GL_FALSE,stride*sizeof(double),(void*)0);
+        glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(GL_FLOAT)*stride,(void*)0);
         glEnableVertexAttribArray(0);
 
         this->lenV = lenV;
