@@ -1,10 +1,10 @@
 #pragma once
 #include <vector>
 #include "RenderContextDisplay.h"
+#include <cstring>
 #include "windows.h"
 #include "psapi.h"
-
-class Scene;
+#include "Scene.h"
 
 class DisplayerManager{
     std::vector<RenderContextDisplay*> RenderContextDisplays;
@@ -27,7 +27,7 @@ class DisplayerManager{
     }
 
     void MachineState();
-
+    void SceneEditor(Scene* scene);
     void RenderAppOptions();
     void RenderAllRenderWindows(int width,int height,Scene* scene);
 

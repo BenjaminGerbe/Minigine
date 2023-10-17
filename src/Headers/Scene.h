@@ -39,6 +39,10 @@ class Scene{
     virtual void Render(glm::mat4* _MVP,int debug){
     }
 
+    virtual std::vector<Object> GetObjects(){
+        return this->Objects;
+    }
+
     virtual int VertexToRender(){
         return 0;
     }

@@ -1,7 +1,12 @@
 #include "../Headers/ApplicationState.h"
 
 void framebuffer_size_callback(GLFWwindow* window,int width,int height){
-   // glViewport(0,0,width,height);
+    ApplicationState* AppState = static_cast<ApplicationState*>(glfwGetWindowUserPointer(window));
+     if (AppState) {
+        AppState->SetHeight(height);
+        AppState->SetWidth(width);
+      
+    }
 }
 
 void processInput(GLFWwindow* window){
@@ -20,22 +25,23 @@ int ApplicationState::SetupApplication(){
         window = glfwCreateWindow(width,height,"Minigine",NULL,NULL);
 
         if(window == NULL){
-            std::cout << "Failted to create GLFW Window" << std::endl;
+            std::cout << "Failed to create GLFW Window" << std::endl;
             glfwTerminate();
             return 1;
         }
 
+        glfwSetWindowUserPointer(window, this);
         glfwMakeContextCurrent(window);
         GLenum err = glewInit();
 
         if(GLEW_OK != err){
-            std::cout << "Failted to load glew" << std::endl;
+            std::cout << "Failed to load glew" << std::endl;
             return 1;
         }
 
         
         // callback for resizing window
-        // glfwSetFramebufferSizeCallback(window,framebuffer_size_callback);
+        glfwSetFramebufferSizeCallback(window,framebuffer_size_callback);
 
         return 0;
 }

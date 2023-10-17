@@ -34,7 +34,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../stbload/stb_image_write.h"
 
-ApplicationState app; 
+static ApplicationState app; 
 Scene1 scene;
 RenderContextShadedWireFrame renderContext;
 RenderContextShaded rcShaded;
@@ -42,6 +42,9 @@ RenderContextWireFrame renderContextShaded;
 RenderContextNOFramed Noframed;
 RenderContextDisplay renderContextDisplay;
 DisplayerManager displayerManager;
+
+
+
 
 bool p_open = true;
 int main(int, char**){
@@ -51,15 +54,17 @@ int main(int, char**){
     app = ApplicationState((int)(1920*1.5f),(int)(1080*1.5f));
     int err = app.SetupApplication();    
 
+  
+
     if(err == 1){
         return 1;
     }
 
     Mesh* m_Cube = new Mesh(verticesArray,sizeof(verticesArray),indicesArray,sizeof(indicesArray),3);
     Mesh* m_Dragon = new Mesh(DragonVertices,sizeof(DragonVertices),DragonIndices,sizeof(DragonIndices),8);
-    Object cube1(m_Cube);
-    Object cube2(m_Cube);
-    Object Dragon(m_Dragon);
+    Object cube1(m_Cube,"cube1");
+    Object cube2(m_Cube,"cube2");
+    Object Dragon(m_Dragon,"dragon");
     
     cube1.SetTransformation(glm::translate(glm::mat4(1.f), glm::vec3({ 2.f, 1.f,0.f })));
     cube2.SetTransformation(glm::translate(glm::mat4(1.f), glm::vec3({ -2.f, 1.f,0.f })));
@@ -94,7 +99,6 @@ int main(int, char**){
     renderContext.SetLabel("ShadedWireFrame");
     renderContextShaded.SetLabel("WireFrame");
    
-    glEnable(GL_SCISSOR_TEST);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);  
 
@@ -114,6 +118,8 @@ int main(int, char**){
     colors[ImGuiCol_TitleBgActive]          = ImVec4(1.00f, 0.79f, 0.80f, 1.00f);
     colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.83f, 0.89f, 0.83f, 1.00f);
     colors[ImGuiCol_MenuBarBg]              = ImVec4(0.88f, 0.93f, 1.00f, 1.00f);
+    colors[ImGuiCol_TitleBg]                = ImVec4(1.00f, 0.79f, 0.80f, 1.00f);
+
 
     ImGui::GetStyle().WindowRounding = 9.0f;
     ImGui::GetStyle().FramePadding = ImVec2(11.0f,11.0f);
@@ -121,13 +127,17 @@ int main(int, char**){
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 430");
 
+
     while(!glfwWindowShouldClose(window)){
         i += 0.1f;
 
 
+        height = (float)app.GetHeight();
+        width = (float)app.GetWidth();
+
         // rendering stuff
-        glViewport(0,0,(int)width,(int)height);
-        glClearColor(0.98f,0.95f,0.94f,1.0f);
+      glViewport(0,0,(int)width,(int)height);
+        glClearColor(0.94f,0.91f,0.90f,1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         matricesWire[0] =  glm::translate(glm::mat4(1.f), -glm::vec3({ 0.f, .6f,5.f }));
@@ -142,9 +152,11 @@ int main(int, char**){
         ImGui::NewFrame();
 
         displayerManager.RenderAllRenderWindows((int)(width/2.0),(int)(height/2.0),&scene);
+        displayerManager.SceneEditor(&scene);
 
         ImGui::ShowStyleEditor();
         ImGui::ShowDemoWindow();
+        
 
         displayerManager.RenderAppOptions();
         displayerManager.MachineState();

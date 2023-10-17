@@ -41,6 +41,14 @@ class ApplicationState{
         return this->width;
     }
 
+    void SetWidth(int w){
+        width = w;
+    }
+
+    void SetHeight(int h){
+        height = h;
+    }
+
     void SetGLFWwindow(GLFWwindow* window){
         this->window = window;
     }

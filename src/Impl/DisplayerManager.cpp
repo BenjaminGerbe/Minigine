@@ -7,6 +7,8 @@ bool isToDelete(RenderContextDisplay *element){
 void DisplayerManager::MachineState(){
     if(!openMachineState) return;
     ImGui::Begin("Machine State",&openMachineState);
+
+    
         MEMORYSTATUSEX memInfo;
         memInfo.dwLength = sizeof(MEMORYSTATUSEX);
         GlobalMemoryStatusEx(&memInfo);
@@ -25,10 +27,40 @@ void DisplayerManager::MachineState(){
         memoryUsage.erase(memoryUsage.begin());
         char buffer[64];
         int ret = snprintf(buffer, sizeof buffer, "%f", value);
-        ImGui::PlotLines("Memory Usage",&memoryUsage[0],500,0,buffer,0,300.0f,ImVec2(0,65.0f));
+        ImGui::PlotLines("Memory Usage",&memoryUsage[0],500,0,buffer,0,150.0f,ImVec2(0,65.0f));
 
     ImGui::End();
 }
+
+void DisplayerManager::SceneEditor(Scene* scene){
+    ImGui::Begin("Scene Editor");
+
+    static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
+    
+    if (ImGui::BeginTable("split2", 2, ImGuiTableFlags_NoSavedSettings ))
+    {
+         static int item_current_idx = 0;
+        for (int i = 0; i < scene->GetObjects().size(); i++)
+        {
+            char label[32];
+            sprintf(label, "%d: %s",i,scene->GetObjects()[i].GetName());
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            const bool is_selected = (item_current_idx == i);
+            if(ImGui::Selectable(label, is_selected, ImGuiSelectableFlags_SpanAllColumns)){
+                    item_current_idx = i;
+            }
+            ImGui::TableNextColumn();
+            char poly[64];
+            int ret = snprintf(poly, sizeof poly, "%d", scene->GetObjects()[i].GetMesh()->TriangleToDraw()/(sizeof(unsigned int)*3));
+            ImGui::Text(poly);
+ 
+        }
+        ImGui::EndTable();
+    }
+    
+    ImGui::End();
+};
 
 void DisplayerManager::RenderAllRenderWindows(int width,int height,Scene* scene){
 
