@@ -78,20 +78,20 @@ void Scene1::Render(glm::mat4* _MVP,int debug){
 
         for (int i = 0; i < Objects.size(); i++)
         {
-                glBindVertexArray(Objects[i].GetMesh()->GetVAO());  
+                glBindVertexArray(Objects[i]->GetMesh()->GetVAO());  
 
                 glUseProgram(programShader);
                 if(debug == 1) glUseProgram(programShaderWireFrame);
 
                 glm::mat4 cameraView = _MVP[0];
-                cameraView *= Objects[i].GetTransformation();
+                cameraView *= Objects[i]->GetTransformation();
                 glm::mat4 matrices[2];
                 matrices[0] =  cameraView;
                 matrices[1] =  _MVP[1];
 
                 glBindBuffer(GL_UNIFORM_BUFFER,UBO);
                 glBufferData(GL_UNIFORM_BUFFER,sizeof(glm::mat4)*2,matrices,GL_STREAM_DRAW);
-                glDrawElements(GL_TRIANGLES,Objects[i].GetMesh()->TriangleToDraw(),GL_UNSIGNED_INT,(void*)0);
+                glDrawElements(GL_TRIANGLES,Objects[i]->GetMesh()->TriangleToDraw(),GL_UNSIGNED_INT,(void*)0);
         }
         
         glBindVertexArray(VAOS);  

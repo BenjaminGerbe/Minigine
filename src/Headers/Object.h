@@ -7,6 +7,7 @@
 #include <ext/matrix_clip_space.hpp> // glm::perspective
 #include <ext/scalar_constants.hpp> // glm::pi
 #include <gtc/type_ptr.hpp>
+#include <string>  
 
 class Object{
     Mesh* mesh;
@@ -18,14 +19,19 @@ class Object{
 
     Object(Mesh* _mesh,char* _name):mesh(_mesh),name(_name){
         transformation = glm::mat4(1.0f);
+       
     }
 
     Mesh* GetMesh()const{
         return mesh;
     };
 
-    const char* GetName(){
-        return this->name;
+    char* GetName(){
+        return name;
+    }
+
+    void SetName(char* n){
+        this->name = n;
     }
 
     void SetTransformation( glm::mat4 tr){

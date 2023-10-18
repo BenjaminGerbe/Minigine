@@ -1,7 +1,9 @@
 #pragma once
 #include <vector>
 #include "RenderContextDisplay.h"
+#include <stdio.h>
 #include <cstring>
+#include <string> 
 #include "windows.h"
 #include "psapi.h"
 #include "Scene.h"
@@ -11,13 +13,16 @@ class DisplayerManager{
     RenderContextDisplay* renderContextDisplay;
     std::vector<float> memoryUsage;
     bool openMachineState;
-    
+    int selectedObjects;
+
     public :
     DisplayerManager(){
         memoryUsage = std::vector<float>(500);
         openMachineState = true;
     }
     
+    void ObjectEditor(Scene* scene);
+
     void AddRenderContextDisplay(RenderContextDisplay* renderWindow){
         RenderContextDisplays.push_back(renderWindow);
     };

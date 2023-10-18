@@ -24,7 +24,7 @@ class Scene{
     protected:
     int width;
     int height;
-    std::vector<Object> Objects;
+    std::vector<Object*> Objects;
    
     public:
     Scene() = default;
@@ -32,14 +32,14 @@ class Scene{
     virtual void SetUp(){
     }
 
-    virtual void AddObjectScene(Object object){
+    virtual void AddObjectScene(Object* object){
         Objects.push_back(object);
     }
 
     virtual void Render(glm::mat4* _MVP,int debug){
     }
 
-    virtual std::vector<Object> GetObjects(){
+    virtual std::vector<Object*> GetObjects(){
         return this->Objects;
     }
 

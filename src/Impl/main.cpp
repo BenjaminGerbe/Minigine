@@ -65,14 +65,14 @@ int main(int, char**){
     Object cube1(m_Cube,"cube1");
     Object cube2(m_Cube,"cube2");
     Object Dragon(m_Dragon,"dragon");
-    
+
     cube1.SetTransformation(glm::translate(glm::mat4(1.f), glm::vec3({ 2.f, 1.f,0.f })));
     cube2.SetTransformation(glm::translate(glm::mat4(1.f), glm::vec3({ -2.f, 1.f,0.f })));
     Dragon.SetTransformation(glm::scale(glm::mat4(1.f), glm::vec3({ .2f, .2f,.2f })));
 
-    scene.AddObjectScene(cube1);
-    scene.AddObjectScene(cube2);
-    scene.AddObjectScene(Dragon);
+    scene.AddObjectScene(&cube1);
+    scene.AddObjectScene(&cube2);
+    scene.AddObjectScene(&Dragon);
 
     renderContextDisplay.AddRender(&rcShaded);
     renderContextDisplay.AddRender(&renderContext);
@@ -153,6 +153,7 @@ int main(int, char**){
 
         displayerManager.RenderAllRenderWindows((int)(width/2.0),(int)(height/2.0),&scene);
         displayerManager.SceneEditor(&scene);
+        displayerManager.ObjectEditor(&scene);
 
         ImGui::ShowStyleEditor();
         ImGui::ShowDemoWindow();

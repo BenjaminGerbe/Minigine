@@ -31,6 +31,24 @@ void DisplayerManager::MachineState(){
 
     ImGui::End();
 }
+void CallBacks(){
+    
+}
+void DisplayerManager::ObjectEditor(Scene* scene){
+    Object* obj = scene->GetObjects()[this->selectedObjects];
+    
+    ImGui::Begin("Object View");
+    char buff[16];
+    std::strcpy(buff,obj->GetName());
+    if(ImGui::InputText("Name :",buff,IM_ARRAYSIZE(buff),0)){
+        
+        char* t = new char[32];
+        std::strcpy(t,buff);
+        obj->SetName(t);
+    }
+
+    ImGui::End();
+}
 
 void DisplayerManager::SceneEditor(Scene* scene){
     ImGui::Begin("Scene Editor");
@@ -43,16 +61,17 @@ void DisplayerManager::SceneEditor(Scene* scene){
         for (int i = 0; i < scene->GetObjects().size(); i++)
         {
             char label[32];
-            sprintf(label, "%d: %s",i,scene->GetObjects()[i].GetName());
+            sprintf(label, "%d: %s",i,scene->GetObjects()[i]->GetName());
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             const bool is_selected = (item_current_idx == i);
             if(ImGui::Selectable(label, is_selected, ImGuiSelectableFlags_SpanAllColumns)){
                     item_current_idx = i;
+                    selectedObjects = i;
             }
             ImGui::TableNextColumn();
             char poly[64];
-            int ret = snprintf(poly, sizeof poly, "%d", scene->GetObjects()[i].GetMesh()->TriangleToDraw()/(sizeof(unsigned int)*3));
+            int ret = snprintf(poly, sizeof poly, "%d", scene->GetObjects()[i]->GetMesh()->TriangleToDraw()/(sizeof(unsigned int)*3));
             ImGui::Text(poly);
  
         }
@@ -73,7 +92,7 @@ void DisplayerManager::RenderAllRenderWindows(int width,int height,Scene* scene)
         }
         else{
             char buffer[50]; 
-            char* str = "Scene View ";
+            char* str = "Scene View## ";
             sprintf(buffer, "%s%d", str,idx);
             RenderContextDisplays[idx]->DisplayRenderWindow(width,height,scene,buffer);
             idx++;
