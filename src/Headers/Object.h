@@ -12,14 +12,19 @@
 class Object{
     Mesh* mesh;
     glm::mat4 transformation;
+    glm::vec3 position;
+    glm::vec3 rotation;
+    glm::vec3 scale;
     uint32_t programShader;
-    char* name;
+    std::string name;
 
     public:
 
-    Object(Mesh* _mesh,char* _name):mesh(_mesh),name(_name){
+    Object(Mesh* _mesh,std::string _name):mesh(_mesh),name(_name){
         transformation = glm::mat4(1.0f);
-       
+        scale = glm::vec3({1.0f,1.0f,1.0f});
+        rotation = glm::vec3({0.0f,0.0f,0.0f});
+        position = glm::vec3({0.0f,0.0f,0.0f});
     }
 
     Mesh* GetMesh()const{
@@ -27,18 +32,50 @@ class Object{
     };
 
     char* GetName(){
-        return name;
+        char buffer[32];
+        strcpy(buffer,name.c_str());
+        return buffer;
     }
 
-    void SetName(char* n){
-        this->name = n;
+    glm::vec3 GetPosition(){
+        return position;
     }
 
-    void SetTransformation( glm::mat4 tr){
-        transformation = tr;
-    };
+    glm::vec3 GetRotation(){
+        return rotation;
+    }
+
+    glm::vec3 GetScale(){
+        return scale;
+    }
+
+    void SetName(std::string str){
+        name = str;
+    }
+
+    void SetPosition(glm::vec3 position){
+        this->position = position;
+    }
+
+    void SetRotation(glm::vec3 rotation){
+        this->rotation = rotation;
+    }
+
+    void SetScale(glm::vec3 scale){
+        this->scale = scale;
+    }
 
     glm::mat4 GetTransformation(){
+        
+        transformation = glm::mat4(1.0f);
+        
+        transformation *= glm::scale(glm::mat4(1.0f),scale);
+        transformation *= glm::translate(glm::mat4(1.0f),position);
+        transformation *= glm::rotate(glm::mat4(1.0f), rotation.x * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        transformation *= glm::rotate(glm::mat4(1.0f), rotation.y * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        transformation *= glm::rotate(glm::mat4(1.0f), rotation.z * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+       
+
         return transformation;
     };
 

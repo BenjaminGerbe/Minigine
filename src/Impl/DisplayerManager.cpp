@@ -22,7 +22,7 @@ void DisplayerManager::MachineState(){
         
         float max = totalVirtualMem;
         float value  = virtualMemUsedByMe;
-        value /= 1000000;
+        value /= 1000000.0f;
         memoryUsage.push_back(value);
         memoryUsage.erase(memoryUsage.begin());
         char buffer[64];
@@ -38,16 +38,36 @@ void DisplayerManager::ObjectEditor(Scene* scene){
     Object* obj = scene->GetObjects()[this->selectedObjects];
     
     ImGui::Begin("Object View");
+    
     char buff[16];
+    float static pos[3];
+    float static rot[3];
+    float static sca[3];
+    pos[0] = obj->GetPosition().x; pos[1] = obj->GetPosition().y; pos[2] = obj->GetPosition().z;
+
+    rot[0] = obj->GetRotation().x; rot[1] = obj->GetRotation().y; rot[2] = obj->GetRotation().z;
+
+    sca[0] = obj->GetScale().x; sca[1] = obj->GetScale().y; sca[2] = obj->GetScale().z;
+
     std::strcpy(buff,obj->GetName());
-    if(ImGui::InputText("Name :",buff,IM_ARRAYSIZE(buff),0)){
-        
-        char* t = new char[32];
-        std::strcpy(t,buff);
-        obj->SetName(t);
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing,ImVec2(0.0f,15.0f));
+    ImGui::Spacing();
+    ImGui::SetCursorPosX(135.0f);
+    if(ImGui::InputText("##Name",buff,IM_ARRAYSIZE(buff),0)){
+        obj->SetName(std::string(buff));
     }
+    ImGui::Separator();
+    ImGui::Text("Transformations");
+    ImGui::DragFloat3("Position",pos,0.1f);
+    ImGui::DragFloat3("Rotation",rot,0.1f);
+    ImGui::DragFloat3("Scale",sca,0.1f);
+    ImGui::PopStyleVar(1);
+    obj->SetPosition(glm::vec3({pos[0],pos[1],pos[2]}));
+    obj->SetRotation(glm::vec3({rot[0],rot[1],rot[2]}));
+    obj->SetScale(glm::vec3({sca[0],sca[1],sca[2]}));
 
     ImGui::End();
+
 }
 
 void DisplayerManager::SceneEditor(Scene* scene){
@@ -59,9 +79,13 @@ void DisplayerManager::SceneEditor(Scene* scene){
     {
          static int item_current_idx = 0;
         for (int i = 0; i < scene->GetObjects().size(); i++)
-        {
+        {   
+            char buff[16];
+            std::strcpy(buff,scene->GetObjects()[i]->GetName());
+
             char label[32];
-            sprintf(label, "%d: %s",i,scene->GetObjects()[i]->GetName());
+            sprintf(label, "%d: %s",i,buff);
+            
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             const bool is_selected = (item_current_idx == i);
@@ -91,9 +115,11 @@ void DisplayerManager::RenderAllRenderWindows(int width,int height,Scene* scene)
             it = RenderContextDisplays.erase(it);
         }
         else{
-            char buffer[50]; 
+            char buffer[32]; 
             char* str = "Scene View## ";
             sprintf(buffer, "%s%d", str,idx);
+            float w = ImGui::GetWindowSize().x;
+            float h = ImGui::GetWindowSize().y;
             RenderContextDisplays[idx]->DisplayRenderWindow(width,height,scene,buffer);
             idx++;
             it++;

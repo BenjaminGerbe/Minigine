@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 #include "RenderContextDisplay.h"
 #include <stdio.h>
 #include <cstring>

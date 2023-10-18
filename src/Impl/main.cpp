@@ -66,9 +66,9 @@ int main(int, char**){
     Object cube2(m_Cube,"cube2");
     Object Dragon(m_Dragon,"dragon");
 
-    cube1.SetTransformation(glm::translate(glm::mat4(1.f), glm::vec3({ 2.f, 1.f,0.f })));
-    cube2.SetTransformation(glm::translate(glm::mat4(1.f), glm::vec3({ -2.f, 1.f,0.f })));
-    Dragon.SetTransformation(glm::scale(glm::mat4(1.f), glm::vec3({ .2f, .2f,.2f })));
+    //cube1.SetTransformation(glm::translate(glm::mat4(1.f), glm::vec3({ 2.f, 1.f,0.f })));
+    //cube2.SetTransformation(glm::translate(glm::mat4(1.f), glm::vec3({ -2.f, 1.f,0.f })));
+    //Dragon.SetTransformation(glm::scale(glm::mat4(1.f), glm::vec3({ .2f, .2f,.2f })));
 
     scene.AddObjectScene(&cube1);
     scene.AddObjectScene(&cube2);
@@ -86,7 +86,9 @@ int main(int, char**){
     float width = (float)app.GetWidth();
 
     glm::mat4 matricesWire[2];
-    matricesWire[0] =  glm::translate(glm::mat4(1.f), -glm::vec3({ 0.f, 0.f,3.f }));
+    matricesWire[0] =  glm::translate(glm::mat4(1.f), -glm::vec3({ 0.f, .6f,5.f }));
+    matricesWire[0] *= glm::rotate(glm::mat4(1.0f), 15 * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0, 0.0));
+    matricesWire[0] *= glm::rotate(glm::mat4(1.0f), 0.0f * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 1.0, 0.0));
     matricesWire[1] =  glm::perspectiveFov(glm::radians(45.0f), (float)width, (float)height, 0.5f, 1000.0f);
 
     renderContext.SetUp(matricesWire,(int)(width/2.0f),(int)(height/2.0f));
@@ -124,6 +126,7 @@ int main(int, char**){
     ImGui::GetStyle().WindowRounding = 9.0f;
     ImGui::GetStyle().FramePadding = ImVec2(11.0f,11.0f);
     ImGui::GetStyle().WindowBorderSize = 0.0f;
+    ImGui::GetStyle().WindowTitleAlign = ImVec2(.5f,.5f);
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 430");
 
@@ -136,14 +139,13 @@ int main(int, char**){
         width = (float)app.GetWidth();
 
         // rendering stuff
-      glViewport(0,0,(int)width,(int)height);
+        glViewport(0,0,(int)width,(int)height);
         glClearColor(0.94f,0.91f,0.90f,1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         matricesWire[0] =  glm::translate(glm::mat4(1.f), -glm::vec3({ 0.f, .6f,5.f }));
         matricesWire[0] *= glm::rotate(glm::mat4(1.0f), 15 * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0, 0.0));
         matricesWire[0] *= glm::rotate(glm::mat4(1.0f), i * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 1.0, 0.0));
-    
 
         // UI
         ImGui_ImplOpenGL3_NewFrame();

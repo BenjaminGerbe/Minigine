@@ -5,7 +5,7 @@
 void RenderContextDisplay::DisplayRenderWindow(int width,int height,Scene* scene,char* label){
        
        
-        ImGui::SetNextWindowSize(ImVec2(width,height));
+        
         if(!ImGui::Begin(label,&p_open,ImGuiWindowFlags_NoCollapse)){
                 ImGui::End();
         }
