@@ -75,7 +75,7 @@ void DisplayerManager::SceneEditor(Scene* scene){
 
     static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
     
-    if (ImGui::BeginTable("split2", 2, ImGuiTableFlags_NoSavedSettings ))
+    if (ImGui::BeginTable("split2", 2,0 ))
     {
          static int item_current_idx = 0;
         for (int i = 0; i < scene->GetObjects().size(); i++)

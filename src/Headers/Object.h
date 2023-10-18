@@ -22,9 +22,9 @@ class Object{
 
     Object(Mesh* _mesh,std::string _name):mesh(_mesh),name(_name){
         transformation = glm::mat4(1.0f);
-        scale = glm::vec3({1.0f,1.0f,1.0f});
         rotation = glm::vec3({0.0f,0.0f,0.0f});
         position = glm::vec3({0.0f,0.0f,0.0f});
+        scale = glm::vec3({1.0f,1.0f,1.0f});
     }
 
     Mesh* GetMesh()const{
@@ -69,12 +69,12 @@ class Object{
         
         transformation = glm::mat4(1.0f);
         
-        transformation *= glm::scale(glm::mat4(1.0f),scale);
+     
         transformation *= glm::translate(glm::mat4(1.0f),position);
         transformation *= glm::rotate(glm::mat4(1.0f), rotation.x * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         transformation *= glm::rotate(glm::mat4(1.0f), rotation.y * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         transformation *= glm::rotate(glm::mat4(1.0f), rotation.z * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-       
+        transformation *= glm::scale(glm::mat4(1.0f),scale);  
 
         return transformation;
     };
