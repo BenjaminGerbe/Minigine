@@ -124,12 +124,16 @@ int main(int, char**){
     colors[ImGuiCol_TitleBgActive]          = ImVec4(0.12f, 0.12f, 0.12f, 1.00f);
     colors[ImGuiCol_Header]                 = ImVec4(0.30f, 0.27f, 0.24f, 0.80f);
     colors[ImGuiCol_HeaderHovered]          = ImVec4(0.21f, 0.21f, 0.21f, 0.80f);
-    colors[ImGuiCol_Tab]                    = ImVec4(0.14f, 0.21f, 0.31f, 0.86f);
-    colors[ImGuiCol_TabHovered]             = ImVec4(0.13f, 0.17f, 0.22f, 0.80f);
+    colors[ImGuiCol_Tab]                    = ImVec4(0.00f, 0.00f, 0.00f, 0.97f);
+    colors[ImGuiCol_TabHovered]             = ImVec4(0.28f, 0.28f, 0.28f, 1.00f);
     colors[ImGuiCol_TabUnfocused]           = ImVec4(0.00f, 0.00f, 0.00f, 0.97f);
-    colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.24f, 0.23f, 0.23f, 0.94f);
+    colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.00f, 0.00f, 0.00f, 0.97f);
     colors[ImGuiCol_DockingPreview]         = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
     colors[ImGuiCol_TabActive]              = ImVec4(0.28f, 0.28f, 0.28f, 1.00f);
+
+
+
+
 
 
     ImGui::GetStyle().WindowRounding = 9.0f;
