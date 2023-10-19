@@ -28,7 +28,6 @@
 #include "../Headers/DisplayerManager.h"
 #include "../data.h"
 
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "../stbload/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -42,6 +41,7 @@ RenderContextWireFrame renderContextShaded;
 RenderContextNOFramed Noframed;
 RenderContextDisplay renderContextDisplay;
 DisplayerManager displayerManager;
+std::vector<Mesh*> objs;
 
 int main(int, char**){
 
@@ -49,8 +49,6 @@ int main(int, char**){
    // Application Setup
     app = ApplicationState((int)(1920*1.5f),(int)(1080*1.5f));
     int err = app.SetupApplication();    
-
-  
 
     if(err == 1){
         return 1;
@@ -62,9 +60,8 @@ int main(int, char**){
     Object cube2(m_Cube,"cube2");
     Object Dragon(m_Dragon,"dragon");
 
-    //cube1.SetTransformation(glm::translate(glm::mat4(1.f), glm::vec3({ 2.f, 1.f,0.f })));
-    //cube2.SetTransformation(glm::translate(glm::mat4(1.f), glm::vec3({ -2.f, 1.f,0.f })));
-    //Dragon.SetTransformation(glm::scale(glm::mat4(1.f), glm::vec3({ .2f, .2f,.2f })));
+    objs.push_back(m_Cube);
+    objs.push_back(m_Dragon);
 
     scene.AddObjectScene(&cube1);
     scene.AddObjectScene(&cube2);
@@ -130,14 +127,9 @@ int main(int, char**){
     colors[ImGuiCol_Tab]                    = ImVec4(0.14f, 0.21f, 0.31f, 0.86f);
     colors[ImGuiCol_TabHovered]             = ImVec4(0.13f, 0.17f, 0.22f, 0.80f);
     colors[ImGuiCol_TabUnfocused]           = ImVec4(0.00f, 0.00f, 0.00f, 0.97f);
-   colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.24f, 0.23f, 0.23f, 0.94f);
+    colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.24f, 0.23f, 0.23f, 0.94f);
     colors[ImGuiCol_DockingPreview]         = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-colors[ImGuiCol_TabActive]              = ImVec4(0.28f, 0.28f, 0.28f, 1.00f);
-
-
-
-
-
+    colors[ImGuiCol_TabActive]              = ImVec4(0.28f, 0.28f, 0.28f, 1.00f);
 
 
     ImGui::GetStyle().WindowRounding = 9.0f;
@@ -169,12 +161,11 @@ colors[ImGuiCol_TabActive]              = ImVec4(0.28f, 0.28f, 0.28f, 1.00f);
         ImGui_ImplGlfw_NewFrame();
 
         ImGui::NewFrame();
-
        
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
         displayerManager.RenderAllRenderWindows((int)(width/2.0),(int)(height/2.0),&scene);
-        displayerManager.SceneEditor(&scene);
+        displayerManager.SceneEditor(&scene,objs);
         displayerManager.ObjectEditor(&scene);
 
         ImGui::ShowStyleEditor();

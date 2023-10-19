@@ -31,50 +31,64 @@ void DisplayerManager::MachineState(){
 
     ImGui::End();
 }
-void CallBacks(){
-    
-}
+
 void DisplayerManager::ObjectEditor(Scene* scene){
-    Object* obj = scene->GetObjects()[this->selectedObjects];
+   
     
     ImGui::Begin("Object View");
-    
-    char buff[16];
-    float static pos[3];
-    float static rot[3];
-    float static sca[3];
-    pos[0] = obj->GetPosition().x; pos[1] = obj->GetPosition().y; pos[2] = obj->GetPosition().z;
 
-    rot[0] = obj->GetRotation().x; rot[1] = obj->GetRotation().y; rot[2] = obj->GetRotation().z;
+        if(selectedObjects >= 0 && scene->GetObjects().size() > 0){
+        
+            Object* obj = scene->GetObjects()[this->selectedObjects];
 
-    sca[0] = obj->GetScale().x; sca[1] = obj->GetScale().y; sca[2] = obj->GetScale().z;
+            char buff[16];
+            float static pos[3];
+            float static rot[3];
+            float static sca[3];
+            pos[0] = obj->GetPosition().x; pos[1] = obj->GetPosition().y; pos[2] = obj->GetPosition().z;
 
-    std::strcpy(buff,obj->GetName());
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing,ImVec2(0.0f,15.0f));
-    ImGui::Spacing();
-    ImGui::SetCursorPosX(135.0f);
-    if(ImGui::InputText("##Name",buff,IM_ARRAYSIZE(buff),0)){
-        obj->SetName(std::string(buff));
-    }
-    ImGui::Separator();
-    ImGui::Text("Transformations");
-    ImGui::DragFloat3("Position",pos,0.1f);
-    ImGui::DragFloat3("Rotation",rot,0.1f);
-    ImGui::DragFloat3("Scale",sca,0.1f);
-    ImGui::PopStyleVar(1);
-    obj->SetPosition(glm::vec3({pos[0],pos[1],pos[2]}));
-    obj->SetRotation(glm::vec3({rot[0],rot[1],rot[2]}));
-    obj->SetScale(glm::vec3({sca[0],sca[1],sca[2]}));
+            rot[0] = obj->GetRotation().x; rot[1] = obj->GetRotation().y; rot[2] = obj->GetRotation().z;
 
+            sca[0] = obj->GetScale().x; sca[1] = obj->GetScale().y; sca[2] = obj->GetScale().z;
+
+            std::strcpy(buff,obj->GetName());
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing,ImVec2(0.0f,15.0f));
+            ImGui::Spacing();
+            ImGui::SetCursorPosX(135.0f);
+            if(ImGui::InputText("##Name",buff,IM_ARRAYSIZE(buff),0)){
+                obj->SetName(std::string(buff));
+            }
+            ImGui::Separator();
+            ImGui::Text("Transformations");
+            ImGui::DragFloat3("Position",pos,0.1f);
+            ImGui::DragFloat3("Rotation",rot,0.1f);
+            ImGui::DragFloat3("Scale",sca,0.1f);
+            ImGui::PopStyleVar(1);
+            obj->SetPosition(glm::vec3({pos[0],pos[1],pos[2]}));
+            obj->SetRotation(glm::vec3({rot[0],rot[1],rot[2]}));
+            obj->SetScale(glm::vec3({sca[0],sca[1],sca[2]}));
+
+        }  
     ImGui::End();
 
 }
 
-void DisplayerManager::SceneEditor(Scene* scene){
+void DisplayerManager::SceneEditor(Scene* scene,std::vector<Mesh*> objets){
     ImGui::Begin("Scene Editor");
 
     static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
-    
+
+    if(ImGui::Button("+")){
+        Object* Dragon = new Object(objets[1],"dragon");
+        // MEMORY LEAK
+        scene->AddObjectScene(Dragon);
+    }
+    ImGui::SameLine();
+    if(ImGui::Button("-") && selectedObjects >= 0){
+        scene->RemoveObjectScene(selectedObjects);
+    }
+
+
     if (ImGui::BeginTable("split2", 2,0 ))
     {
          static int item_current_idx = 0;
@@ -128,8 +142,6 @@ void DisplayerManager::RenderAllRenderWindows(int width,int height,Scene* scene)
 }
 
 void DisplayerManager::RenderAppOptions(){
-
-       
        
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding,6);
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,ImVec2(3.0f,3.0f));

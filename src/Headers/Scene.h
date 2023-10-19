@@ -32,6 +32,10 @@ class Scene{
     virtual void SetUp(){
     }
 
+    virtual void RemoveObjectScene(int idx){
+        Objects.erase(Objects.begin()+idx);
+    }
+
     virtual void AddObjectScene(Object* object){
         Objects.push_back(object);
     }
