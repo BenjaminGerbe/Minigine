@@ -27,7 +27,9 @@ link_directories(../libs/GLFW/lib-static-ucrt )
 
 #glm
 include_directories(../libs/GLM)     
-link_directories(../libs/GLM/build/glm/Debug)
+
+#TinyXML2
+include_directories(../libs/tinyxml2)
 
 
 include_directories(${PROJECT_SOURCE_DIR})

@@ -27,6 +27,7 @@
 #include "../Headers/RenderContextDisplay.h"
 #include "../Headers/DisplayerManager.h"
 #include "../data.h"
+#include "XMLSerialization.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../stbload/stb_image.h"
@@ -43,12 +44,26 @@ RenderContextDisplay renderContextDisplay;
 DisplayerManager displayerManager;
 std::vector<Mesh*> objs;
 
+class XmlTest : public xmls::Serializable{
+    public :
+    xmls::xString name;
+    xmls::xBool x;
+    XmlTest(){
+        name = " benjamin";
+        x = true;
+    }
+
+};
+
+
 int main(int, char**){
 
     std::cout << "Launch Minigine" << std::endl; 
    // Application Setup
     app = ApplicationState((int)(1920*1.5f),(int)(1080*1.5f));
     int err = app.SetupApplication();    
+
+    XmlTest* xlmTest = new XmlTest();
 
     if(err == 1){
         return 1;
