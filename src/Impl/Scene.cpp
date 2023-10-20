@@ -22,9 +22,8 @@ float SquareUV[] = {
 };
 
 
-void Scene1::SetUp(int width,int height){
-        this->width = width;
-        this->height = height;
+void Scene::SetUp(){
+
 
         unsigned int VBO,EBO;
 
@@ -73,7 +72,7 @@ void Scene1::SetUp(int width,int height){
         programShader = g_basicShader.GetProgram();
 }
 
-void Scene1::Render(glm::mat4* _MVP,int debug){
+void Scene::Render(glm::mat4* _MVP,int debug){
 
 
         for (int i = 0; i < Objects.size(); i++)

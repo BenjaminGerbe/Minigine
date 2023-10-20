@@ -94,7 +94,7 @@ void DisplayerManager::SceneEditor(Scene* scene,std::vector<Mesh*> objets){
 
     if (ImGui::BeginTable("split2", 2,0 ))
     {
-         static int item_current_idx = 0;
+        static int item_current_idx = 0;
         for (int i = 0; i < scene->GetObjects().size(); i++)
         {   
             char buff[16];
@@ -107,15 +107,18 @@ void DisplayerManager::SceneEditor(Scene* scene,std::vector<Mesh*> objets){
             ImGui::TableNextColumn();
             const bool is_selected = (item_current_idx == i);
             if(ImGui::Selectable(label, is_selected, ImGuiSelectableFlags_SpanAllColumns)){
-                    item_current_idx = i;
-                    selectedObjects = i;
+                item_current_idx = i;
+                selectedObjects = i;
             }
+
+     
             ImGui::TableNextColumn();
             char poly[64];
             int ret = snprintf(poly, sizeof poly, "%d", scene->GetObjects()[i]->GetMesh()->TriangleToDraw()/(sizeof(unsigned int)*3));
             ImGui::Text(poly);
  
         }
+
         ImGui::EndTable();
     }
     
@@ -167,7 +170,7 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
             if (ImGui::BeginMenu("Window"))
             {
                 if (ImGui::MenuItem("Scene View",NULL)) {
-                    AddRenderContextDisplay(new RenderContextDisplay(*this->renderContextDisplay));
+                    AddRenderContextDisplay(new RenderContextDisplay());
                 }
                 if (ImGui::MenuItem("Machine State",NULL)) {
                     openMachineState = true;

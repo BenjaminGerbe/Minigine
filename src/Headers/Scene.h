@@ -25,6 +25,12 @@ class Scene{
     int width;
     int height;
     std::vector<Object*> Objects;
+    unsigned int VAO,UBO;
+    unsigned int VAOS;
+    uint32_t programShader;
+    uint32_t programShaderWireFrame;
+    uint32_t programShaderGrid;
+
    
     public:
     Scene(){
@@ -64,11 +70,12 @@ class Scene{
 
 
     ~Scene(){
-  
+        for(auto p : Objects){
+            delete p;
+        }
     }
 
-    virtual void SetUp(){
-    }
+     virtual void SetUp();
 
     virtual void RemoveObjectScene(int idx){
         Objects.erase(Objects.begin()+idx);
@@ -78,8 +85,7 @@ class Scene{
         Objects.push_back(object);
     }
 
-    virtual void Render(glm::mat4* _MVP,int debug){
-    }
+       virtual void Render(glm::mat4* _MVP,int debug);
 
     virtual std::vector<Object*> GetObjects(){
         return this->Objects;
@@ -90,16 +96,4 @@ class Scene{
     }
 };
 
-class Scene1 : public Scene{
-    unsigned int VAO,UBO;
-    unsigned int VAOS;
-    uint32_t programShader;
-    uint32_t programShaderWireFrame;
-    uint32_t programShaderGrid;
-    
-    public :
-    virtual void SetUp(int width,int height);
-    float i = 0;
-    virtual void Render(glm::mat4* _MVP,int debug);
-};
 

@@ -37,7 +37,7 @@
 #include "../stbload/stb_image_write.h"
 
 static ApplicationState app; 
-Scene1 scene;
+Scene* scene;
 Projet projet;
 RenderContextShadedWireFrame renderContext;
 RenderContextShaded rcShaded;
@@ -46,20 +46,18 @@ RenderContextNOFramed Noframed;
 RenderContextDisplay renderContextDisplay;
 DisplayerManager displayerManager;
 std::vector<Mesh*> objs;
-int Object::ID =0;
-
 
 
 
 int main(int, char**){
 
     std::cout << "Launch Minigine" << std::endl; 
-  
+    scene = new Scene();
    // Application Setup
     app = ApplicationState((int)(1920*1.5f),(int)(1080*1.5f));
     int err = app.SetupApplication();    
 
-    projet.AddScene(&scene);
+    projet.AddScene(scene);
 
     if(err == 1){
         return 1;
@@ -71,27 +69,11 @@ int main(int, char**){
     projet.AddMesh(m_Cube);
     projet.AddMesh(m_Dragon);
 
-
-    Object cube1(m_Cube,"cube1");
-    Object cube2(m_Cube,"cube2");
-    Object Dragon(m_Dragon,"dragon");
-
-      
-
     objs.push_back(m_Cube);
     objs.push_back(m_Dragon);
 
-    scene.AddObjectScene(&cube1);
-    scene.AddObjectScene(&cube2);
-    scene.AddObjectScene(&Dragon);
-
-
-    renderContextDisplay.AddRender(&rcShaded);
-    renderContextDisplay.AddRender(&renderContext);
-    renderContextDisplay.AddRender(&renderContextShaded);
 
     displayerManager.AddRenderContextDisplay(new RenderContextDisplay(renderContextDisplay));
-    displayerManager.SetTemplateRenderContextDisplay(&renderContextDisplay);
 
     GLFWwindow* window = app.GetGLFWwindow();
     float height = (float)app.GetHeight();
@@ -101,13 +83,13 @@ int main(int, char**){
     matricesWire[0] =  glm::translate(glm::mat4(1.f), -glm::vec3({ 0.f, .6f,5.f }));
     matricesWire[0] *= glm::rotate(glm::mat4(1.0f), 15 * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0, 0.0));
     matricesWire[0] *= glm::rotate(glm::mat4(1.0f), 0.0f * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 1.0, 0.0));
-    matricesWire[1] =  glm::perspectiveFov(glm::radians(45.0f), (float)width, (float)height, 0.5f, 1000.0f);
+    //matricesWire[1] =  glm::perspectiveFov(glm::radians(45.0f), (float)width, (float)height, 0.5f, 1000.0f);
 
-    renderContext.SetUp(matricesWire,(int)(width/2.0f),(int)(height/2.0f));
-    renderContextShaded.SetUp(matricesWire,(int)(width/2.0f),(int)(height/2.0f));
-    rcShaded.SetUp(matricesWire,(int)(width/2.0f),(int)(height/2.0f));
-    Noframed.SetUp(matricesWire,(int)(width/2.0f),(int)(height/2.0f));
-    scene.SetUp((int)width,(int)height);
+    renderContext.SetUp((int)(width/2.0f),(int)(height/2.0f));
+    renderContextShaded.SetUp((int)(width/2.0f),(int)(height/2.0f));
+    rcShaded.SetUp((int)(width/2.0f),(int)(height/2.0f));
+    Noframed.SetUp((int)(width/2.0f),(int)(height/2.0f));
+    scene->SetUp();
 
     rcShaded.SetLabel("Shaded");
     renderContext.SetLabel("ShadedWireFrame");
@@ -175,9 +157,9 @@ int main(int, char**){
         glClearColor(0.94f,0.91f,0.90f,1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        matricesWire[0] =  glm::translate(glm::mat4(1.f), -glm::vec3({ 0.f, .6f,5.f }));
-        matricesWire[0] *= glm::rotate(glm::mat4(1.0f), 15 * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0, 0.0));
-        matricesWire[0] *= glm::rotate(glm::mat4(1.0f), i * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 1.0, 0.0));
+        // matricesWire[0] =  glm::translate(glm::mat4(1.f), -glm::vec3({ 0.f, .6f,5.f }));
+        // matricesWire[0] *= glm::rotate(glm::mat4(1.0f), 15 * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0, 0.0));
+        // matricesWire[0] *= glm::rotate(glm::mat4(1.0f), i * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 1.0, 0.0));
 
         // UI
         ImGui_ImplOpenGL3_NewFrame();

@@ -4,8 +4,6 @@
 #include <iostream>
 void RenderContextDisplay::DisplayRenderWindow(int width,int height,Scene* scene,char* label){
        
-       
-        
         if(!ImGui::Begin(label,&p_open,ImGuiWindowFlags_NoCollapse)){
                 ImGui::End();
         }
@@ -32,11 +30,14 @@ void RenderContextDisplay::DisplayRenderWindow(int width,int height,Scene* scene
             }
 
             RenderContext* renderContext = renderContextes[idx_renderContext];
-            unsigned int tex =  renderContext->RenderScene(scene);
+            ImVec2 size = ImGui::GetWindowSize();
+            renderContext->UpdateRender(size.x,size.y);
+            MVP[1] = glm::perspectiveFov(glm::radians(45.0f), size.x, size.y, 0.5f, 1000.0f);
+            unsigned int tex =  renderContext->RenderScene(MVP,scene);
 
             ImGui::BeginChild("Game Render");
-            ImVec2 size = ImGui::GetWindowSize();
-            ImGui::Image((void*)(intptr_t)tex,size,ImVec2(0,1 ),ImVec2(1,0 ));
+        
+            ImGui::Image((void*)(intptr_t)tex,ImVec2(size.x,size.y-110),ImVec2(0,1 ),ImVec2(1,0 ));
             ImGui::EndChild();
 
             ImGui::End();

@@ -8,9 +8,7 @@ void Saver::SaveScene(Scene* scene){
     {
         Object* obj = scene->GetObjects()[i];
         std::string id = std::to_string(i);
-        yamlFile[id]["ID"] = id;
         std::string name = obj->GetStrName();
-        std::cout << name << std::endl;
         yamlFile[id]["ObjectName"] = name;
         yamlFile[id]["MeshFileID"] = obj->GetMesh()->GetID();
         yamlFile[id]["Transformation"]["Position"].push_back(obj->GetPosition().x);
@@ -51,7 +49,7 @@ Mesh* FindMesh(Projet* projet,uint32_t fileID){
 
 void Saver::LoadScene(Projet* projet){
     Scene* scene = projet->GetScene();
-    Scene1* s = new Scene1();
+    Scene* s = new Scene();
     YAML::Node yamlFile = YAML::LoadFile("scene.yaml");
 
     int size = yamlFile["Objects"].as<int>();
@@ -91,7 +89,7 @@ void Saver::LoadScene(Projet* projet){
         s->AddObjectScene(tempObj);
     }
     
-    s->SetUp(1920,1080);
+    s->SetUp();
     projet->SetScene(s);
     delete scene;
 }

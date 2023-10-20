@@ -13,6 +13,9 @@
 
 class DisplayerManager{
     std::vector<RenderContextDisplay*> RenderContextDisplays;
+    RenderContextShadedWireFrame rcWireShadedFrame;
+    RenderContextShaded rcShaded;
+    RenderContextWireFrame rcWireFrame;
     RenderContextDisplay* renderContextDisplay;
     std::vector<float> memoryUsage;
     bool openMachineState;
@@ -28,11 +31,22 @@ class DisplayerManager{
 
     void AddRenderContextDisplay(RenderContextDisplay* renderWindow){
         RenderContextDisplays.push_back(renderWindow);
-    };
 
-    void SetTemplateRenderContextDisplay(RenderContextDisplay* render){
-        renderContextDisplay = render;
-    }
+        renderWindow->AddRender(new RenderContextShaded());
+        renderWindow->getRenderContextes()[0]->SetLabel("Shaded");
+        renderWindow->AddRender(new RenderContextShadedWireFrame());
+        renderWindow->getRenderContextes()[1]->SetLabel("ShadedWireFrame");
+        renderWindow->AddRender(new RenderContextWireFrame());
+        renderWindow->getRenderContextes()[2]->SetLabel("WireFrame");
+
+        std::cout << " je t'en suplie change ca " << std::endl;
+        for (int i = 0; i < renderWindow->getRenderContextes().size(); i++)
+        {
+            renderWindow->getRenderContextes()[i]->SetUp(1920,1080);
+        }
+        
+
+    };
 
     void MachineState();
     void SceneEditor(Scene* scene,std::vector<Mesh*> objets);

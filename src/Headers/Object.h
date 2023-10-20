@@ -18,9 +18,7 @@ class Object{
     glm::vec3 scale;
     uint32_t programShader;
     std::string name;
-    int id;
     protected :
-    static int ID;
 
     public:
 
@@ -29,7 +27,6 @@ class Object{
         rotation = glm::vec3({0.0f,0.0f,0.0f});
         position = glm::vec3({0.0f,0.0f,0.0f});
         scale = glm::vec3({1.0f,1.0f,1.0f});
-        id = ID++;
     }
 
     Mesh* GetMesh()const{
@@ -37,13 +34,8 @@ class Object{
     };
 
     ~Object(){
-        
     }
 
-    int GetID()
-    {
-        return id;
-    }
     char* GetName(){
         char buffer[32];
         strcpy(buffer,name.c_str());
