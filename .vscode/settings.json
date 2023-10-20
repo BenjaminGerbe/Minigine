@@ -63,6 +63,12 @@
         "ranges": "cpp",
         "span": "cpp",
         "stack": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "array": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "sstream": "cpp",
+        "valarray": "cpp",
+        "xtree": "cpp"
     }
 }

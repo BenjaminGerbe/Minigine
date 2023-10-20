@@ -144,7 +144,7 @@ void DisplayerManager::RenderAllRenderWindows(int width,int height,Scene* scene)
     }
 }
 
-void DisplayerManager::RenderAppOptions(){
+void DisplayerManager::RenderAppOptions(Projet* projet){
        
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding,6);
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,ImVec2(3.0f,3.0f));
@@ -156,8 +156,12 @@ void DisplayerManager::RenderAppOptions(){
         {
             if (ImGui::BeginMenu("File"))
             {
-                if (ImGui::MenuItem("Save", "CTRL+S")) {}
-                if (ImGui::MenuItem("Import")) {}
+                if (ImGui::MenuItem("Save", "CTRL+S")) {
+                    Saver::SaveScene(projet->GetScene());
+                }
+                if (ImGui::MenuItem("Import")) {
+                    Saver::LoadScene(projet);
+                }
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Window"))

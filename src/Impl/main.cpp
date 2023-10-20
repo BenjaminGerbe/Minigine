@@ -1,6 +1,7 @@
 
 #include <iostream>
 
+
 // glew and glfw include
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
@@ -27,7 +28,8 @@
 #include "../Headers/RenderContextDisplay.h"
 #include "../Headers/DisplayerManager.h"
 #include "../data.h"
-#include "XMLSerialization.h"
+#include "../Headers/Saver.h"
+#include "../Headers/Projet.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../stbload/stb_image.h"
@@ -36,6 +38,7 @@
 
 static ApplicationState app; 
 Scene1 scene;
+Projet projet;
 RenderContextShadedWireFrame renderContext;
 RenderContextShaded rcShaded;
 RenderContextWireFrame renderContextShaded;
@@ -43,37 +46,37 @@ RenderContextNOFramed Noframed;
 RenderContextDisplay renderContextDisplay;
 DisplayerManager displayerManager;
 std::vector<Mesh*> objs;
+int Object::ID =0;
 
-class XmlTest : public xmls::Serializable{
-    public :
-    xmls::xString name;
-    xmls::xBool x;
-    XmlTest(){
-        name = " benjamin";
-        x = true;
-    }
 
-};
 
 
 int main(int, char**){
 
     std::cout << "Launch Minigine" << std::endl; 
+  
    // Application Setup
     app = ApplicationState((int)(1920*1.5f),(int)(1080*1.5f));
     int err = app.SetupApplication();    
 
-    XmlTest* xlmTest = new XmlTest();
+    projet.AddScene(&scene);
 
     if(err == 1){
         return 1;
     }
 
-    Mesh* m_Cube = new Mesh(verticesArray,sizeof(verticesArray),indicesArray,sizeof(indicesArray),3);
-    Mesh* m_Dragon = new Mesh(DragonVertices,sizeof(DragonVertices),DragonIndices,sizeof(DragonIndices),8);
+    Mesh* m_Cube = new Mesh(verticesArray,sizeof(verticesArray),indicesArray,sizeof(indicesArray),3,std::hash<std::string>()("CUBE"));
+    Mesh* m_Dragon = new Mesh(DragonVertices,sizeof(DragonVertices),DragonIndices,sizeof(DragonIndices),8,std::hash<std::string>()("DRAGON"));
+
+    projet.AddMesh(m_Cube);
+    projet.AddMesh(m_Dragon);
+
+
     Object cube1(m_Cube,"cube1");
     Object cube2(m_Cube,"cube2");
     Object Dragon(m_Dragon,"dragon");
+
+      
 
     objs.push_back(m_Cube);
     objs.push_back(m_Dragon);
@@ -81,6 +84,7 @@ int main(int, char**){
     scene.AddObjectScene(&cube1);
     scene.AddObjectScene(&cube2);
     scene.AddObjectScene(&Dragon);
+
 
     renderContextDisplay.AddRender(&rcShaded);
     renderContextDisplay.AddRender(&renderContext);
@@ -183,15 +187,15 @@ int main(int, char**){
        
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
-        displayerManager.RenderAllRenderWindows((int)(width/2.0),(int)(height/2.0),&scene);
-        displayerManager.SceneEditor(&scene,objs);
-        displayerManager.ObjectEditor(&scene);
+        displayerManager.RenderAllRenderWindows((int)(width/2.0),(int)(height/2.0),projet.GetScene());
+        displayerManager.SceneEditor(projet.GetScene(),objs);
+        displayerManager.ObjectEditor(projet.GetScene());
 
         ImGui::ShowStyleEditor();
         ImGui::ShowDemoWindow();
         
 
-        displayerManager.RenderAppOptions();
+        displayerManager.RenderAppOptions(&projet);
         displayerManager.MachineState();
 
         ImGui::Render();

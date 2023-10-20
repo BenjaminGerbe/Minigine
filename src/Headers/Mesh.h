@@ -26,10 +26,11 @@ class Mesh{
     float* uv;
     int lenV;
     int lenI;
+    uint32_t ID;
 
     public :
 
-    Mesh(float* _vertices,int lenV,unsigned int* _indices,int lenI,int stride):indices(_indices),vertices(_vertices){
+    Mesh(float* _vertices,int lenV,unsigned int* _indices,int lenI,int stride,uint32_t _ID):indices(_indices),vertices(_vertices),ID(_ID){
         unsigned int VBO,EBO;
         glGenBuffers(1,&VBO);
         glGenBuffers(1,&EBO);
@@ -48,6 +49,10 @@ class Mesh{
 
     int TriangleToDraw(){
         return lenI;
+    }
+
+    uint32_t GetID(){
+        return this->ID;
     }
 
     unsigned int GetVAO(){

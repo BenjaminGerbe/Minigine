@@ -9,6 +9,7 @@
 #include "psapi.h"
 #include "Scene.h"
 #include "Mesh.h"
+#include "Saver.h"
 
 class DisplayerManager{
     std::vector<RenderContextDisplay*> RenderContextDisplays;
@@ -35,7 +36,7 @@ class DisplayerManager{
 
     void MachineState();
     void SceneEditor(Scene* scene,std::vector<Mesh*> objets);
-    void RenderAppOptions();
+    void RenderAppOptions(Projet* projet);
     void RenderAllRenderWindows(int width,int height,Scene* scene);
 
 

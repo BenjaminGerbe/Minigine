@@ -25,6 +25,11 @@ link_directories(../libs/GLEW/lib/Release/WIN32)
 include_directories(../libs/GLFW/include)     
 link_directories(../libs/GLFW/lib-static-ucrt )
 
+# yaml-cpp
+include_directories(../libs/yaml-cpp/include)     
+link_directories(../libs/yaml-cpp/build/Debug)
+
+
 #glm
 include_directories(../libs/GLM)     
 
@@ -45,5 +50,5 @@ endforeach()
 
 set_source_files_properties("Headers/data.h" PROPERTIES COMPILE_FLAGS "-w")
 
-target_link_libraries( ${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARY} imgui glfw3dll glew32s opengl32)
+target_link_libraries( ${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARY} yaml-cppd.lib imgui glfw3dll glew32s opengl32)
 

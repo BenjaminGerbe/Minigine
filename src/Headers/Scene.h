@@ -27,7 +27,45 @@ class Scene{
     std::vector<Object*> Objects;
    
     public:
-    Scene() = default;
+    Scene(){
+    };
+
+    Scene(const Scene& scene){
+        this->height = scene.height;
+        this->width = scene.width;
+
+        std::vector<Object*> tmp;
+        for (int i = 0; i < scene.Objects.size(); i++)
+        {
+            tmp.push_back(new Object(scene.Objects[i]->GetMesh(),scene.Objects[i]->GetName()));
+        }
+
+        Objects = tmp;
+    }
+
+    Scene operator=(const Scene& copy){
+        this->height = copy.height;
+        this->width = copy.width;
+
+        std::vector<Object*> tmp;
+        for (int i = 0; i < copy.Objects.size(); i++)
+        {
+            tmp.push_back(new Object(copy.Objects[i]->GetMesh(),copy.Objects[i]->GetName()));
+        }
+
+        for (int i = 0; i < Objects.size(); i++)
+        {
+            delete Objects[i];
+        }
+
+        Objects = tmp;
+        return *this;
+    }
+
+
+    ~Scene(){
+  
+    }
 
     virtual void SetUp(){
     }
