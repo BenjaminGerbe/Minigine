@@ -40,7 +40,6 @@ static ApplicationState app;
 Scene* scene;
 Projet projet;
 DisplayerManager displayerManager;
-std::vector<Mesh*> objs;
 
 int main(int, char**){
 
@@ -57,14 +56,17 @@ int main(int, char**){
         return 1;
     }
 
-    Mesh* m_Cube = new Mesh(verticesArray,sizeof(verticesArray),indicesArray,sizeof(indicesArray),3,std::hash<std::string>()("CUBE"));
+    Mesh* m_Cube = new Mesh(verticesArray,sizeof(verticesArray),indicesArray,sizeof(indicesArray),6,std::hash<std::string>()("CUBE"));
     Mesh* m_Dragon = new Mesh(DragonVertices,sizeof(DragonVertices),DragonIndices,sizeof(DragonIndices),8,std::hash<std::string>()("DRAGON"));
+    Mesh* m_blank = new Mesh(nullptr,0.0f,nullptr,0.0f,0,std::hash<std::string>()("BLANK"));
 
-    projet.AddMesh(m_Cube);
-    projet.AddMesh(m_Dragon);
+    Object Cube(m_Cube,"cube",ClassicObject);
+    Object Dragon(m_Dragon,"dragon",ClassicObject);
+    Object light(m_blank,"light",Light);
 
-    objs.push_back(m_Cube);
-    objs.push_back(m_Dragon);
+    projet.AddObjs(&Cube);
+    projet.AddObjs(&Dragon);
+    projet.AddObjs(&light);
 
 
     displayerManager.AddRenderContextDisplay(new RenderContextDisplay());
@@ -121,9 +123,6 @@ int main(int, char**){
 
 
 
-
-
-
     ImGui::GetStyle().WindowRounding = 9.0f;
     ImGui::GetStyle().FramePadding = ImVec2(11.0f,11.0f);
     ImGui::GetStyle().WindowBorderSize = 0.0f;
@@ -157,7 +156,7 @@ int main(int, char**){
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
         displayerManager.RenderAllRenderWindows((int)(width/2.0),(int)(height/2.0),&projet);
-        displayerManager.SceneEditor(projet.GetScene(),objs);
+        displayerManager.SceneEditor(projet.GetScene(),projet.GetObjs());
         displayerManager.ObjectEditor(projet.GetScene());
 
         ImGui::ShowStyleEditor();

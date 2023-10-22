@@ -10,6 +10,7 @@ void Saver::SaveScene(Scene* scene){
         std::string id = std::to_string(i);
         std::string name = obj->GetStrName();
         yamlFile[id]["ObjectName"] = name;
+        yamlFile[id]["ObjectType"] = (int)obj->GetObjectType();
         yamlFile[id]["MeshFileID"] = obj->GetMesh()->GetID();
         yamlFile[id]["Transformation"]["Position"].push_back(obj->GetPosition().x);
         yamlFile[id]["Transformation"]["Position"].push_back(obj->GetPosition().y);
@@ -33,8 +34,8 @@ Mesh* FindMesh(Projet* projet,uint32_t fileID){
     int i = 0;
     Mesh* mesh;
 
-    while(!find && i< projet->GetMeshes().size()){
-        mesh = projet->GetMeshes()[i];
+    while(!find && i< projet->GetObjs().size()){
+        mesh = projet->GetObjs()[i]->GetMesh();
 
         if(mesh->GetID() == fileID){
             find = true;
@@ -79,9 +80,12 @@ void Saver::LoadScene(Projet* projet){
         y = yamlFile[id]["Transformation"]["Scale"][1].as<double>();
         z = yamlFile[id]["Transformation"]["Scale"][2].as<double>();
 
+
+        ObjectType type =  (ObjectType)yamlFile[id]["ObjectType"].as<int>(); 
+
         glm::vec3 scale({x,y,z});
 
-        Object* tempObj = new Object(mesh,name);
+        Object* tempObj = new Object(mesh,name,type);
         tempObj->SetPosition(position);
         tempObj->SetRotation(rotation);
         tempObj->SetScale(scale);

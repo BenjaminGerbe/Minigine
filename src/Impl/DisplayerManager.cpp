@@ -42,7 +42,6 @@ void DisplayerManager::ObjectEditor(Scene* scene){
         if(selectedObjects >= 0 && scene->GetObjects().size() > 0){
         
             Object* obj = scene->GetObjects()[this->selectedObjects];
-
             char buff[16];
           
             std::strcpy(buff,obj->GetName());
@@ -78,7 +77,7 @@ void DisplayerManager::ObjectEditor(Scene* scene){
 
 }
 
-void DisplayerManager::SceneEditor(Scene* scene,std::vector<Mesh*> objets){
+void DisplayerManager::SceneEditor(Scene* scene,std::vector<Object*> objets){
 
     if(!openSceneEditor)
         return;
@@ -87,14 +86,32 @@ void DisplayerManager::SceneEditor(Scene* scene,std::vector<Mesh*> objets){
 
     static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
 
-    if(ImGui::Button("+")){
-        Object* Dragon = new Object(objets[1],"dragon");
-        // MEMORY LEAK
-        scene->AddObjectScene(Dragon);
+
+    if (ImGui::BeginCombo("Add Object", "", ImGuiComboFlags_NoPreview)) 
+    {
+        for (int n = 0; n < objets.size(); n++)
+        {
+            char nbuffer[32];
+            strcpy(nbuffer,objets[n]->GetStrName().c_str());
+           
+            if (ImGui::Selectable(nbuffer)){
+                Object* obj = new Object(objets[n]->GetMesh(),objets[n]->GetStrName(),objets[n]->GetObjectType());
+                scene->AddObjectScene(obj);
+            }
+
+         
+                
+        }
+        ImGui::EndCombo();
     }
+
     ImGui::SameLine();
-    if(ImGui::Button("-") && selectedObjects >= 0){
+    if(ImGui::Button("-") && selectedObjects >= 0 && scene->GetObjects().size() > 0){
         scene->RemoveObjectScene(selectedObjects);
+
+        if(selectedObjects > scene->GetObjects().size()-1){
+            selectedObjects = scene->GetObjects().size()-1;
+        }        
     }
 
 
@@ -107,18 +124,26 @@ void DisplayerManager::SceneEditor(Scene* scene,std::vector<Mesh*> objets){
             std::strcpy(buff,scene->GetObjects()[i]->GetName());
 
             char label[32];
-            sprintf(label, "%d: %s",i,buff);
+            sprintf(label, "%s##%d",buff,i);
             
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             const bool is_selected = (item_current_idx == i);
+            if(scene->GetObjects()[i]->GetObjectType() == ClassicObject){
+                ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.85f,0.85f,0.85f,1.0f));
+            }
+            else if(scene->GetObjects()[i]->GetObjectType() == Light){
+                ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.91f,0.96f,0.25f,1.0f));
+            }
+            
             if(ImGui::Selectable(label, is_selected, ImGuiSelectableFlags_SpanAllColumns)){
                 item_current_idx = i;
                 selectedObjects = i;
             }
-
+            ImGui::PopStyleColor(1);
      
             ImGui::TableNextColumn();
+
             char poly[64];
             int ret = snprintf(poly, sizeof poly, "%d", scene->GetObjects()[i]->GetMesh()->TriangleToDraw()/(sizeof(unsigned int)*3));
             ImGui::Text(poly);
@@ -192,6 +217,12 @@ void DisplayerManager::RenderAllRenderWindows(int width,int height,Projet* proje
                     float middleMouse = io.MouseWheel;
                     pos.z -= middleMouse;
 
+                    if(obj->GetRenderType() == Orthographic){
+                        obj->SetOrthoSize(obj->GetOrthoSize() - middleMouse);
+                        std::cout << obj->GetOrthoSize() << std::endl;
+                        pos.z = obj->GetOrthoSize();
+                    }
+
                     if(ImGui::IsKeyDown(ImGuiKey_Z)){
                          pos.z -= 0.05f;
                       
@@ -239,9 +270,37 @@ void DisplayerManager::RenderSceneViewOption(){
         RenderContextDisplay* obj = RenderContextDisplays[selectedSceneView];
         pos[0] = obj->GetPosition().x; pos[1] = obj->GetPosition().y; pos[2] = obj->GetPosition().z;
         rot[0] = obj->GetRotation().x; rot[1] = obj->GetRotation().y; rot[2] = obj->GetRotation().z;
-        ImGui::DragFloat3("Position",pos,0.1f);
-        ImGui::DragFloat3("Rotation",rot,0.1f);
+        float OrthoSize =obj->GetOrthoSize();
+        float Fov =obj->GetFov();
+        float nar[2];
+
+        nar[0] = obj->GetNearClip();
+        nar[1] = obj->GetFarClip();
         
+        if (ImGui::CollapsingHeader("Transform##trans")){
+            ImGui::DragFloat3("Position",pos,0.1f);
+            ImGui::DragFloat3("Rotation",rot,0.1f);
+        }
+
+        if (ImGui::CollapsingHeader("Settings##sett")){
+            if(obj->GetRenderType() == Orthographic){
+               
+                if(ImGui::DragFloat("Orthographic Size",&OrthoSize)){
+                    obj->SetOrthoSize(OrthoSize);
+                }     
+            }
+            else{
+                if(ImGui::DragFloat("Fov",&Fov) && Fov > 0){
+                    obj->SetFov(Fov);
+                }   
+            }
+
+            if(ImGui::DragFloat2("Near/Far Clip",nar,0.1f)){
+                obj->SetNearClip(nar[0]);
+                obj->SetFarClip(nar[1]);
+            }    
+           
+        }
         
         obj->SetPosition(glm::vec3({pos[0],pos[1],pos[2]}));
         obj->SetRotation(glm::vec3({rot[0],rot[1],rot[2]}));

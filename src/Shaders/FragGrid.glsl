@@ -6,7 +6,9 @@ out vec4 FragColor;
 uniform Matrices {
 	mat4 u_ViewMatrix;
 	mat4 u_ProjectionMatrix;
+	mat4 u_ObjectMatrix;
 };
+
 
 
 in vec2 TexCoord;

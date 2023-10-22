@@ -3,6 +3,7 @@
 uniform Matrices {
 	mat4 u_ViewMatrix;
 	mat4 u_ProjectionMatrix;
+	mat4 u_ObjectMatrix;
 };
 
 layout (location = 0) in vec3 aPos;

@@ -20,10 +20,17 @@ class RenderContextDisplay{
     glm::vec3 position;
     glm::vec3 rotation;
     glm::vec3 padding;
+    RenderType renderType;
+    char* item_current;
+    float OrthographiqueSize;
+    float perspectiveFov;
+    float nearClip;
+    float farClip;
 
     public :
     RenderContextDisplay(){
-        position = glm::vec3({ 0.f, .6f,5.f });
+        OrthographiqueSize = 5.0f;
+        position = glm::vec3({ 0.f, .6f,5.0f });
         rotation = glm::vec3(0.0f);
         padding = glm::vec3(0.0f);
         idx_renderContext= 0;
@@ -33,7 +40,13 @@ class RenderContextDisplay{
         MVP[0] *= glm::rotate(glm::mat4(1.0f), 15 * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0, 0.0));
         MVP[0] *= glm::rotate(glm::mat4(1.0f), 15 * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0, 0.0));
         MVP[1] = glm::mat4(1.0f);
+        renderType = Perspective;
+        perspectiveFov = 45.0f;
+        nearClip = 0.01f;
+        farClip = 1000.0f;
     }
+
+    
 
     RenderContextDisplay(const RenderContextDisplay& copy){
         this->p_open = copy.p_open;
@@ -43,6 +56,47 @@ class RenderContextDisplay{
         MVP = new glm::mat4[2];
         MVP[0] = copy.MVP[0];
         MVP[1] =  copy.MVP[1];
+    }
+
+    void SetRenderType(RenderType type){
+        renderType = type;
+    }
+
+    float GetNearClip(){
+        return this->nearClip;
+    }
+
+    void SetNearClip(float n){
+        this->nearClip = n;
+    }
+
+    float GetFarClip(){
+        return this->farClip;
+    }
+
+    void SetFarClip(float n){
+        this->farClip = n;
+    }
+
+    RenderType GetRenderType(){
+        return this->renderType;
+    }
+
+    void SetOrthoSize(float s){
+        this->OrthographiqueSize = s;
+    }
+
+    float GetOrthoSize(){
+        return this->OrthographiqueSize;
+    }
+
+    
+    void SetFov(float s){
+        this->perspectiveFov = s;
+    }
+
+    float GetFov(){
+        return this->perspectiveFov;
     }
 
     glm::mat4* GetTransform(){
@@ -122,6 +176,7 @@ class RenderContextDisplay{
 
     void AddRender(RenderContext* render){
         renderContextes.push_back(render);
+        item_current = renderContextes[0]->GetLabel();
     }
 
     bool DisplayRenderWindow(int width,int height,Scene* scene,char* label);

@@ -11,9 +11,7 @@ bool RenderContextDisplay::DisplayRenderWindow(int width,int height,Scene* scene
         }
         else{
 
-
             static ImGuiComboFlags flags = ImGuiComboFlags_NoPreview;
-            static const char* item_current = renderContextes[0]->GetLabel();
             
             if (ImGui::BeginCombo("Render Context", item_current, flags)) 
             {
@@ -33,10 +31,35 @@ bool RenderContextDisplay::DisplayRenderWindow(int width,int height,Scene* scene
                 ImGui::EndCombo();
             }
 
+            ImGui::SameLine(ImGui::GetWindowWidth()-200);
+
+            if (ImGui::BeginCombo("Render Type","Perspective",flags)) 
+            {
+                if (ImGui::Selectable("Perspective")){
+                    renderType = Perspective;
+                }
+
+                if (ImGui::Selectable("Orthographique")){
+                    renderType = Orthographic   ;
+                }
+
+                ImGui::EndCombo();
+            }
+
             RenderContext* renderContext = renderContextes[idx_renderContext];
             ImVec2 size = ImGui::GetWindowSize();
             renderContext->UpdateRender(size.x,size.y);
-            MVP[1] = glm::perspectiveFov(glm::radians(45.0f), size.x, size.y, 0.5f, 1000.0f);
+
+            if(renderType == Perspective){
+                MVP[1] = glm::perspectiveFov(glm::radians(perspectiveFov), size.x, size.y, nearClip, farClip);
+            }
+            else{
+                float ratio = size.x/size.y;
+                float w =  ratio*OrthographiqueSize;
+                float h =  OrthographiqueSize;
+                MVP[1] =  glm::ortho( -w/2.0f, w/2.0f,-h/2.0f, h/2.0f, nearClip,farClip);;
+            }
+
             unsigned int tex =  renderContext->RenderScene(GetTransform(),scene);
 
             ImGui::BeginChild("Game Render");

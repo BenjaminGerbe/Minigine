@@ -18,8 +18,8 @@
 #include "../Headers/Scene.h"
 
 enum RenderType{
-    Orthographic,
-    Perspective
+    Perspective,
+    Orthographic
 };
 
 class RenderContext{

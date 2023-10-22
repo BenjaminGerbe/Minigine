@@ -43,7 +43,7 @@ class Scene{
         std::vector<Object*> tmp;
         for (int i = 0; i < scene.Objects.size(); i++)
         {
-            tmp.push_back(new Object(scene.Objects[i]->GetMesh(),scene.Objects[i]->GetName()));
+            tmp.push_back(new Object(scene.Objects[i]->GetMesh(),scene.Objects[i]->GetName(),scene.Objects[i]->GetObjectType()));
         }
 
         Objects = tmp;
@@ -56,7 +56,7 @@ class Scene{
         std::vector<Object*> tmp;
         for (int i = 0; i < copy.Objects.size(); i++)
         {
-            tmp.push_back(new Object(copy.Objects[i]->GetMesh(),copy.Objects[i]->GetName()));
+            tmp.push_back(new Object(copy.Objects[i]->GetMesh(),copy.Objects[i]->GetName(),copy.Objects[i]->GetObjectType()));
         }
 
         for (int i = 0; i < Objects.size(); i++)

@@ -42,6 +42,9 @@ class Mesh{
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,lenI,_indices,GL_STATIC_DRAW);
         glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(GL_FLOAT)*stride,(void*)0);
         glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT)*stride, (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+   
 
         this->lenV = lenV;
         this->lenI = lenI;

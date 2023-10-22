@@ -2,10 +2,11 @@
 #include "Scene.h"
 #include "Mesh.h"
 #include "ApplicationState.h"
+#include "Object.h"
 
 class Projet{
     Scene* scene;
-    std::vector<Mesh*> meshes;
+    std::vector<Object*> objects;
     ApplicationState* appState;
 
     public :
@@ -27,12 +28,12 @@ class Projet{
         return scene;
     }
 
-    std::vector<Mesh*> GetMeshes(){
-        return meshes;
+    std::vector<Object*> GetObjs(){
+        return objects;
     }
 
-    void AddMesh(Mesh* mesh){
-        meshes.push_back(mesh);
+    void AddObjs(Object* mesh){
+        objects.push_back(mesh);
     }
 
     void SetScene(Scene* scene){

@@ -84,12 +84,12 @@ void Scene::Render(glm::mat4* _MVP,int debug){
 
                 glm::mat4 cameraView = _MVP[0];
                 cameraView *= Objects[i]->GetTransformation();
-                glm::mat4 matrices[2];
+                glm::mat4 matrices[3];
                 matrices[0] =  cameraView;
                 matrices[1] =  _MVP[1];
-
+                matrices[2] =  Objects[i]->GetTransformation();
                 glBindBuffer(GL_UNIFORM_BUFFER,UBO);
-                glBufferData(GL_UNIFORM_BUFFER,sizeof(glm::mat4)*2,matrices,GL_STREAM_DRAW);
+                glBufferData(GL_UNIFORM_BUFFER,sizeof(glm::mat4)*3,matrices,GL_STREAM_DRAW);
                 glDrawElements(GL_TRIANGLES,Objects[i]->GetMesh()->TriangleToDraw(),GL_UNSIGNED_INT,(void*)0);
         }
 

@@ -42,7 +42,7 @@ class DisplayerManager{
     void SceneViewParameter();
     
     void MachineState();
-    void SceneEditor(Scene* scene,std::vector<Mesh*> objets);
+    void SceneEditor(Scene* scene,std::vector<Object*> objets);
     void RenderAppOptions(Projet* projet);
     void RenderAllRenderWindows(int width,int height,Projet* projet);
     void RenderSceneViewOption();
