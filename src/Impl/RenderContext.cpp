@@ -8,7 +8,6 @@ unsigned int RenderContextShaded::RenderScene(glm::mat4* MVP,Scene* scene){
     glBindFramebuffer(GL_FRAMEBUFFER,FBO);
     glViewport(0,0,(int)width,(int)height);
     glClearColor(0.23f,0.23f,0.23f,1.0f);
-    glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
     scene->Render(MVP,0);
@@ -107,7 +106,7 @@ void RenderContext::SetUp(int width,int height){
     
     glBindFramebuffer(GL_FRAMEBUFFER,0);
 }
-
+    
 void RenderContext::UpdateRender(int width,int height){
    this->width = width;
    this->height = height;

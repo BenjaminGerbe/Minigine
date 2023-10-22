@@ -92,7 +92,8 @@ void Scene::Render(glm::mat4* _MVP,int debug){
                 glBufferData(GL_UNIFORM_BUFFER,sizeof(glm::mat4)*2,matrices,GL_STREAM_DRAW);
                 glDrawElements(GL_TRIANGLES,Objects[i]->GetMesh()->TriangleToDraw(),GL_UNSIGNED_INT,(void*)0);
         }
-        
+
+       
         glBindVertexArray(VAOS);  
         glUseProgram(programShaderGrid);
         glm::mat4 cameraView =  _MVP[0];
@@ -105,7 +106,9 @@ void Scene::Render(glm::mat4* _MVP,int debug){
         matrices[1] =  _MVP[1];
         glBindBuffer(GL_UNIFORM_BUFFER,UBO);
         glBufferData(GL_UNIFORM_BUFFER,sizeof(glm::mat4)*2,matrices,GL_STREAM_DRAW);
-        glDrawElements(GL_TRIANGLES,  sizeof(squareIndices)/sizeof(unsigned int),GL_UNSIGNED_INT,(void*)0);
 
+        glDisable(GL_CULL_FACE);  
+        glDrawElements(GL_TRIANGLES,  sizeof(squareIndices)/sizeof(unsigned int),GL_UNSIGNED_INT,(void*)0);
+        glEnable(GL_CULL_FACE);  
 }
 

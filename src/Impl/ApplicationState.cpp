@@ -8,10 +8,22 @@ void framebuffer_size_callback(GLFWwindow* window,int width,int height){
       
     }
 }
-
+    
 void processInput(GLFWwindow* window){
     if(glfwGetKey(window,GLFW_KEY_ESCAPE) == GLFW_PRESS){
-        glfwSetWindowShouldClose(window,true);
+       // lockMouse = true;
+    }
+}
+
+void ApplicationState::LockMouse(bool b){
+  //  glfwSetInputMode(window, GLFW_CURSOR,  GLFW_CURSOR_HIDDEN);
+    lockMouse = b;
+
+    if(lockMouse){
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+    else{
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 }
 
@@ -41,13 +53,38 @@ int ApplicationState::SetupApplication(){
 
         
         // callback for resizing window
+
+   
         glfwSetFramebufferSizeCallback(window,framebuffer_size_callback);
 
         return 0;
+}
+
+static void cursor_position_callback(GLFWwindow *window, double x, double y)
+{
+    ApplicationState* AppState = static_cast<ApplicationState*>(glfwGetWindowUserPointer(window));
+    int Height = 0;
+    int Width = 0;
+    if (AppState) {
+        Height = AppState->GetHeight();
+        Width = AppState->GetWidth();
+    }   
+
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.MousePos.x = x;
+    io.MousePos.y = y;
+ //   glfwSetCursorPos(window,Width/2.0f, Height/2.0f);       
+   
 }
 
 void ApplicationState::ApplicationEvents(){
     processInput(window);
     glfwSwapBuffers(window);
     glfwPollEvents();
+  
+     //  ImGui::SetMouseCursor(ImGuiMouseCursor_None); 
+    glfwSetCursorPosCallback(window, cursor_position_callback); 
+
+    
 }

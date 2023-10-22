@@ -1,12 +1,15 @@
 // ApplicationState will store some application data, like width and height window or the OpenGLContext
 // and setup the opengl context and the glfw window
 
-#ifndef __ContextLibs__
-#define __ContextLibs__
-#define GLEW_STATIC 1
+#pragma once
+
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
-#endif
+
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 
 #include <iostream>
 
@@ -14,10 +17,13 @@ class ApplicationState{
     GLFWwindow* window;
     int height;
     int width;
+    bool lockMouse;
 
    public:
 
-    ApplicationState() = default;
+    ApplicationState(){
+        lockMouse = false;
+    }
 
     ApplicationState(int _width,int _height):width(_width),height(_height){
     }
@@ -26,12 +32,18 @@ class ApplicationState{
         glfwTerminate();
     }
 
+    bool GetLockMouse(){
+        return this->lockMouse;
+    }
+
     int SetupApplication();
     void ApplicationEvents();
 
     GLFWwindow* GetGLFWwindow(){
         return this->window;
     };
+
+    void LockMouse(bool b);
 
     int GetHeight(){
         return this->height;

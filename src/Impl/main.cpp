@@ -39,15 +39,8 @@
 static ApplicationState app; 
 Scene* scene;
 Projet projet;
-RenderContextShadedWireFrame renderContext;
-RenderContextShaded rcShaded;
-RenderContextWireFrame renderContextShaded;
-RenderContextNOFramed Noframed;
-RenderContextDisplay renderContextDisplay;
 DisplayerManager displayerManager;
 std::vector<Mesh*> objs;
-
-
 
 int main(int, char**){
 
@@ -58,6 +51,7 @@ int main(int, char**){
     int err = app.SetupApplication();    
 
     projet.AddScene(scene);
+    projet.SetAppState(&app);
 
     if(err == 1){
         return 1;
@@ -73,7 +67,7 @@ int main(int, char**){
     objs.push_back(m_Dragon);
 
 
-    displayerManager.AddRenderContextDisplay(new RenderContextDisplay(renderContextDisplay));
+    displayerManager.AddRenderContextDisplay(new RenderContextDisplay());
 
     GLFWwindow* window = app.GetGLFWwindow();
     float height = (float)app.GetHeight();
@@ -85,19 +79,12 @@ int main(int, char**){
     matricesWire[0] *= glm::rotate(glm::mat4(1.0f), 0.0f * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 1.0, 0.0));
     //matricesWire[1] =  glm::perspectiveFov(glm::radians(45.0f), (float)width, (float)height, 0.5f, 1000.0f);
 
-    renderContext.SetUp((int)(width/2.0f),(int)(height/2.0f));
-    renderContextShaded.SetUp((int)(width/2.0f),(int)(height/2.0f));
-    rcShaded.SetUp((int)(width/2.0f),(int)(height/2.0f));
-    Noframed.SetUp((int)(width/2.0f),(int)(height/2.0f));
+ 
     scene->SetUp();
 
-    rcShaded.SetLabel("Shaded");
-    renderContext.SetLabel("ShadedWireFrame");
-    renderContextShaded.SetLabel("WireFrame");
    
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);  
-
     glEnable(GL_BLEND);  
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
     
@@ -169,7 +156,7 @@ int main(int, char**){
        
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
-        displayerManager.RenderAllRenderWindows((int)(width/2.0),(int)(height/2.0),projet.GetScene());
+        displayerManager.RenderAllRenderWindows((int)(width/2.0),(int)(height/2.0),&projet);
         displayerManager.SceneEditor(projet.GetScene(),objs);
         displayerManager.ObjectEditor(projet.GetScene());
 
@@ -179,7 +166,7 @@ int main(int, char**){
 
         displayerManager.RenderAppOptions(&projet);
         displayerManager.MachineState();
-
+        displayerManager.RenderSceneViewOption();
         ImGui::Render();
 
       

@@ -34,8 +34,10 @@ void DisplayerManager::MachineState(){
 
 void DisplayerManager::ObjectEditor(Scene* scene){
    
-    
-    ImGui::Begin("Object View");
+    if(!openObjectView)
+        return;
+
+    ImGui::Begin("Object View",&openObjectView);
 
         if(selectedObjects >= 0 && scene->GetObjects().size() > 0){
         
@@ -77,7 +79,11 @@ void DisplayerManager::ObjectEditor(Scene* scene){
 }
 
 void DisplayerManager::SceneEditor(Scene* scene,std::vector<Mesh*> objets){
-    ImGui::Begin("Scene Editor");
+
+    if(!openSceneEditor)
+        return;
+
+    ImGui::Begin("Scene Editor",&openSceneEditor);
 
     static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
 
@@ -125,10 +131,29 @@ void DisplayerManager::SceneEditor(Scene* scene,std::vector<Mesh*> objets){
     ImGui::End();
 };
 
-void DisplayerManager::RenderAllRenderWindows(int width,int height,Scene* scene){
+void DisplayerManager::AddRenderContextDisplay(RenderContextDisplay* renderWindow){
+        RenderContextDisplays.push_back(renderWindow);
+
+        renderWindow->AddRender(new RenderContextShaded());
+        renderWindow->getRenderContextes()[0]->SetLabel("Shaded");
+        renderWindow->AddRender(new RenderContextShadedWireFrame());
+        renderWindow->getRenderContextes()[1]->SetLabel("ShadedWireFrame");
+        renderWindow->AddRender(new RenderContextWireFrame());
+        renderWindow->getRenderContextes()[2]->SetLabel("WireFrame");
+
+        std::cout << " je t'en suplie change ca " << std::endl;
+        for (int i = 0; i < renderWindow->getRenderContextes().size(); i++)
+        {
+            renderWindow->getRenderContextes()[i]->SetUp(1920,1080);
+        }
+};
+
+
+void DisplayerManager::RenderAllRenderWindows(int width,int height,Projet* projet){
 
     std::vector<RenderContextDisplay*>::iterator it = RenderContextDisplays.begin();
     int idx=0;
+  
     while(it != RenderContextDisplays.end()){
         if( isToDelete(*it)){
             delete *it;
@@ -140,11 +165,88 @@ void DisplayerManager::RenderAllRenderWindows(int width,int height,Scene* scene)
             sprintf(buffer, "%s%d", str,idx);
             float w = ImGui::GetWindowSize().x;
             float h = ImGui::GetWindowSize().y;
-            RenderContextDisplays[idx]->DisplayRenderWindow(width,height,scene,buffer);
+            bool selected = RenderContextDisplays[idx]->DisplayRenderWindow(width,height,projet->GetScene(),buffer);
+
+            if(selected){
+                selectedSceneView = idx;
+                ImGuiIO& io = ImGui::GetIO();
+
+                if(ImGui::IsMouseDown(1)){
+                    projet->getAppState()->LockMouse(true);
+
+                    RenderContextDisplay* obj = RenderContextDisplays[selectedSceneView];
+
+                    float angleX = io.MouseDelta.x;
+                    angleX = std::clamp(angleX,-10.0f,10.00f);
+
+                    float angleY = io.MouseDelta.y;
+                    angleY = std::clamp(angleY,-10.0f,10.00f);
+
+                    glm::vec3 rot = obj->GetRotation();
+                    rot.y += angleX;
+                    rot.x += angleY;
+                    obj->SetRotation(rot);
+
+                    glm::vec3 pos = obj->GetPosition();
+                    glm::vec3 pad = obj->GetPadding();
+                    float middleMouse = io.MouseWheel;
+                    pos.z -= middleMouse;
+
+                    if(ImGui::IsKeyDown(ImGuiKey_Z)){
+                         pos.z -= 0.05f;
+                      
+                    }
+
+                    if(ImGui::IsKeyDown(ImGuiKey_S)){
+                        pos.z += 0.05f;
+                    }
+
+                    
+                    if(ImGui::IsKeyDown(ImGuiKey_Q)){
+                        pad -= obj->GetRight() *0.05f;
+                      
+                    }
+
+                    if(ImGui::IsKeyDown(ImGuiKey_D)){
+                        pad += obj->GetRight() *0.05f;;
+                      
+                    }
+
+                    obj->SetPosition(pos);
+                    obj->SetPadding(pad);
+
+                }
+                else{
+                    projet->getAppState()->LockMouse(false);    
+                }
+              
+            }
+            
             idx++;
             it++;
         }
     }
+}
+
+void DisplayerManager::RenderSceneViewOption(){
+    if(!openSceneViewOption)
+        return;
+
+    ImGui::Begin("Scene View Option",&openSceneViewOption);
+    if(selectedSceneView >= 0){
+        float static pos[3];
+        float static rot[3];
+        RenderContextDisplay* obj = RenderContextDisplays[selectedSceneView];
+        pos[0] = obj->GetPosition().x; pos[1] = obj->GetPosition().y; pos[2] = obj->GetPosition().z;
+        rot[0] = obj->GetRotation().x; rot[1] = obj->GetRotation().y; rot[2] = obj->GetRotation().z;
+        ImGui::DragFloat3("Position",pos,0.1f);
+        ImGui::DragFloat3("Rotation",rot,0.1f);
+        
+        
+        obj->SetPosition(glm::vec3({pos[0],pos[1],pos[2]}));
+        obj->SetRotation(glm::vec3({rot[0],rot[1],rot[2]}));
+    }
+    ImGui::End();
 }
 
 void DisplayerManager::RenderAppOptions(Projet* projet){
@@ -174,6 +276,15 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
                 }
                 if (ImGui::MenuItem("Machine State",NULL)) {
                     openMachineState = true;
+                }
+                if (ImGui::MenuItem("Scene Editor",NULL)) {
+                    openSceneEditor = true;
+                }
+                if (ImGui::MenuItem("Object View",NULL)) {
+                    openObjectView = true;
+                }
+                if (ImGui::MenuItem("Scene View Option",NULL)) {
+                    openSceneViewOption = true;
                 }
                 ImGui::EndMenu();
             }

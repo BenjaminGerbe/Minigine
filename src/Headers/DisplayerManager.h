@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <cstring>
 #include <string> 
+#include <algorithm>
 #include "windows.h"
 #include "psapi.h"
 #include "Scene.h"
@@ -19,40 +20,32 @@ class DisplayerManager{
     RenderContextDisplay* renderContextDisplay;
     std::vector<float> memoryUsage;
     bool openMachineState;
+    bool openSceneEditor;
+    bool openObjectView;
+    bool openSceneViewOption;
     int selectedObjects;
+    int selectedSceneView;
 
     public :
     DisplayerManager(){
+        selectedSceneView = -1;
         memoryUsage = std::vector<float>(500);
         openMachineState = true;
+        openObjectView = true;
+        openSceneEditor = true;
+        openSceneViewOption = true;
     }
     
     void ObjectEditor(Scene* scene);
 
-    void AddRenderContextDisplay(RenderContextDisplay* renderWindow){
-        RenderContextDisplays.push_back(renderWindow);
-
-        renderWindow->AddRender(new RenderContextShaded());
-        renderWindow->getRenderContextes()[0]->SetLabel("Shaded");
-        renderWindow->AddRender(new RenderContextShadedWireFrame());
-        renderWindow->getRenderContextes()[1]->SetLabel("ShadedWireFrame");
-        renderWindow->AddRender(new RenderContextWireFrame());
-        renderWindow->getRenderContextes()[2]->SetLabel("WireFrame");
-
-        std::cout << " je t'en suplie change ca " << std::endl;
-        for (int i = 0; i < renderWindow->getRenderContextes().size(); i++)
-        {
-            renderWindow->getRenderContextes()[i]->SetUp(1920,1080);
-        }
-        
-
-    };
-
+    void AddRenderContextDisplay(RenderContextDisplay* renderWindow);
+    void SceneViewParameter();
+    
     void MachineState();
     void SceneEditor(Scene* scene,std::vector<Mesh*> objets);
     void RenderAppOptions(Projet* projet);
-    void RenderAllRenderWindows(int width,int height,Scene* scene);
-
+    void RenderAllRenderWindows(int width,int height,Projet* projet);
+    void RenderSceneViewOption();
 
     ~DisplayerManager(){
         for (size_t i = 0; i < RenderContextDisplays.size(); i++) {

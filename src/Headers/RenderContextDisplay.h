@@ -17,12 +17,19 @@ class RenderContextDisplay{
     std::vector<RenderContext*> renderContextes;
     char* label;
     glm::mat4* MVP;
+    glm::vec3 position;
+    glm::vec3 rotation;
+    glm::vec3 padding;
+
     public :
     RenderContextDisplay(){
+        position = glm::vec3({ 0.f, .6f,5.f });
+        rotation = glm::vec3(0.0f);
+        padding = glm::vec3(0.0f);
         idx_renderContext= 0;
         p_open = true;
         MVP = new glm::mat4[2];
-        MVP[0] =  glm::translate(glm::mat4(1.f), -glm::vec3({ 0.f, .6f,5.f }));
+        MVP[0] =  glm::translate(glm::mat4(1.f), -position);
         MVP[0] *= glm::rotate(glm::mat4(1.0f), 15 * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0, 0.0));
         MVP[0] *= glm::rotate(glm::mat4(1.0f), 15 * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0, 0.0));
         MVP[1] = glm::mat4(1.0f);
@@ -38,8 +45,56 @@ class RenderContextDisplay{
         MVP[1] =  copy.MVP[1];
     }
 
+    glm::mat4* GetTransform(){
+
+        
+        MVP[0] =  glm::translate(glm::mat4(1.f), -position);
+        MVP[0] *= glm::rotate(glm::mat4(1.0f), rotation.x * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        MVP[0] *= glm::rotate(glm::mat4(1.0f), rotation.y * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        MVP[0] *= glm::rotate(glm::mat4(1.0f), rotation.z * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        MVP[0] *= glm::translate(glm::mat4(1.f), -padding);
+
+        return MVP;
+    }
+
     std::vector<RenderContext*> getRenderContextes(){
         return this->renderContextes;
+    }
+
+    glm::vec3 GetRight(){
+        glm::vec4 right = glm::vec4({1.0f,0.0f,0.0f,0.0f});
+ 
+        return glm::vec3(right*MVP[0]);
+    }
+
+    glm::vec3 GetForward(){
+        glm::vec4 forward = glm::vec4({0.0f,0.0f,1.0f,0.0f});
+ 
+        return glm::vec3(forward*MVP[0]);
+    }
+
+    glm::vec3 GetPosition(){
+        return position;
+    }
+
+    glm::vec3 GetPadding(){
+        return padding;
+    }
+
+    glm::vec3 GetRotation(){
+        return rotation;
+    }
+
+    void SetPosition(glm::vec3 pos){
+        position = pos;
+    }
+
+     void SetPadding(glm::vec3 pad){
+        padding = pad;
+    }
+
+    void SetRotation(glm::vec3 rot){
+       rotation = rot;
     }
 
     RenderContextDisplay operator=(const RenderContextDisplay& copy){
@@ -69,5 +124,5 @@ class RenderContextDisplay{
         renderContextes.push_back(render);
     }
 
-    void DisplayRenderWindow(int width,int height,Scene* scene,char* label);
+    bool DisplayRenderWindow(int width,int height,Scene* scene,char* label);
 };

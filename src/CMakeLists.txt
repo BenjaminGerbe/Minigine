@@ -2,7 +2,7 @@
 # project specific logic here.
 #
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 file(GLOB_RECURSE Classes
      "*.h"
