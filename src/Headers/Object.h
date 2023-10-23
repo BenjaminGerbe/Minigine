@@ -8,7 +8,9 @@
 #include <ext/scalar_constants.hpp> // glm::pi
 #include <gtc/type_ptr.hpp>
 #include <string>  
+#include <vector>
 
+class Component;
 
 enum ObjectType{
     ClassicObject,
@@ -27,6 +29,7 @@ class Object{
     uint32_t programShader;
     std::string name;
     ObjectType objectType;
+    std::vector<Component*> components;
 
     public:
 
@@ -38,68 +41,92 @@ class Object{
         position = glm::vec3({0.0f,0.0f,0.0f});
         scale = glm::vec3({1.0f,1.0f,1.0f});
         objectType = _objectType;
+        AddTransform();
+    
     }
+
+    Object(const Object& copy){
+        this->mesh = copy.mesh;
+        this->name = copy.name;
+        this->objectType = copy.objectType;
+       transformation = glm::mat4(1.0f);
+        rotation = glm::vec3({0.0f,0.0f,0.0f});
+        position = glm::vec3({0.0f,0.0f,0.0f});
+        scale = glm::vec3({1.0f,1.0f,1.0f});
+        this->programShader = copy.programShader;
+
+        CopyComponents(copy.components);
+    }
+
+    Object operator=(const Object& copy){
+        this->mesh = copy.mesh;
+        this->name = copy.name;
+        this->objectType = copy.objectType;
+        this->programShader = copy.programShader;
+
+        CopyComponents(copy.components);
+    }
+
+    void DeleteComponents();
+    void AddTransform();
+
+    void CopyComponents(std::vector<Component*> copy);
 
     ~Object(){
+        DeleteComponents();
     }
 
-    virtual char* GetName(){
+    std::vector<Component*> GetComponents(){
+        return components;
+    }
+
+    char* GetName(){
         char buffer[32];
         strcpy(buffer,name.c_str());
         return buffer;
     }
 
-    virtual ObjectType GetObjectType(){
+    ObjectType GetObjectType(){
         return objectType;
     }
 
-    virtual Mesh* GetMesh()const{
+    Mesh* GetMesh()const{
         return mesh;
     };
 
-    virtual std::string GetStrName(){
+    std::string GetStrName(){
         return this->name;
     }
 
-    virtual glm::vec3 GetPosition(){
+    glm::vec3 GetPosition(){
         return position;
     }
 
-    virtual glm::vec3 GetRotation(){
+    glm::vec3 GetRotation(){
+        std::cout <<    rotation.y << std::endl;
         return rotation;
     }
 
-    virtual glm::vec3 GetScale(){
+    glm::vec3 GetScale(){
         return scale;
     }
 
-    virtual void SetName(std::string str){
+    void SetName(std::string str){
         name = str;
     }
 
-    virtual void SetPosition(glm::vec3 position){
+    void SetPosition(glm::vec3 position){
         this->position = position;
     }
 
-    virtual void SetRotation(glm::vec3 rotation){
+    void SetRotation(glm::vec3 rotation){
         this->rotation = rotation;
     }
 
-    virtual void SetScale(glm::vec3 scale){
+    void SetScale(glm::vec3 scale){
         this->scale = scale;
     }
 
-    virtual glm::mat4 GetTransformation(){
-        
-        transformation = glm::mat4(1.0f);
-        
-        transformation *= glm::translate(glm::mat4(1.0f),position);
-        transformation *= glm::rotate(glm::mat4(1.0f), rotation.x * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        transformation *= glm::rotate(glm::mat4(1.0f), rotation.y * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        transformation *= glm::rotate(glm::mat4(1.0f), rotation.z * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        transformation *= glm::scale(glm::mat4(1.0f),scale);  
-
-        return transformation;
-    };
+    glm::mat4 GetTransformation();
 
 };

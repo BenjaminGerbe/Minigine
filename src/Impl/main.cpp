@@ -130,6 +130,12 @@ int main(int, char**){
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 430");
 
+    for(Object* obj : projet.GetScene()->GetObjects()){
+        for(Component* c: obj->GetComponents()){
+            c->SetUp();
+        }
+    }
+
 
     while(!glfwWindowShouldClose(window)){
         i += 0.1f;
@@ -142,6 +148,12 @@ int main(int, char**){
         glViewport(0,0,(int)width,(int)height);
         glClearColor(0.94f,0.91f,0.90f,1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        for(Object* obj : projet.GetScene()->GetObjects() ){
+            for(Component* c: obj->GetComponents()){
+                c->Update();
+            }
+        }
 
         // matricesWire[0] =  glm::translate(glm::mat4(1.f), -glm::vec3({ 0.f, .6f,5.f }));
         // matricesWire[0] *= glm::rotate(glm::mat4(1.0f), 15 * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0, 0.0));

@@ -11,6 +11,7 @@
 #include "Scene.h"
 #include "Mesh.h"
 #include "Saver.h"
+#include "Component.h"
 
 class DisplayerManager{
     std::vector<RenderContextDisplay*> RenderContextDisplays;
