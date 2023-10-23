@@ -30,7 +30,7 @@ bool RenderContextDisplay::DisplayRenderWindow(int width,int height,Scene* scene
                 }
                 ImGui::EndCombo();
             }
-
+            
             ImGui::SameLine(ImGui::GetWindowWidth()-200);
 
             if (ImGui::BeginCombo("Render Type","Perspective",flags)) 
@@ -65,14 +65,14 @@ bool RenderContextDisplay::DisplayRenderWindow(int width,int height,Scene* scene
             ImGui::BeginChild("Game Render");
         
             ImGui::Image((void*)(intptr_t)tex,ImVec2(size.x,size.y-110),ImVec2(0,1 ),ImVec2(1,0 ));
-            if(ImGui::IsWindowHovered()){
+            if(ImGui::IsWindowFocused()){
               selected = true;
             }
             ImGui::EndChild();
 
             
             
-            if(ImGui::IsWindowHovered()){
+            if(ImGui::IsWindowFocused()){
               selected = true;
             }
 

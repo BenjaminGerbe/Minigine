@@ -149,8 +149,13 @@ int main(int, char**){
         glClearColor(0.94f,0.91f,0.90f,1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        Scene* sceneBuffer = projet.GetScene();
+        std::vector<LightComp*> Lights = sceneBuffer->GetLightComp();
         for(Object* obj : projet.GetScene()->GetObjects() ){
             for(Component* c: obj->GetComponents()){
+                if(c->GetID() == c_Light && std::find(Lights.begin(),Lights.end(),dynamic_cast<LightComp*>(c)) == Lights.end()){
+                    sceneBuffer->AddLight(dynamic_cast<LightComp*>(c));
+                }
                 c->Update();
             }
         }

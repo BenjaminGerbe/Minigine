@@ -41,8 +41,7 @@ class Object{
         position = glm::vec3({0.0f,0.0f,0.0f});
         scale = glm::vec3({1.0f,1.0f,1.0f});
         objectType = _objectType;
-        AddTransform();
-    
+        AddComponents();
     }
 
     Object(const Object& copy){
@@ -68,7 +67,7 @@ class Object{
     }
 
     void DeleteComponents();
-    void AddTransform();
+    void AddComponents();
 
     void CopyComponents(std::vector<Component*> copy);
 
@@ -103,12 +102,15 @@ class Object{
     }
 
     glm::vec3 GetRotation(){
-        std::cout <<    rotation.y << std::endl;
         return rotation;
     }
 
     glm::vec3 GetScale(){
         return scale;
+    }
+
+    glm::vec3 GetForward(){
+        return glm::vec3( GetTransformation() * glm::vec4({0.0,0.0,1.0,0.0}));
     }
 
     void SetName(std::string str){

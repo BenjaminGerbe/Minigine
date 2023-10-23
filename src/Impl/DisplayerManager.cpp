@@ -182,12 +182,13 @@ void DisplayerManager::RenderAllRenderWindows(int width,int height,Projet* proje
             float w = ImGui::GetWindowSize().x;
             float h = ImGui::GetWindowSize().y;
             bool selected = RenderContextDisplays[idx]->DisplayRenderWindow(width,height,projet->GetScene(),buffer);
-
+            
+            
             if(selected){
                 selectedSceneView = idx;
                 ImGuiIO& io = ImGui::GetIO();
 
-                if(ImGui::IsMouseDown(1)){
+                if(ImGui::IsMouseDown(1) ){
                     projet->getAppState()->LockMouse(true);
 
                     RenderContextDisplay* obj = RenderContextDisplays[selectedSceneView];
@@ -237,13 +238,12 @@ void DisplayerManager::RenderAllRenderWindows(int width,int height,Projet* proje
                     obj->SetPosition(pos);
                     obj->SetPadding(pad);
 
+                }else{
+                    projet->getAppState()->LockMouse(false);  
                 }
-                else{
-                    projet->getAppState()->LockMouse(false);    
-                }
-              
+                
             }
-            
+
             idx++;
             it++;
         }

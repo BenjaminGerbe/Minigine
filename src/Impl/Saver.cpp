@@ -23,6 +23,23 @@ void Saver::SaveScene(Scene* scene){
         yamlFile[id]["Transformation"]["Scale"].push_back(obj->GetScale().x);
         yamlFile[id]["Transformation"]["Scale"].push_back(obj->GetScale().y);
         yamlFile[id]["Transformation"]["Scale"].push_back(obj->GetScale().z);
+
+        // for (int i = 0; i < obj->GetComponents().size(); i++)
+        // {
+        //     Component* Component = obj->GetComponents()[i];
+        //     if(Component->GetID() == c_Light){
+        //         char* name = Component->GetHeaderName();
+        //         LightComp* l = dynamic_cast<LightComp*>(Component);
+        //         yamlFile[id][name]["ID"] = l->GetID();
+        //         yamlFile[id][name]["Color"].push_back(l->GetColor()[0]);
+        //         yamlFile[id][name]["Color"].push_back(l->GetColor()[1]);
+        //         yamlFile[id][name]["Color"].push_back(l->GetColor()[2]);
+        //         yamlFile[id][name]["Intensity"] = l->GetIntensity();
+        //     }
+
+        // }
+            
+
     }  
     std::ofstream MyFile("scene.yaml");
     MyFile  <<  yamlFile;
@@ -80,6 +97,16 @@ void Saver::LoadScene(Projet* projet){
         y = yamlFile[id]["Transformation"]["Scale"][1].as<double>();
         z = yamlFile[id]["Transformation"]["Scale"][2].as<double>();
 
+           
+        // char* name = Component->GetHeaderName();
+        // LightComp* l = dynamic_cast<LightComp*>(Component);
+        // yamlFile[id][name]["ID"] = l->GetID();
+        // yamlFile[id][name]["Color"].push_back(l->GetColor()[0]);
+        // yamlFile[id][name]["Color"].push_back(l->GetColor()[1]);
+        // yamlFile[id][name]["Color"].push_back(l->GetColor()[2]);
+        // yamlFile[id][name]["Intensity"] = l->GetIntensity();
+
+            
 
         ObjectType type =  (ObjectType)yamlFile[id]["ObjectType"].as<int>(); 
 

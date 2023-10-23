@@ -18,13 +18,14 @@
 
 #include "Object.h"
 #include "../Headers/GLShader.h"
-
+#include "Light.h"
 
 class Scene{
     protected:
     int width;
     int height;
     std::vector<Object*> Objects;
+    std::vector<LightComp*> Lights;
     unsigned int VAO,UBO;
     unsigned int VAOS;
     uint32_t programShader;
@@ -75,23 +76,31 @@ class Scene{
         }
     }
 
-     virtual void SetUp();
+    void SetUp();
 
-    virtual void RemoveObjectScene(int idx){
+    void RemoveObjectScene(int idx){
         Objects.erase(Objects.begin()+idx);
     }
 
-    virtual void AddObjectScene(Object* object){
-        Objects.push_back(object);
+    std::vector<LightComp*> GetLightComp(){
+        return this->Lights;
     }
 
-       virtual void Render(glm::mat4* _MVP,int debug);
+    void AddLight(LightComp* light){
+        Lights.push_back(light);
+    };
 
-    virtual std::vector<Object*> GetObjects(){
+    void AddObjectScene(Object* object){
+         Objects.push_back(object);
+    }
+
+     void Render(glm::mat4* _MVP,int debug);
+
+     std::vector<Object*> GetObjects(){
         return this->Objects;
     }
 
-    virtual int VertexToRender(){
+     int VertexToRender(){
         return 0;
     }
 };

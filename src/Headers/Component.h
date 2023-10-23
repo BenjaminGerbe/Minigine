@@ -4,7 +4,8 @@
 
 enum ComponentID{
     c_None,
-    c_Transform
+    c_Transform,
+    c_Light
 };
 
 class Component
@@ -58,6 +59,10 @@ class Component
         open = b;
     }
 
+    Object* GetObject(){
+        return obj;
+    }
+
     virtual void Editor();
 
     virtual void SetUp();
@@ -68,7 +73,7 @@ class Component
         return this->ID;
     }
 
-    ~Component(){
+    virtual ~Component(){
 
     }
 };

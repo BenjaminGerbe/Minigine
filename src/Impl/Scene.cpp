@@ -44,13 +44,14 @@ void Scene::SetUp(){
         glBufferData(GL_ARRAY_BUFFER,sizeof(SquareUV),SquareUV,GL_STATIC_DRAW);
         glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,2*sizeof(float),(void*)0);
         glEnableVertexAttribArray(1);
+        glBindVertexArray(0);
 
-        // UBO
+        // UBO MVP
         glGenBuffers(1,&UBO);
         glBindBuffer(GL_UNIFORM_BUFFER,UBO);
         glBufferData(GL_UNIFORM_BUFFER,sizeof(glm::mat4)*2,nullptr,GL_STREAM_DRAW);
         glBindBufferBase(GL_UNIFORM_BUFFER,0,UBO);
-        glBindVertexArray(0);
+     
         // createShader
         GLShader g_basicShader;
         g_basicShader.LoadVertexShader("frag.glsl");
@@ -77,7 +78,8 @@ void Scene::Render(glm::mat4* _MVP,int debug){
 
         for (int i = 0; i < Objects.size(); i++)
         {
-                glBindVertexArray(Objects[i]->GetMesh()->GetVAO());  
+                GLuint ID = Objects[i]->GetMesh()->GetVAO();
+                glBindVertexArray(ID);  
 
                 glUseProgram(programShader);
                 if(debug == 1) glUseProgram(programShaderWireFrame);
@@ -90,6 +92,13 @@ void Scene::Render(glm::mat4* _MVP,int debug){
                 matrices[2] =  Objects[i]->GetTransformation();
                 glBindBuffer(GL_UNIFORM_BUFFER,UBO);
                 glBufferData(GL_UNIFORM_BUFFER,sizeof(glm::mat4)*3,matrices,GL_STREAM_DRAW);
+
+                if(Lights.size() > 0){
+                    glUniform3fv(glGetUniformLocation(ID, "dir.direction"), 1, &Lights[0]->GetObject()->GetForward()[0]); 
+                    glUniform3fv(glGetUniformLocation(ID, "dir.color"), 1, Lights[0]->GetColor()); 
+                    glUniform1f(glGetUniformLocation(ID, "dir.intensity"),  Lights[0]->GetIntensity()); 
+                }
+
                 glDrawElements(GL_TRIANGLES,Objects[i]->GetMesh()->TriangleToDraw(),GL_UNSIGNED_INT,(void*)0);
         }
 

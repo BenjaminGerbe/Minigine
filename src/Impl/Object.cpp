@@ -1,6 +1,7 @@
 #include "../Headers/Object.h"
 #include "../Headers/Component.h"
 #include "../Headers/Transform.h"
+#include "../Headers/Light.h"
 
 
 void Object::DeleteComponents(){
@@ -18,14 +19,23 @@ void Object::CopyComponents(std::vector<Component*> copy){
                         Transform* nTr = new Transform(tr);
                         components.push_back(nTr);
                 }
+                else if(c->GetID() == c_Light){
+                        LightComp& tr = *dynamic_cast<LightComp*>(c);
+                        LightComp* nTr = new LightComp(tr);
+                        components.push_back(nTr);
+                }
                 else{
                        components.push_back( new Component(*c));
                 }
         }
 }
 
-void Object::AddTransform(){
+void Object::AddComponents(){
         this->components.push_back(new Transform(this));
+
+        if(objectType == Light){
+                this->components.push_back(new LightComp(this));
+        }
 }
 
 glm::mat4 Object::GetTransformation(){

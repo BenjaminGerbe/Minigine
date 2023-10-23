@@ -74,8 +74,6 @@ static void cursor_position_callback(GLFWwindow *window, double x, double y)
     ImGuiIO& io = ImGui::GetIO();
     io.MousePos.x = x;
     io.MousePos.y = y;
- //   glfwSetCursorPos(window,Width/2.0f, Height/2.0f);       
-   
 }
 
 void ApplicationState::ApplicationEvents(){

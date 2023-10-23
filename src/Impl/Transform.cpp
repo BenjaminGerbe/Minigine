@@ -24,11 +24,12 @@ void Transform::SetUp(){
 }
 
 void Transform::Update(){
-    glm::vec3 rot = obj->GetRotation();
-    rot.y += .1f;
-    if(rot.y > 360.0f){
-        rot.y = 0.0f;
-    }
-    obj->SetRotation(rot);
+    return;
+    // glm::vec3 rot = obj->GetRotation();
+    // rot.y += .1f;
+    // if(rot.y > 360.0f){
+    //     rot.y = 0.0f;
+    // }
+    // obj->SetRotation(rot);
    
 }

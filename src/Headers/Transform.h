@@ -4,7 +4,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "Object.h"
-
+    
 class Transform: public Component{
 
     public :
