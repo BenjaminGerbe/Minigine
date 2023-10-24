@@ -10,7 +10,21 @@ unsigned int RenderContextShaded::RenderScene(glm::mat4* MVP,Scene* scene){
     glClearColor(0.23f,0.23f,0.23f,1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-    scene->Render(MVP,0);
+    scene->Render(MVP,WireFrame_None);
+    
+    glBindFramebuffer(GL_FRAMEBUFFER,0);
+    return Tex;
+};
+
+unsigned int RenderContextGame::RenderScene(glm::mat4* MVP,Scene* scene){
+    
+ 
+    glBindFramebuffer(GL_FRAMEBUFFER,FBO);
+    glViewport(0,0,(int)width,(int)height);
+    glClearColor(0.23f,0.23f,0.23f,1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+    scene->Render(MVP,s_Grid_None );
     
     glBindFramebuffer(GL_FRAMEBUFFER,0);
     return Tex;
@@ -25,7 +39,7 @@ unsigned int RenderContextWireFrame::RenderScene(glm::mat4* MVP,Scene* scene){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-    scene->Render(MVP,1);
+    scene->Render(MVP,WireFrame);
     glBindFramebuffer(GL_FRAMEBUFFER,0);
 
     return Tex;
@@ -43,10 +57,10 @@ unsigned int RenderContextShadedWireFrame::RenderScene(glm::mat4* MVP,Scene* sce
     
 
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-    scene->Render(MVP,0);
+    scene->Render(MVP,WireFrame_None);
 
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-    scene->Render(MVP,1);
+    scene->Render(MVP,WireFrame);
 
 
     glBindFramebuffer(GL_FRAMEBUFFER,0);
@@ -60,10 +74,10 @@ unsigned int RenderContextNOFramed::RenderScene(glm::mat4* MVP, Scene* scene){
 
     glBindFramebuffer(GL_FRAMEBUFFER,0);
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-    scene->Render(MVP,0);
+    scene->Render(MVP,WireFrame_None);
 
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-    scene->Render(MVP,1);
+    scene->Render(MVP,WireFrame);
   
 
     return 0;

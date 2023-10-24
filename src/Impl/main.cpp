@@ -40,15 +40,14 @@ static ApplicationState app;
 Scene* scene;
 Projet projet;
 DisplayerManager displayerManager;
-
+GameView gameView;
 #include "TCHAR.h"
 #include "pdh.h"
 
 static PDH_HQUERY cpuQuery;
 static PDH_HCOUNTER cpuTotal;
 
-double lastTime = glfwGetTime();
-int nbFrames = 0;
+
 
 int main(int, char**){
 
@@ -164,26 +163,19 @@ int main(int, char**){
 
         Scene* sceneBuffer = projet.GetScene();
         std::vector<LightComp*> Lights = sceneBuffer->GetLightComp();
+        std::vector<CameraComp*> Cameras = sceneBuffer->GetCameras();
         for(Object* obj : projet.GetScene()->GetObjects() ){
             for(Component* c: obj->GetComponents()){
                 if(c->GetID() == c_Light && std::find(Lights.begin(),Lights.end(),dynamic_cast<LightComp*>(c)) == Lights.end()){
                     sceneBuffer->AddLight(dynamic_cast<LightComp*>(c));
                 }
+                if(c->GetID() == c_Camera && std::find(Cameras.begin(),Cameras.end(),dynamic_cast<CameraComp*>(c)) == Cameras.end()){
+                    sceneBuffer->AddCamera(dynamic_cast<CameraComp*>(c));
+                }
                 c->Update();
             }
-
-
         }
-
-        double currentTime = glfwGetTime();
-        nbFrames++;
-        if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
-            // printf and reset timer
-            printf("%f ms/frame\n", 1000.0/double(nbFrames));
-            nbFrames = 0;
-            lastTime += 1.0;
-        }
-
+     
         // UI
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -195,13 +187,14 @@ int main(int, char**){
         displayerManager.RenderAllRenderWindows((int)(width/2.0),(int)(height/2.0),&projet);
         displayerManager.SceneEditor(projet.GetScene(),projet.GetObjs());
         displayerManager.ObjectEditor(projet.GetScene());
+        displayerManager.RenderGameView(&gameView,projet.GetScene());
 
         ImGui::ShowStyleEditor();
         ImGui::ShowDemoWindow();
         
 
         displayerManager.RenderAppOptions(&projet);
-        displayerManager.MachineState();
+        displayerManager.MachineState(&projet);
         displayerManager.RenderSceneViewOption();
         ImGui::Render();
 

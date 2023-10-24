@@ -18,6 +18,8 @@ class ApplicationState{
     int height;
     int width;
     bool lockMouse;
+    double lastTime;
+    int nbFrames;
 
    public:
 
@@ -34,6 +36,26 @@ class ApplicationState{
 
     bool GetLockMouse(){
         return this->lockMouse;
+    }
+
+    int GetFrames(){
+        return nbFrames;
+    }
+
+    void SetFrames(int f){
+        nbFrames = f;
+    }
+
+    double GetLastTime(){
+        return lastTime;
+    }
+
+    void SetLastTime(double d){
+        lastTime =d;
+    }
+
+    double GetGlfTime(){
+        return glfwGetTime();
     }
 
     int SetupApplication();

@@ -6,6 +6,8 @@
 #include "Component.h"
 #include "Transform.h"
 #include "Light.h"
+#include "Camera.h"
+
 namespace Saver{
     void SaveScene(Scene* scene);
     void LoadScene(Projet* projet);

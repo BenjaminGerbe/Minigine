@@ -4,7 +4,7 @@ bool isToDelete(RenderContextDisplay *element){
     return !element->GetOpen();
 }
 
-void DisplayerManager::MachineState(){
+void DisplayerManager::MachineState(Projet* projet){
     if(!openMachineState) return;
     ImGui::Begin("Machine State",&openMachineState);
 
@@ -27,7 +27,54 @@ void DisplayerManager::MachineState(){
         memoryUsage.erase(memoryUsage.begin());
         char buffer[64];
         int ret = snprintf(buffer, sizeof buffer, "%f", value);
+        ImGui::PushStyleColor(ImGuiCol_PlotLines,ImVec4(0.98f,0.60f,0.10f,1.0f));
+        ImGui::PushStyleColor(ImGuiCol_FrameBg,ImVec4(0.5f,0.5f,0.5f,0.5f));
+
         ImGui::PlotLines("Memory Usage",&memoryUsage[0],500,0,buffer,0,150.0f,ImVec2(0,65.0f));
+
+
+        ApplicationState* appState = projet->getAppState();
+        double currentTime = appState->GetGlfTime();
+        
+        appState->SetFrames(appState->GetFrames()+1);
+        float fps = fpsCounter[0];
+        if ( currentTime -appState->GetLastTime() >= 1.0 ){ // If last prinf() was more than 1 sec ago
+ 
+            appState->SetLastTime(appState->GetLastTime()+1);
+            fpsCounter.push_back((appState->GetFrames()));
+            fpsCounter.erase(fpsCounter.begin());
+            fps = appState->GetFrames();
+            appState->SetFrames(0);
+        }
+
+        char bufferFps[64];
+        ret = snprintf(bufferFps, sizeof (bufferFps), "%f",  fpsCounter[fpsCounter.size()-1]);
+
+       
+        ImGui::PlotLines("Fps Counter",&fpsCounter[0],25,0,bufferFps,0.0f,120.0f,ImVec2(0,65.0f));
+        ImGui::PopStyleColor(2);
+
+    ImGui::End();
+}
+
+void DisplayerManager::RenderGameView(GameView* GameView,Scene* scene){
+    ImGui::Begin("GameView");
+
+    if(scene->GetCameras().size() > 0){
+        RenderContext* renderContext = rcGameView;
+        
+        ImVec2 size = ImGui::GetWindowSize();
+        renderContext->UpdateRender(size.x,size.y);
+        glm::mat4 MVP[2];
+        MVP[0] = scene->GetCameras()[0]->GetObj()->GetTransformation();
+        MVP[1] = glm::perspectiveFov(glm::radians(45.5f), size.x, size.y, 0.1f, 1000.0f);
+
+        unsigned int tex =  renderContext->RenderScene(MVP,scene);
+        ImGui::BeginChild("Game Render");
+        ImGui::Image((void*)(intptr_t)tex,ImVec2(size.x,size.y-110),ImVec2(0,1 ),ImVec2(1,0 ));
+        ImGui::EndChild();
+
+    }
 
     ImGui::End();
 }
@@ -214,7 +261,6 @@ void DisplayerManager::RenderAllRenderWindows(int width,int height,Projet* proje
 
                     if(obj->GetRenderType() == Orthographic){
                         obj->SetOrthoSize(obj->GetOrthoSize() - middleMouse);
-                        std::cout << obj->GetOrthoSize() << std::endl;
                         pos.z = obj->GetOrthoSize();
                     }
 
@@ -258,7 +304,7 @@ void DisplayerManager::RenderSceneViewOption(){
         return;
 
     ImGui::Begin("Scene View Option",&openSceneViewOption);
-    if(selectedSceneView >= 0){
+    if(selectedSceneView >= 0 && selectedSceneView < RenderContextDisplays.size()){
         float static pos[3];
         float static rot[3];
         RenderContextDisplay* obj = RenderContextDisplays[selectedSceneView];

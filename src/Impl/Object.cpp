@@ -2,6 +2,7 @@
 #include "../Headers/Component.h"
 #include "../Headers/Transform.h"
 #include "../Headers/Light.h"
+#include "../Headers/Camera.h"
 
 
 void Object::DeleteComponents(){
@@ -38,6 +39,10 @@ void Object::AddComponents(){
 
         if(objectType == Light){
                 this->components.push_back(new LightComp(this));
+        }
+
+        if(objectType == Camera){
+               this->components.push_back(new CameraComp(this));
         }
 }
 

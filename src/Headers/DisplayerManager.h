@@ -12,14 +12,25 @@
 #include "Mesh.h"
 #include "Saver.h"
 #include "Component.h"
+#include "GameView.h"
+#include <vec3.hpp> // glm::vec3
+#include <vec4.hpp> // glm::vec4
+#include <mat4x4.hpp> // glm::mat4
+#include <ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
+#include <ext/matrix_clip_space.hpp> // glm::perspective
+#include <ext/scalar_constants.hpp> // glm::pi
+#include <gtc/type_ptr.hpp>
+
 
 class DisplayerManager{
     std::vector<RenderContextDisplay*> RenderContextDisplays;
     RenderContextShadedWireFrame rcWireShadedFrame;
     RenderContextShaded rcShaded;
     RenderContextWireFrame rcWireFrame;
+    RenderContextGame* rcGameView;
     RenderContextDisplay* renderContextDisplay;
     std::vector<float> memoryUsage;
+    std::vector<float> fpsCounter;
     bool openMachineState;
     bool openSceneEditor;
     bool openObjectView;
@@ -31,22 +42,23 @@ class DisplayerManager{
     DisplayerManager(){
         selectedSceneView = -1;
         memoryUsage = std::vector<float>(500);
+        fpsCounter = std::vector<float>(25);
         openMachineState = true;
         openObjectView = true;
         openSceneEditor = true;
         openSceneViewOption = true;
+        rcGameView = new RenderContextGame();
     }
     
     void ObjectEditor(Scene* scene);
-
     void AddRenderContextDisplay(RenderContextDisplay* renderWindow);
     void SceneViewParameter();
-    
-    void MachineState();
+    void MachineState(Projet* projet);
     void SceneEditor(Scene* scene,std::vector<Object*> objets);
     void RenderAppOptions(Projet* projet);
     void RenderAllRenderWindows(int width,int height,Projet* projet);
     void RenderSceneViewOption();
+    void RenderGameView(GameView* GameView,Scene* scene);
 
     ~DisplayerManager(){
         for (size_t i = 0; i < RenderContextDisplays.size(); i++) {

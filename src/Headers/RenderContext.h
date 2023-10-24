@@ -128,6 +128,33 @@ class RenderContextShaded : public RenderContext{
     }
 };
 
+class RenderContextGame: public RenderContext{
+    public :
+    virtual unsigned int RenderScene(glm::mat4* MVP,Scene* scene);
+
+    RenderContextGame() = default;
+    RenderContextGame(const RenderContextGame& render){
+        FBO = render.FBO;
+        Tex = render.Tex;
+        height = render.height;
+        width = render.width;
+        label = render.label;
+        cameraPosition = render.cameraPosition;
+    }
+
+    RenderContextGame operator=(const RenderContextGame& render){
+        FBO = render.FBO;
+        Tex = render.Tex;
+        height = render.height;
+        width = render.width;
+        label = render.label;
+        cameraPosition = render.cameraPosition;
+
+        return *this;
+    }
+};
+
+
 class RenderContextWireFrame: public RenderContext{
     public :
     virtual unsigned int RenderScene(glm::mat4* MVP,Scene* scene);

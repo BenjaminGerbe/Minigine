@@ -75,6 +75,9 @@ void Saver::LoadScene(Projet* projet){
             else if(ID == c_Light){
                 tempObj->AddComponent(new LightComp(id,j,yamlFile,tempObj));
             }
+            else if(ID == c_Camera){
+                tempObj->AddComponent(new CameraComp(id,j,yamlFile,tempObj));
+            }
         }
         
         tempObj->SetObjectType(type);

@@ -5,7 +5,8 @@
 enum ComponentID{
     c_None,
     c_Transform,
-    c_Light
+    c_Light,
+    c_Camera
 };
 
 class Component
@@ -77,7 +78,7 @@ class Component
         open = b;
     }
 
-    Object* GetObject(){
+    Object* GetObj(){
         return obj;
     }
 

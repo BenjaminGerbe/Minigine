@@ -72,7 +72,7 @@ void Scene::SetUp(){
         programShader = g_basicShader.GetProgram();
 }
 
-void Scene::Render(glm::mat4* _MVP,int debug){
+void Scene::Render(glm::mat4* _MVP,int flags){
 
 
         for (int i = 0; i < Objects.size(); i++)
@@ -81,7 +81,7 @@ void Scene::Render(glm::mat4* _MVP,int debug){
                 glBindVertexArray(ID);  
 
                 glUseProgram(programShader);
-                if(debug == 1) glUseProgram(programShaderWireFrame);
+                if(flags & WireFrame) glUseProgram(programShaderWireFrame);
 
                 glm::mat4 cameraView = _MVP[0];
                 cameraView *= Objects[i]->GetTransformation();
@@ -93,15 +93,17 @@ void Scene::Render(glm::mat4* _MVP,int debug){
                 glBufferData(GL_UNIFORM_BUFFER,sizeof(glm::mat4)*3,matrices,GL_STREAM_DRAW);
 
                 if(Lights.size() > 0){
-                    glUniform3fv(glGetUniformLocation(ID, "dir.direction"), 1, &Lights[0]->GetObject()->GetForward()[0]); 
+                    glUniform3fv(glGetUniformLocation(ID, "dir.direction"), 1, &Lights[0]->GetObj()->GetForward()[0]); 
                     glUniform3fv(glGetUniformLocation(ID, "dir.color"), 1, Lights[0]->GetColor()); 
                     glUniform1f(glGetUniformLocation(ID, "dir.intensity"),  Lights[0]->GetIntensity()); 
                 }
 
                 glDrawElements(GL_TRIANGLES,Objects[i]->GetMesh()->TriangleToDraw(),GL_UNSIGNED_INT,(void*)0);
         }
-
        
+        if((flags & s_Grid_None))
+            return;
+
         glBindVertexArray(VAOS);  
         glUseProgram(programShaderGrid);
         glm::mat4 cameraView =  _MVP[0];

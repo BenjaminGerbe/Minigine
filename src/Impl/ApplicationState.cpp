@@ -36,6 +36,9 @@ int ApplicationState::SetupApplication(){
 
         window = glfwCreateWindow(width,height,"Minigine",NULL,NULL);
 
+        lastTime = glfwGetTime();
+        nbFrames = 0;
+        
         if(window == NULL){
             std::cout << "Failed to create GLFW Window" << std::endl;
             glfwTerminate();

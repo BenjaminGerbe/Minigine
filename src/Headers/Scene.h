@@ -19,6 +19,14 @@
 #include "Object.h"
 #include "../Headers/GLShader.h"
 #include "Light.h"
+#include "Camera.h"
+
+enum SceneFlags{
+    s_Grid = 1<<0,
+    s_Grid_None = 1 << 1,
+    WireFrame = 1 << 2,
+    WireFrame_None = 1 << 3
+};
 
 class Scene{
     protected:
@@ -26,12 +34,12 @@ class Scene{
     int height;
     std::vector<Object*> Objects;
     std::vector<LightComp*> Lights;
+    std::vector<CameraComp*> Cameras;
     unsigned int VAO,UBO;
     unsigned int VAOS;
     uint32_t programShader;
     uint32_t programShaderWireFrame;
     uint32_t programShaderGrid;
-
    
     public:
     Scene(){
@@ -94,13 +102,21 @@ class Scene{
          Objects.push_back(object);
     }
 
-     void Render(glm::mat4* _MVP,int debug);
+     void Render(glm::mat4* _MVP,int flags);
 
-     std::vector<Object*> GetObjects(){
+    std::vector<Object*> GetObjects(){
         return this->Objects;
     }
 
-     int VertexToRender(){
+    std::vector<CameraComp*> GetCameras(){
+        return this->Cameras;
+    }
+
+    void AddCamera(CameraComp* cam){
+        Cameras.push_back(cam);
+    }
+
+    int VertexToRender(){
         return 0;
     }
 };
