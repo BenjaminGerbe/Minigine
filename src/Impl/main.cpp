@@ -41,7 +41,18 @@ Scene* scene;
 Projet projet;
 DisplayerManager displayerManager;
 
+#include "TCHAR.h"
+#include "pdh.h"
+
+static PDH_HQUERY cpuQuery;
+static PDH_HCOUNTER cpuTotal;
+
+double lastTime = glfwGetTime();
+int nbFrames = 0;
+
 int main(int, char**){
+
+   
 
     std::cout << "Launch Minigine" << std::endl; 
     scene = new Scene();
@@ -164,9 +175,14 @@ int main(int, char**){
 
         }
 
-        // matricesWire[0] =  glm::translate(glm::mat4(1.f), -glm::vec3({ 0.f, .6f,5.f }));
-        // matricesWire[0] *= glm::rotate(glm::mat4(1.0f), 15 * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0, 0.0));
-        // matricesWire[0] *= glm::rotate(glm::mat4(1.0f), i * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 1.0, 0.0));
+        double currentTime = glfwGetTime();
+        nbFrames++;
+        if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
+            // printf and reset timer
+            printf("%f ms/frame\n", 1000.0/double(nbFrames));
+            nbFrames = 0;
+            lastTime += 1.0;
+        }
 
         // UI
         ImGui_ImplOpenGL3_NewFrame();
