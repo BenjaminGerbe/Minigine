@@ -26,7 +26,6 @@ void Scene::SetUp(){
 
 
         unsigned int VBO,EBO;
-
         //Square
         glGenBuffers(1,&VBO);
         glGenBuffers(1,&EBO);

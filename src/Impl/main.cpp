@@ -62,11 +62,13 @@ int main(int, char**){
 
     Object Cube(m_Cube,"cube",ClassicObject);
     Object Dragon(m_Dragon,"dragon",ClassicObject);
-    Object light(m_blank,"light",Light);
+    Object Light(m_blank,"light",Light);
+    Object Camera(m_blank,"camera",Camera);
 
     projet.AddObjs(&Cube);
     projet.AddObjs(&Dragon);
-    projet.AddObjs(&light);
+    projet.AddObjs(&Light);
+    projet.AddObjs(&Camera);
 
 
     displayerManager.AddRenderContextDisplay(new RenderContextDisplay());
@@ -158,6 +160,8 @@ int main(int, char**){
                 }
                 c->Update();
             }
+
+
         }
 
         // matricesWire[0] =  glm::translate(glm::mat4(1.f), -glm::vec3({ 0.f, .6f,5.f }));

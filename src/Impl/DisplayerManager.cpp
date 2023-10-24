@@ -126,13 +126,16 @@ void DisplayerManager::SceneEditor(Scene* scene,std::vector<Object*> objets){
             else if(scene->GetObjects()[i]->GetObjectType() == Light){
                 ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.91f,0.96f,0.25f,1.0f));
             }
+            else if(scene->GetObjects()[i]->GetObjectType() == Camera){
+                ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.18f,0.39f,0.96f,1.0f));
+            }
             
             if(ImGui::Selectable(label, is_selected, ImGuiSelectableFlags_SpanAllColumns)){
                 item_current_idx = i;
                 selectedObjects = i;
             }
             ImGui::PopStyleColor(1);
-     
+
             ImGui::TableNextColumn();
 
             char poly[64];

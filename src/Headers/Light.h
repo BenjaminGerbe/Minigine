@@ -15,10 +15,28 @@ class LightComp:public Component{
     virtual void Update();
 
     LightComp(Object* obj):Component(obj){
-        headerName = "Light##transform";
+        headerName = "Light";
         SetID();
         color = new float[3];
         intensity = 1.0f;
+    }
+
+    LightComp(std::string id,int i,YAML::Node& yamlFile,Object* obj):Component(id,i,yamlFile,obj){
+        this->headerName = "Light";
+        color = new float[3];
+        color[0] = yamlFile[id][i]["color"][0].as<float>();
+        color[1] = yamlFile[id][i]["color"][1].as<float>();
+        color[2] = yamlFile[id][i]["color"][2].as<float>();
+
+        this->intensity = yamlFile[id][i]["intensity"].as<float>();
+    }
+
+    virtual void Save(std::string id,int i,YAML::Node& yamlFile){
+        Component::Save(id,i,yamlFile);
+        yamlFile[id][i]["color"].push_back(color[0]);
+        yamlFile[id][i]["color"].push_back(color[1]);
+        yamlFile[id][i]["color"].push_back(color[2]);
+        yamlFile[id][i]["intensity"] = intensity;
     }
 
     LightComp(const LightComp& copy):Component(copy){

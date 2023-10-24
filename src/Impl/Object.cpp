@@ -31,11 +31,18 @@ void Object::CopyComponents(std::vector<Component*> copy){
 }
 
 void Object::AddComponents(){
+        if(objectType == Loader)
+                return;
+
         this->components.push_back(new Transform(this));
 
         if(objectType == Light){
                 this->components.push_back(new LightComp(this));
         }
+}
+
+void Object::SetObjectType(ObjectType type){
+        this->objectType = type;
 }
 
 glm::mat4 Object::GetTransformation(){

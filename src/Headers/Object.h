@@ -15,7 +15,8 @@ class Component;
 enum ObjectType{
     ClassicObject,
     Light,
-    Camera
+    Camera,
+    Loader
 };
 
 class Object{
@@ -68,7 +69,10 @@ class Object{
 
     void DeleteComponents();
     void AddComponents();
-
+    void AddComponent(Component* comp){
+        components.push_back(comp);
+    }
+    
     void CopyComponents(std::vector<Component*> copy);
 
     ~Object(){
@@ -124,6 +128,8 @@ class Object{
     void SetRotation(glm::vec3 rotation){
         this->rotation = rotation;
     }
+
+    void SetObjectType(ObjectType type);
 
     void SetScale(glm::vec3 scale){
         this->scale = scale;

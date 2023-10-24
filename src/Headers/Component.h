@@ -1,6 +1,6 @@
 #pragma once
 #include "Object.h"
-
+#include "yaml-cpp/yaml.h"
 
 enum ComponentID{
     c_None,
@@ -15,6 +15,8 @@ class Component
     ComponentID ID;
     bool open;
     char* headerName;
+
+
 
     virtual void SetID(){
         ID = c_None;
@@ -38,6 +40,14 @@ class Component
         this->headerName = copy.headerName;
     }
 
+    Component(std::string id,int i,YAML::Node& yamlFile,Object* obj){
+        this->obj = obj;
+        this->ID = (ComponentID)yamlFile[id][i]["ID"].as<int>();
+        this->open = (ComponentID)yamlFile[id][i]["open"].as<bool>();
+
+        headerName = "component";
+    }
+
     Component operator=(const Component& copy){
         this->obj = copy.obj;
         this->ID = copy.ID;
@@ -46,6 +56,14 @@ class Component
 
         return *this;
     }
+
+    virtual void Save(std::string id,int i,YAML::Node& yamlFile){
+        std::string header(headerName);
+        yamlFile[id][i]["ID"] = (int)ID;
+        yamlFile[id][i]["open"] = open;
+        yamlFile[id][i]["headerName"] = header;
+    }
+
 
     char* GetHeaderName(){
         return headerName;
@@ -74,7 +92,6 @@ class Component
     }
 
     virtual ~Component(){
-
     }
 };
 

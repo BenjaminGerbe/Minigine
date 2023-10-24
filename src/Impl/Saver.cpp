@@ -12,33 +12,13 @@ void Saver::SaveScene(Scene* scene){
         yamlFile[id]["ObjectName"] = name;
         yamlFile[id]["ObjectType"] = (int)obj->GetObjectType();
         yamlFile[id]["MeshFileID"] = obj->GetMesh()->GetID();
-        yamlFile[id]["Transformation"]["Position"].push_back(obj->GetPosition().x);
-        yamlFile[id]["Transformation"]["Position"].push_back(obj->GetPosition().y);
-        yamlFile[id]["Transformation"]["Position"].push_back(obj->GetPosition().z);
+        yamlFile[id]["ComponentSize"] = obj->GetComponents().size();
+        for (int i = 0; i < obj->GetComponents().size(); i++)
+        {
+            Component* Component = obj->GetComponents()[i];
+            Component->Save(id,i,yamlFile);
+        }
 
-        yamlFile[id]["Transformation"]["Rotation"].push_back(obj->GetRotation().x);
-        yamlFile[id]["Transformation"]["Rotation"].push_back(obj->GetRotation().y);
-        yamlFile[id]["Transformation"]["Rotation"].push_back(obj->GetRotation().z);
-
-        yamlFile[id]["Transformation"]["Scale"].push_back(obj->GetScale().x);
-        yamlFile[id]["Transformation"]["Scale"].push_back(obj->GetScale().y);
-        yamlFile[id]["Transformation"]["Scale"].push_back(obj->GetScale().z);
-
-        // for (int i = 0; i < obj->GetComponents().size(); i++)
-        // {
-        //     Component* Component = obj->GetComponents()[i];
-        //     if(Component->GetID() == c_Light){
-        //         char* name = Component->GetHeaderName();
-        //         LightComp* l = dynamic_cast<LightComp*>(Component);
-        //         yamlFile[id][name]["ID"] = l->GetID();
-        //         yamlFile[id][name]["Color"].push_back(l->GetColor()[0]);
-        //         yamlFile[id][name]["Color"].push_back(l->GetColor()[1]);
-        //         yamlFile[id][name]["Color"].push_back(l->GetColor()[2]);
-        //         yamlFile[id][name]["Intensity"] = l->GetIntensity();
-        //     }
-
-        // }
-            
 
     }  
     std::ofstream MyFile("scene.yaml");
@@ -80,42 +60,24 @@ void Saver::LoadScene(Projet* projet){
     
         uint32_t fileNameID = yamlFile[id]["MeshFileID"].as<uint32_t>();
         Mesh* mesh = FindMesh(projet,fileNameID);
-
-        double x = yamlFile[id]["Transformation"]["Position"][0].as<double>();
-        double y = yamlFile[id]["Transformation"]["Position"][1].as<double>();
-        double z = yamlFile[id]["Transformation"]["Position"][2].as<double>();
-
-        glm::vec3 position({x,y,z});
-
-        x = yamlFile[id]["Transformation"]["Rotation"][0].as<double>();
-        y = yamlFile[id]["Transformation"]["Rotation"][1].as<double>();
-        z = yamlFile[id]["Transformation"]["Rotation"][2].as<double>();
-
-        glm::vec3 rotation({x,y,z});
-
-        x = yamlFile[id]["Transformation"]["Scale"][0].as<double>();
-        y = yamlFile[id]["Transformation"]["Scale"][1].as<double>();
-        z = yamlFile[id]["Transformation"]["Scale"][2].as<double>();
-
            
-        // char* name = Component->GetHeaderName();
-        // LightComp* l = dynamic_cast<LightComp*>(Component);
-        // yamlFile[id][name]["ID"] = l->GetID();
-        // yamlFile[id][name]["Color"].push_back(l->GetColor()[0]);
-        // yamlFile[id][name]["Color"].push_back(l->GetColor()[1]);
-        // yamlFile[id][name]["Color"].push_back(l->GetColor()[2]);
-        // yamlFile[id][name]["Intensity"] = l->GetIntensity();
-
-            
-
         ObjectType type =  (ObjectType)yamlFile[id]["ObjectType"].as<int>(); 
+        Object* tempObj = new Object(mesh,name,Loader);
+        int componentSize =  yamlFile[id]["ComponentSize"].as<int>();
 
-        glm::vec3 scale({x,y,z});
-
-        Object* tempObj = new Object(mesh,name,type);
-        tempObj->SetPosition(position);
-        tempObj->SetRotation(rotation);
-        tempObj->SetScale(scale);
+        for (int j = 0; j < componentSize; j++)
+        {
+            ComponentID ID = (ComponentID)yamlFile[id][j]["ID"].as<int>();
+            
+            if(ID == c_Transform){
+                tempObj->AddComponent(new Transform(id,j,yamlFile,tempObj));
+            }
+            else if(ID == c_Light){
+                tempObj->AddComponent(new LightComp(id,j,yamlFile,tempObj));
+            }
+        }
+        
+        tempObj->SetObjectType(type);
 
         s->AddObjectScene(tempObj);
     }
