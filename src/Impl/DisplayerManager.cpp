@@ -65,11 +65,8 @@ void DisplayerManager::RenderGameView(GameView* GameView,Scene* scene){
         
         ImVec2 size = ImGui::GetWindowSize();
         renderContext->UpdateRender(size.x,size.y);
-        glm::mat4 MVP[2];
-        MVP[0] = scene->GetCameras()[0]->GetObj()->GetTransformation();
-        MVP[1] = glm::perspectiveFov(glm::radians(45.5f), size.x, size.y, 0.1f, 1000.0f);
-
-        unsigned int tex =  renderContext->RenderScene(MVP,scene);
+        CameraComp* camera = scene->GetCameras()[0];
+        unsigned int tex =  renderContext->RenderScene(camera->GetMVP(size.x,size.y),scene);
         ImGui::BeginChild("Game Render");
         ImGui::Image((void*)(intptr_t)tex,ImVec2(size.x,size.y-110),ImVec2(0,1 ),ImVec2(1,0 ));
         ImGui::EndChild();

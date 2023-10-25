@@ -20,9 +20,12 @@ void CameraComp::Editor(){
     }
 
     ImGui::Spacing();
-    static float d;
-    ImGui::DragFloat("Fov",&d);
-
+    if(RenderMode == 0){
+        ImGui::DragFloat("Fov",&fov);
+    }
+    else{
+        ImGui::DragFloat("Size",&size);
+    }
    
 };
 
