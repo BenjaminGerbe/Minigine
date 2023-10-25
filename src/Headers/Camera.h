@@ -10,7 +10,13 @@
 #include <ext/scalar_constants.hpp> // glm::pi
 #include <gtc/type_ptr.hpp>
 
+#include "Component.h"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 class CameraComp : public Component{
+    int RenderMode;
     public :
     virtual void Editor();
     virtual void SetUp();
@@ -18,15 +24,17 @@ class CameraComp : public Component{
 
     CameraComp(Object* obj):Component(obj){
         headerName = "Camera";
+        RenderMode = 0;
         SetID();
     }
 
     CameraComp(const CameraComp& copy):Component(copy){
-        
+         RenderMode = 0;
     }
 
     CameraComp(std::string id,int i,YAML::Node& yamlFile,Object* obj):Component(id,i,yamlFile,obj){
         headerName = "Camera";
+        RenderMode = yamlFile[id][i]["RenderMode"].as<int>();
     }
 
     glm::mat4* GetTransform(){
@@ -35,6 +43,7 @@ class CameraComp : public Component{
 
     virtual void Save(std::string id,int i,YAML::Node& yamlFile){
         Component::Save(id,i,yamlFile);
+        yamlFile[id][i]["RenderMode"] = RenderMode;
     }
 
     virtual void SetID(){
