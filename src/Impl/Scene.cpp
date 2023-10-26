@@ -1,5 +1,6 @@
 #include "../Headers/Scene.h"
 
+
 unsigned int squareIndices[] = {
     // Face avant
     0, 2,1,
@@ -131,11 +132,17 @@ void Scene::RemoveObjectScene(Object* object){
         if(object == Objects[i]){
             find = true;
             this->RemoveObjectScene(i);
-            delete object;
         }
         else{
             i++;
         }
    }
    
+}
+
+void Scene::RemoveObjectScene(int idx){
+    Object* o =  Objects[idx];
+    Objects.erase(Objects.begin()+idx);
+    delete o;
+    o = NULL;
 }

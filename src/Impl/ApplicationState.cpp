@@ -1,5 +1,10 @@
 #include "../Headers/ApplicationState.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "../stbload/stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "../stbload/stb_image_write.h"
+
 void framebuffer_size_callback(GLFWwindow* window,int width,int height){
     ApplicationState* AppState = static_cast<ApplicationState*>(glfwGetWindowUserPointer(window));
      if (AppState) {
@@ -56,9 +61,17 @@ int ApplicationState::SetupApplication(){
 
         
         // callback for resizing window
-
-   
+        int w;
+        int h;
+        int c;
         glfwSetFramebufferSizeCallback(window,framebuffer_size_callback);
+
+        GLFWimage images;
+        images.pixels = stbi_load("heart.png ", &w, &h, &c, 0);;
+        images.width = w;
+        images.height = h;
+
+        glfwSetWindowIcon(window, 1, &images);
 
         return 0;
 }

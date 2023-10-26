@@ -37,8 +37,14 @@ include_directories(../libs/GLM)
 include_directories(../libs/tinyxml2)
 
 
+
+set(ICON_FILE "${CMAKE_SOURCE_DIR}/Minigine.ico")
+configure_file(${ICON_FILE} ${CMAKE_BINARY_DIR}/Minigine.ico COPYONLY)
+set(CMAKE_RC_COMPILER_INIT "windres")
+enable_language(RC)
+
 include_directories(${PROJECT_SOURCE_DIR})
-add_executable ( ${CMAKE_PROJECT_NAME} ${Classes})
+add_executable ( ${CMAKE_PROJECT_NAME} ${Classes} "${CMAKE_SOURCE_DIR}/resources.rc")
 
 foreach(shader_file ${Shaders})
     add_custom_command(

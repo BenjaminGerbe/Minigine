@@ -86,9 +86,7 @@ class Scene{
 
     void SetUp();
 
-    void RemoveObjectScene(int idx){
-        Objects.erase(Objects.begin()+idx);
-    }
+    void RemoveObjectScene(int idx);
 
     void RemoveObjectScene(Object* object);
 

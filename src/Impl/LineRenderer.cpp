@@ -23,6 +23,7 @@ void LineRenderer::CreateLine(){
     }
     lstLines.clear();
 
+
     for (int i = 0; i < lstObject.size(); i++)
     {
         glm::vec3 a = lstObject[i]->GetPosition();

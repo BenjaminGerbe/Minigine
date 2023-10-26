@@ -6,7 +6,7 @@ bool isToDelete(RenderContextDisplay *element){
 
 void DisplayerManager::MachineState(Projet* projet){
     if(!openMachineState) return;
-    ImGui::Begin("Machine State",&openMachineState);
+    ImGui::Begin("Profiler",&openMachineState);
 
     
         MEMORYSTATUSEX memInfo;
@@ -237,7 +237,7 @@ void DisplayerManager::AddRenderContextDisplay(RenderContextDisplay* renderWindo
         std::cout << " je t'en suplie change ca " << std::endl;
         for (int i = 0; i < renderWindow->getRenderContextes().size(); i++)
         {
-            renderWindow->getRenderContextes()[i]->SetUp(1920,1080);
+            renderWindow->getRenderContextes()[i]->SetUp(0,0);
         }
 };
 

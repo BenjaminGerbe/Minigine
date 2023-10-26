@@ -31,10 +31,7 @@
 #include "../Headers/Saver.h"
 #include "../Headers/Projet.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "../stbload/stb_image.h"
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "../stbload/stb_image_write.h"
+
 
 static ApplicationState app; 
 Scene* scene;
@@ -203,7 +200,7 @@ int main(int, char**){
       
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         // event
-        app.ApplicationEvents();
+            app.ApplicationEvents();
     }
 
 
