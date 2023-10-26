@@ -18,11 +18,8 @@ void LineRenderer::CreateLine(){
     if(lstObject.size() <= 1 ) 
         return;
 
-    for(Object* l : lstLines){
-       projet->GetScene()->RemoveObjectScene(l);
-    }
+    projet->GetScene()->RemoveObjectScene(lstLines);
     lstLines.clear();
-
 
     for (int i = 0; i < lstObject.size(); i++)
     {

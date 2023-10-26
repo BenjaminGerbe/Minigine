@@ -94,6 +94,8 @@ class Scene{
         return this->Lights;
     }
 
+    void Scene::RemoveObjectScene(std::vector<Object*> objects);
+
     void AddLight(LightComp* light){
         Lights.push_back(light);
     };

@@ -140,6 +140,25 @@ void Scene::RemoveObjectScene(Object* object){
    
 }
 
+void Scene::RemoveObjectScene(std::vector<Object*> objects){
+   int i = this->Objects.size()-1;
+   bool find = false;
+
+   while(i >= 0 && !find){
+        
+        for (int k = 0; k < objects.size(); k++)
+        {
+            if(objects[k] == Objects[i]){
+            this->RemoveObjectScene(i);
+            break;
+            }
+        }
+       
+        i--;
+   }
+   
+}
+
 void Scene::RemoveObjectScene(int idx){
     Object* o =  Objects[idx];
     Objects.erase(Objects.begin()+idx);
