@@ -31,6 +31,7 @@ class ApplicationState{
     int nbFrames;
     glm::vec2 MousePosition;
     glm::mat4* MVP;
+    bool GameViewHovered;
 
    public:
 
@@ -64,6 +65,9 @@ class ApplicationState{
     void SetMousePosition(glm::vec2 MousePosition){
         this->MousePosition = MousePosition;
     }
+
+    bool GetGameViewHovered(){ return this->GameViewHovered;};
+    void SetGameViewHovered(bool b){  this->GameViewHovered = b;};
 
     bool GetLockMouse(){
         return this->lockMouse;

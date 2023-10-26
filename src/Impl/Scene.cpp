@@ -122,3 +122,20 @@ void Scene::Render(glm::mat4* _MVP,int flags){
         glEnable(GL_CULL_FACE);  
 }
 
+
+void Scene::RemoveObjectScene(Object* object){
+   int i =0;
+   bool find = false;
+
+   while(i < this->Objects.size() && !find){
+        if(object == Objects[i]){
+            find = true;
+            this->RemoveObjectScene(i);
+            delete object;
+        }
+        else{
+            i++;
+        }
+   }
+   
+}

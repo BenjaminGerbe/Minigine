@@ -90,6 +90,8 @@ class Scene{
         Objects.erase(Objects.begin()+idx);
     }
 
+    void RemoveObjectScene(Object* object);
+
     std::vector<LightComp*> GetLightComp(){
         return this->Lights;
     }

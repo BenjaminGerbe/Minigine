@@ -83,11 +83,12 @@ void DisplayerManager::RenderGameView(GameView* GameView,Projet* projet){
         float offsetX = ImGui::GetCursorScreenPos().x;
         float offsetY = ImGui::GetCursorScreenPos().y;
 
-        if(ImGui::IsWindowFocused()){
+        if( ImGui::IsWindowHovered()){
             projet->getAppState()->SetMousePosition(glm::vec2({io.MousePos.x - offsetX,offsetY - io.MousePos.y }));
             projet->getAppState()->SetMVP(camera->GetMVP(width,height));
         }
 
+        projet->getAppState()->SetGameViewHovered(ImGui::IsWindowHovered() );
 
         ImGui::EndChild();
     }
@@ -102,7 +103,7 @@ void DisplayerManager::ObjectEditor(Scene* scene){
 
     ImGui::Begin("Object View",&openObjectView);
 
-        if(selectedObjects >= 0 && scene->GetObjects().size() > 0){
+        if(selectedObjects >= 0 && scene->GetObjects().size() > 0 && selectedObjects < scene->GetObjects().size() ){
         
             Object* obj = scene->GetObjects()[this->selectedObjects];
             char buff[16];
