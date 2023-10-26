@@ -4,6 +4,7 @@
 #include "ApplicationState.h"
 #include "Object.h"
 
+
 class Projet{
     Scene* scene;
     std::vector<Object*> objects;

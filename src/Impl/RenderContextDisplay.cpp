@@ -48,13 +48,18 @@ bool RenderContextDisplay::DisplayRenderWindow(int width,int height,Scene* scene
 
             RenderContext* renderContext = renderContextes[idx_renderContext];
             ImVec2 size = ImGui::GetWindowSize();
-            renderContext->UpdateRender(size.x,size.y);
 
+            if(size.x != this->width || size.y != this->height){
+                this->height = size.y;
+                this->width = size.x;
+                renderContext->UpdateRender(this->height,this->width);
+            }
+           
             if(renderType == Perspective){
-                MVP[1] = glm::perspectiveFov(glm::radians(perspectiveFov), size.x, size.y, nearClip, farClip);
+                MVP[1] = glm::perspectiveFov(glm::radians(perspectiveFov), this->width, this->height, nearClip, farClip);
             }
             else{
-                float ratio = size.x/size.y;
+                float ratio = this->width/this->height;
                 float w =  ratio*OrthographiqueSize;
                 float h =  OrthographiqueSize;
                 MVP[1] =  glm::ortho( -w/2.0f, w/2.0f,-h/2.0f, h/2.0f, nearClip,farClip);;

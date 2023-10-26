@@ -7,6 +7,7 @@
 #include "Transform.h"
 #include "Light.h"
 #include "Camera.h"
+#include "LineRenderer.h"
 
 namespace Saver{
     void SaveScene(Scene* scene);

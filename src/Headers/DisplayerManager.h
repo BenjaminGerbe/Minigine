@@ -54,11 +54,11 @@ class DisplayerManager{
     void AddRenderContextDisplay(RenderContextDisplay* renderWindow);
     void SceneViewParameter();
     void MachineState(Projet* projet);
-    void SceneEditor(Scene* scene,std::vector<Object*> objets);
+    void SceneEditor(Projet* projet);
     void RenderAppOptions(Projet* projet);
     void RenderAllRenderWindows(int width,int height,Projet* projet);
     void RenderSceneViewOption();
-    void RenderGameView(GameView* GameView,Scene* scene);
+    void RenderGameView(GameView* GameView,Projet* projet);
 
     ~DisplayerManager(){
         for (size_t i = 0; i < RenderContextDisplays.size(); i++) {

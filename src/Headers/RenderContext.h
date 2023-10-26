@@ -29,8 +29,8 @@ class RenderContext{
     unsigned int FBO;
     unsigned int RBO;
     unsigned int Tex;
-    int height;
-    int width;
+    float height;
+    float width;
     char* label;
     glm::vec3 cameraPosition;
 

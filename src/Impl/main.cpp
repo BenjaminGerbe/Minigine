@@ -74,11 +74,13 @@ int main(int, char**){
     Object Dragon(m_Dragon,"dragon",ClassicObject);
     Object Light(m_blank,"light",Light);
     Object Camera(m_blank,"camera",Camera);
+    Object LineRenderer(m_blank,"LineRenderer",o_LineRenderer);
 
     projet.AddObjs(&Cube);
     projet.AddObjs(&Dragon);
     projet.AddObjs(&Light);
     projet.AddObjs(&Camera);
+    projet.AddObjs(&LineRenderer);
 
 
     displayerManager.AddRenderContextDisplay(new RenderContextDisplay());
@@ -185,9 +187,9 @@ int main(int, char**){
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
         displayerManager.RenderAllRenderWindows((int)(width/2.0),(int)(height/2.0),&projet);
-        displayerManager.SceneEditor(projet.GetScene(),projet.GetObjs());
+        displayerManager.SceneEditor(&projet);
         displayerManager.ObjectEditor(projet.GetScene());
-        displayerManager.RenderGameView(&gameView,projet.GetScene());
+        displayerManager.RenderGameView(&gameView,&projet);
 
         ImGui::ShowStyleEditor();
         ImGui::ShowDemoWindow();

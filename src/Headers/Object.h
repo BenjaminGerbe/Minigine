@@ -11,18 +11,22 @@
 #include <vector>
 
 class Component;
+class Scene;
+class Projet;
 
 enum ObjectType{
     ClassicObject,
     Light,
     Camera,
-    Loader
+    Loader,
+    o_LineRenderer
 };
 
 class Object{
 
     protected :
     Mesh* mesh;
+    Projet* projet;
     glm::mat4 transformation;
     glm::vec3 position;
     glm::vec3 rotation;
@@ -66,6 +70,16 @@ class Object{
 
         CopyComponents(copy.components);
     }
+
+    void SetProjet(Projet* p){
+        projet = p;
+    }
+
+    Projet* GetProjet(){
+        return projet;
+    }
+
+    void SetUp();
 
     void DeleteComponents();
     void AddComponents();

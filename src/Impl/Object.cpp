@@ -3,11 +3,18 @@
 #include "../Headers/Transform.h"
 #include "../Headers/Light.h"
 #include "../Headers/Camera.h"
+#include "../Headers/LineRenderer.h"
 
 
 void Object::DeleteComponents(){
         for(auto p : this->components){
                 delete p;
+        }
+}
+
+void Object::SetUp(){
+        for(Component* c: components){
+                c->SetUp();
         }
 }
 
@@ -43,6 +50,10 @@ void Object::AddComponents(){
 
         if(objectType == Camera){
                this->components.push_back(new CameraComp(this));
+        }
+
+        if(objectType == o_LineRenderer){
+                this->components.push_back(new LineRenderer(this));
         }
 }
 

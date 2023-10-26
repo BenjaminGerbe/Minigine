@@ -12,6 +12,15 @@
 
 
 #include <iostream>
+// glm include
+#include <vec3.hpp> // glm::vec3
+#include <vec4.hpp> // glm::vec4
+#include <mat4x4.hpp> // glm::mat4
+#include <ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
+#include <ext/matrix_clip_space.hpp> // glm::perspective
+#include <ext/scalar_constants.hpp> // glm::pi
+#include <gtc/type_ptr.hpp>
+
 
 class ApplicationState{
     GLFWwindow* window;
@@ -20,19 +29,45 @@ class ApplicationState{
     bool lockMouse;
     double lastTime;
     int nbFrames;
+    glm::vec2 MousePosition;
+    glm::mat4* MVP;
+    bool GameViewHovered;
 
    public:
 
     ApplicationState(){
         lockMouse = false;
+        MVP = nullptr;
     }
-
+    
     ApplicationState(int _width,int _height):width(_width),height(_height){
+        lockMouse = false;
+        MVP = nullptr;
+      
     }
 
     ~ApplicationState(){
         glfwTerminate();
     }
+
+    glm::vec2 GetMousePosition(){
+        return MousePosition;
+    }
+
+    glm::mat4* GetMVP(){
+        return MVP;
+    }
+
+    void SetMVP(glm::mat4* MVP){
+        this->MVP = MVP;
+    }
+
+    void SetMousePosition(glm::vec2 MousePosition){
+        this->MousePosition = MousePosition;
+    }
+
+    bool GetGameViewHovered(){ return this->GameViewHovered;};
+    void SetGameViewHovered(bool b){  this->GameViewHovered = b;};
 
     bool GetLockMouse(){
         return this->lockMouse;
@@ -86,5 +121,7 @@ class ApplicationState{
     void SetGLFWwindow(GLFWwindow* window){
         this->window = window;
     }
+
+
 
 };
