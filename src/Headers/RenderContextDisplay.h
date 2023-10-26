@@ -26,6 +26,8 @@ class RenderContextDisplay{
     float perspectiveFov;
     float nearClip;
     float farClip;
+    float height;
+    float width;
 
     public :
     RenderContextDisplay(){

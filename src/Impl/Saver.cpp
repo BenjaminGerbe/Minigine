@@ -48,6 +48,7 @@ Mesh* FindMesh(Projet* projet,uint32_t fileID){
 void Saver::LoadScene(Projet* projet){
     Scene* scene = projet->GetScene();
     Scene* s = new Scene();
+    projet->SetScene(s);
     YAML::Node yamlFile = YAML::LoadFile("scene.yaml");
 
     int size = yamlFile["Objects"].as<int>();
@@ -78,14 +79,18 @@ void Saver::LoadScene(Projet* projet){
             else if(ID == c_Camera){
                 tempObj->AddComponent(new CameraComp(id,j,yamlFile,tempObj));
             }
+            else if(ID == c_LineRenderer){
+                tempObj->AddComponent(new LineRenderer(id,j,yamlFile,tempObj));
+            }
         }
         
         tempObj->SetObjectType(type);
-
+        tempObj->SetProjet(projet);
         s->AddObjectScene(tempObj);
+        tempObj->SetUp();
     }
     
     s->SetUp();
-    projet->SetScene(s);
+ 
     delete scene;
 }

@@ -6,7 +6,8 @@ enum ComponentID{
     c_None,
     c_Transform,
     c_Light,
-    c_Camera
+    c_Camera,
+    c_LineRenderer
 };
 
 class Component

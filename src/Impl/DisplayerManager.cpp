@@ -57,20 +57,39 @@ void DisplayerManager::MachineState(Projet* projet){
     ImGui::End();
 }
 
-void DisplayerManager::RenderGameView(GameView* GameView,Scene* scene){
+void DisplayerManager::RenderGameView(GameView* GameView,Projet* projet){
     ImGui::Begin("GameView");
-
+    Scene* scene = projet->GetScene();
     if(scene->GetCameras().size() > 0){
         RenderContext* renderContext = rcGameView;
         
         ImVec2 size = ImGui::GetWindowSize();
-        renderContext->UpdateRender(size.x,size.y);
-        CameraComp* camera = scene->GetCameras()[0];
-        unsigned int tex =  renderContext->RenderScene(camera->GetMVP(size.x,size.y),scene);
-        ImGui::BeginChild("Game Render");
-        ImGui::Image((void*)(intptr_t)tex,ImVec2(size.x,size.y-110),ImVec2(0,1 ),ImVec2(1,0 ));
-        ImGui::EndChild();
 
+        float width =  projet->getAppState()->GetWidth();
+        float height =  projet->getAppState()->GetHeight();
+
+        if(width != size.x || height != size.y-110){
+            projet->getAppState()->SetWidth(size.x);
+            projet->getAppState()->SetHeight(size.y-110);
+
+            renderContext->UpdateRender(width,height);
+        }
+      
+        CameraComp* camera = scene->GetCameras()[0];
+        unsigned int tex =  renderContext->RenderScene(camera->GetMVP(width,height),scene);
+        ImGui::BeginChild("Game Render");
+        ImGui::Image((void*)(intptr_t)tex,ImVec2(width,height),ImVec2(0,1 ),ImVec2(1,0 ));
+        ImGuiIO& io = ImGui::GetIO();
+        float offsetX = ImGui::GetCursorScreenPos().x;
+        float offsetY = ImGui::GetCursorScreenPos().y;
+
+        if(ImGui::IsWindowFocused()){
+            projet->getAppState()->SetMousePosition(glm::vec2({io.MousePos.x - offsetX,offsetY - io.MousePos.y }));
+            projet->getAppState()->SetMVP(camera->GetMVP(width,height));
+        }
+
+
+        ImGui::EndChild();
     }
 
     ImGui::End();
@@ -111,19 +130,22 @@ void DisplayerManager::ObjectEditor(Scene* scene){
 
 }
 
-void DisplayerManager::SceneEditor(Scene* scene,std::vector<Object*> objets){
+void DisplayerManager::SceneEditor(Projet* projet){
 
     if(!openSceneEditor)
         return;
 
     ImGui::Begin("Scene Editor",&openSceneEditor);
 
+    Scene* scene = projet->GetScene();
+    std::vector<Object*> objets = projet->GetObjs();
+
     static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
 
 
     if (ImGui::BeginCombo("Add Object", "", ImGuiComboFlags_NoPreview)) 
     {
-        for (int n = 0; n < objets.size(); n++)
+        for (int n = 0; n < projet->GetObjs().size(); n++)
         {
             char nbuffer[32];
             strcpy(nbuffer,objets[n]->GetStrName().c_str());
@@ -131,7 +153,10 @@ void DisplayerManager::SceneEditor(Scene* scene,std::vector<Object*> objets){
             if (ImGui::Selectable(nbuffer)){
                 
                 Object* obj = new Object(objets[n]->GetMesh(),objets[n]->GetStrName(),objets[n]->GetObjectType());
-                scene->AddObjectScene(obj);
+                projet->GetScene()->AddObjectScene(obj);
+                obj->SetProjet(projet);
+                obj->SetUp();
+                
             }
 
          
@@ -164,14 +189,18 @@ void DisplayerManager::SceneEditor(Scene* scene,std::vector<Object*> objets){
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             const bool is_selected = (item_current_idx == i);
-            if(scene->GetObjects()[i]->GetObjectType() == ClassicObject){
-                ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.85f,0.85f,0.85f,1.0f));
-            }
-            else if(scene->GetObjects()[i]->GetObjectType() == Light){
+          
+            if(scene->GetObjects()[i]->GetObjectType() == Light){
                 ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.91f,0.96f,0.25f,1.0f));
             }
             else if(scene->GetObjects()[i]->GetObjectType() == Camera){
                 ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.18f,0.39f,0.96f,1.0f));
+            }
+            else if(scene->GetObjects()[i]->GetObjectType() == o_LineRenderer){
+                ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.96f,0.39f,0.18f,1.0f));
+            }
+            else{
+                ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.85f,0.85f,0.85f,1.0f));
             }
             
             if(ImGui::Selectable(label, is_selected, ImGuiSelectableFlags_SpanAllColumns)){
