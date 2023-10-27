@@ -1,7 +1,98 @@
 #include "../Headers/LineRenderer.h"
 
+
+void LineRenderer::GiftWraping(){
+
+    if(lstObject.size() <= 0)
+        return;
+
+    // GiftWraping logic :
+
+    // find the first pivot :
+    float xmin = lstObject[0]->GetPosition().x;
+    float ymin = lstObject[0]->GetPosition().y;
+    int first = 0;
+    float epsilon = std::numeric_limits<float>::epsilon();
+    int size = lstObject.size();
+    for (int i = 1; i < lstObject.size(); i++)
+    {
+        Object* o = lstObject[i];
+        glm::vec3 position = o->GetPosition();
+
+        if(position.x < xmin || ( std::abs(position.x - xmin) < epsilon  && position.y < ymin)){
+            xmin = position.x;
+            ymin = position.y;
+            first = i;
+        }
+            
+    }
+
+    // initialization 
+    glm::vec3 v({0.0,-1.0f,0.0});
+    std::vector<Object*> Pivots;
+    int i = first;
+
+    // Wrapping logic
+    do{
+        Pivots.push_back(new Object(*lstObject[i]));
+
+        int nxt = (i+1)%lstObject.size();
+        glm::vec3 pp =  lstObject[nxt]->GetPosition()- lstObject[i]->GetPosition();
+        float lmax = glm::length(pp);
+        pp = glm::normalize(pp);
+        float dot = glm::dot(v,pp);
+        float angleMin = std::acosf(dot);
+        int I = nxt;
+
+        for (int j = 0; j < lstObject.size(); j++)
+        {
+            int idx = j;
+            if(idx != i){
+                glm::vec3 b = lstObject[idx]->GetPosition();
+                glm::vec3 a = lstObject[i]->GetPosition();
+                glm::vec3 pp = b-a;
+                float l = glm::length(pp);
+                pp = glm::normalize(pp);
+                dot = glm::dot(v,pp);
+                float angle = std::acosf(dot);
+
+                if(angle < angleMin || ( std::abs(angle - angleMin) ) < epsilon && l > lmax ){
+                    lmax = l;
+                    angleMin = angle;
+                    I = idx;
+                }
+
+            }
+        }
+        i = I;
+        v =  lstObject[I]->GetPosition() - lstObject[i]->GetPosition();
+        v = glm::normalize(v);
+    }while(i != first && Pivots.size() <= size);
+
+    if(Pivots.size() > size){
+        std::cout << "error loop" << std::endl;
+        assert(false);
+    }
+    
+    Object* A = new Object(projet->GetObjs()[4]->GetMesh(),"LineRenderer",ClassicObject);
+    A->SetProjet(projet);
+    LineRenderer* lr = new LineRenderer(Pivots,A);
+    A->AddComponent(lr);
+    lr->SetUp();
+  
+    projet->GetScene()->AddObjectScene(A);
+
+    for(Object* o : Pivots){
+        delete o;
+    }
+}
+
 void LineRenderer::Editor(){
     ImGui::Checkbox("RenderLine",&RenderLine);
+    ImGui::Spacing();
+    if(ImGui::Button("Gift Wrapping")){
+        GiftWraping();
+    }
     return;
 }
 

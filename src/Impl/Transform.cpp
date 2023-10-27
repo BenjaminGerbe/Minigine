@@ -24,6 +24,7 @@ void Transform::SetUp(){
 }
 
 void Transform::Update(){
+   
     return;
     // glm::vec3 rot = obj->GetRotation();
     // rot.y += .1f;
