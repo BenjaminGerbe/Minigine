@@ -237,7 +237,7 @@ void DisplayerManager::AddRenderContextDisplay(RenderContextDisplay* renderWindo
         std::cout << " je t'en suplie change ca " << std::endl;
         for (int i = 0; i < renderWindow->getRenderContextes().size(); i++)
         {
-            renderWindow->getRenderContextes()[i]->SetUp(0,0);
+            renderWindow->getRenderContextes()[i]->SetUp(1920,1080);
         }
 };
 

@@ -82,7 +82,9 @@ void Scene::Render(glm::mat4* _MVP,int flags){
                 glBindVertexArray(ID);  
 
                 glUseProgram(programShader);
-                if(flags & WireFrame) glUseProgram(programShaderWireFrame);
+                if(flags & WireFrame){
+                    glUseProgram(programShaderWireFrame);
+                } 
 
                 glm::mat4 cameraView = _MVP[0];
                 cameraView *= Objects[i]->GetTransformation();
@@ -142,9 +144,8 @@ void Scene::RemoveObjectScene(Object* object){
 
 void Scene::RemoveObjectScene(std::vector<Object*> objects){
    int i = this->Objects.size()-1;
-   bool find = false;
 
-   while(i >= 0 && !find){
+   while(i >= 0){
         
         for (int k = 0; k < objects.size(); k++)
         {

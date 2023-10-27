@@ -10,6 +10,9 @@
 #include <gtc/type_ptr.hpp>
 #include <vector>
 #include <math.h> 
+#include <limits>
+#include <chrono>
+#include <iostream>
 
 class LineRenderer:public Component{
     Object* targetMouse;
@@ -18,6 +21,7 @@ class LineRenderer:public Component{
     std::vector<Object*> lstLines;
     int lastIdx;
     bool RenderLine;
+    bool start ;
     
     public :
     virtual void Editor();
@@ -32,6 +36,23 @@ class LineRenderer:public Component{
 
     LineRenderer(const LineRenderer& copy):Component(copy){
         RenderLine = false;
+    }
+
+    LineRenderer( std::vector<Object*> point,Object* obj):Component(obj){
+        headerName = "LineRenderer";
+        RenderLine = false;
+        SetID();
+
+        this->lstObject;
+        this->lstLines;
+        projet = this->obj->GetProjet();
+
+        for(Object* o : point){
+            Object* t = new Object(*o);
+            lstObject.push_back(t);
+            projet->GetScene()->AddObjectScene(t);
+        }
+
     }
 
     LineRenderer(std::string id,int i,YAML::Node& yamlFile,Object* obj):Component(id,i,yamlFile,obj){
@@ -50,6 +71,7 @@ class LineRenderer:public Component{
 
     void CreateLine();
     
+    void GiftWraping();
 
     LineRenderer operator=(const LineRenderer& copy){
         return *this;

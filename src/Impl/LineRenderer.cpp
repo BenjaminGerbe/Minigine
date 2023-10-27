@@ -1,14 +1,108 @@
 #include "../Headers/LineRenderer.h"
 
+
+void LineRenderer::GiftWraping(){
+
+    if(lstObject.size() <= 0)
+        return;
+
+    // GiftWraping logic :
+
+    // find the first pivot :
+    float xmin = lstObject[0]->GetPosition().x;
+    float ymin = lstObject[0]->GetPosition().y;
+    int first = 0;
+    float epsilon = std::numeric_limits<float>::epsilon();
+    int size = lstObject.size();
+    for (int i = 1; i < lstObject.size(); i++)
+    {
+        Object* o = lstObject[i];
+        glm::vec3 position = o->GetPosition();
+
+        if(position.x < xmin || ( std::abs(position.x - xmin) < epsilon  && position.y < ymin)){
+            xmin = position.x;
+            ymin = position.y;
+            first = i;
+        }
+            
+    }
+
+    // initialization 
+    glm::vec3 v({0.0,-1.0f,0.0});
+    std::vector<Object*> Pivots;
+    int i = first;
+
+    // Wrapping logic
+    do{
+        Pivots.push_back(new Object(*lstObject[i]));
+
+        glm::vec3 pp;
+        float lmax = std::numeric_limits<float>::min();
+        float dot = glm::dot(v,pp);
+        float angleMin = std::numeric_limits<float>::max();
+        int I = 0;
+
+        for (int j = 0; j < lstObject.size(); j++)
+        {
+            int idx = j;
+            if(idx != i){
+                glm::vec3 b = lstObject[idx]->GetPosition();
+                glm::vec3 a = lstObject[i]->GetPosition();
+                glm::vec3 pp = b-a;
+
+                float l = glm::length(pp);
+                pp = glm::normalize(pp);
+                dot = glm::dot(v,pp);
+                float angle = std::acosf(dot);
+
+                if(angle < angleMin || ( std::abs(angle - angleMin) ) < epsilon && l > lmax ){
+                    lmax = l;
+                    angleMin = angle;
+                    I = idx;
+                }
+
+            }
+        }
+
+        v =  lstObject[I]->GetPosition() - lstObject[i]->GetPosition();
+        i = I;
+        v = glm::normalize(v);
+    }while(i != first && Pivots.size() <= size);
+
+    if(Pivots.size() > size){
+        std::cout << "error loop" << std::endl;
+        assert(false);
+    }
+    
+    Object* A = new Object(projet->GetObjs()[4]->GetMesh(),"LineRenderer",ClassicObject);
+    A->SetProjet(projet);
+    LineRenderer* lr = new LineRenderer(Pivots,A);
+    A->SetObjectType(o_LineRenderer);
+    A->AddComponent(lr);
+    lr->SetUp();
+  
+    projet->GetScene()->AddObjectScene(A);
+
+    for(Object* o : Pivots){
+        delete o;
+    }
+}
+
 void LineRenderer::Editor(){
     ImGui::Checkbox("RenderLine",&RenderLine);
+    ImGui::Spacing();
+    if(ImGui::Button("Gift Wrapping")){
+        GiftWraping();
+    }
+
+       
     return;
 }
 
 void LineRenderer::SetUp(){
     projet = this->obj->GetProjet();
     lastIdx = 0;
-  
+    start = true;
     return;
 }
 
@@ -18,8 +112,10 @@ void LineRenderer::CreateLine(){
     if(lstObject.size() <= 1 ) 
         return;
 
-    projet->GetScene()->RemoveObjectScene(lstLines);
-    lstLines.clear();
+    if(lstLines.size() > 0){
+        projet->GetScene()->RemoveObjectScene(lstLines);
+        lstLines.clear();
+    }
 
     for (int i = 0; i < lstObject.size(); i++)
     {
@@ -52,16 +148,6 @@ void LineRenderer::CreateLine(){
 
 void LineRenderer::Update(){
 
-    if(RenderLine){
-        CreateLine();
-    }
-    else if(!RenderLine && lstLines.size() > 0){
-        for(Object* l : lstLines){
-            projet->GetScene()->RemoveObjectScene(l);
-        }
-        lstLines.clear();
-    }
-
     glm::mat4* MVP = projet->getAppState()->GetMVP();
     if(MVP == nullptr){
         return;
@@ -89,6 +175,16 @@ void LineRenderer::Update(){
         targetMouse->SetPosition(glm::vec3({pos.x,pos.y,pos.z}));
         targetMouse->SetScale(glm::vec3({.2f,.2f,.2f}));
         lstObject.push_back(targetMouse);
+        std::cout << lstObject.size() << std::endl;
+    }
+
+
+    if(RenderLine){
+        CreateLine();
+    }
+    else if(!RenderLine && lstLines.size() > 0){
+        projet->GetScene()->RemoveObjectScene(lstLines);
+        lstLines.clear();
     }
 
     return;

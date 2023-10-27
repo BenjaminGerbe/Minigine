@@ -53,10 +53,9 @@ class Object{
         this->mesh = copy.mesh;
         this->name = copy.name;
         this->objectType = copy.objectType;
-       transformation = glm::mat4(1.0f);
-        rotation = glm::vec3({0.0f,0.0f,0.0f});
-        position = glm::vec3({0.0f,0.0f,0.0f});
-        scale = glm::vec3({1.0f,1.0f,1.0f});
+        rotation = glm::vec3(copy.rotation);
+        position = glm::vec3(copy.position);
+        scale = glm::vec3(copy.scale);
         this->programShader = copy.programShader;
 
         CopyComponents(copy.components);

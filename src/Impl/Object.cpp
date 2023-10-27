@@ -32,6 +32,11 @@ void Object::CopyComponents(std::vector<Component*> copy){
                         LightComp* nTr = new LightComp(tr);
                         components.push_back(nTr);
                 }
+                else if(c->GetID() == c_LineRenderer){
+                        LineRenderer& tr = *dynamic_cast<LineRenderer*>(c);
+                        LineRenderer* nTr = new LineRenderer(tr);
+                        components.push_back(nTr);
+                }
                 else{
                        components.push_back( new Component(*c));
                 }
