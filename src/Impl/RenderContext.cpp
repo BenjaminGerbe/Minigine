@@ -60,7 +60,7 @@ unsigned int RenderContextShadedWireFrame::RenderScene(glm::mat4* MVP,Scene* sce
     scene->Render(MVP,WireFrame_None);
 
     glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-    scene->Render(MVP,WireFrame);
+    scene->Render(MVP,WireFrame | s_Grid_None);
 
 
     glBindFramebuffer(GL_FRAMEBUFFER,0);

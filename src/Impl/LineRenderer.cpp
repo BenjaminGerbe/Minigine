@@ -36,13 +36,11 @@ void LineRenderer::GiftWraping(){
     do{
         Pivots.push_back(new Object(*lstObject[i]));
 
-        int nxt = (i+1)%lstObject.size();
-        glm::vec3 pp =  lstObject[nxt]->GetPosition()- lstObject[i]->GetPosition();
-        float lmax = glm::length(pp);
-        pp = glm::normalize(pp);
+        glm::vec3 pp;
+        float lmax = std::numeric_limits<float>::min();
         float dot = glm::dot(v,pp);
-        float angleMin = std::acosf(dot);
-        int I = nxt;
+        float angleMin = std::numeric_limits<float>::max();
+        int I = 0;
 
         for (int j = 0; j < lstObject.size(); j++)
         {
@@ -51,6 +49,7 @@ void LineRenderer::GiftWraping(){
                 glm::vec3 b = lstObject[idx]->GetPosition();
                 glm::vec3 a = lstObject[i]->GetPosition();
                 glm::vec3 pp = b-a;
+
                 float l = glm::length(pp);
                 pp = glm::normalize(pp);
                 dot = glm::dot(v,pp);
@@ -64,8 +63,9 @@ void LineRenderer::GiftWraping(){
 
             }
         }
-        i = I;
+
         v =  lstObject[I]->GetPosition() - lstObject[i]->GetPosition();
+        i = I;
         v = glm::normalize(v);
     }while(i != first && Pivots.size() <= size);
 
@@ -77,6 +77,7 @@ void LineRenderer::GiftWraping(){
     Object* A = new Object(projet->GetObjs()[4]->GetMesh(),"LineRenderer",ClassicObject);
     A->SetProjet(projet);
     LineRenderer* lr = new LineRenderer(Pivots,A);
+    A->SetObjectType(o_LineRenderer);
     A->AddComponent(lr);
     lr->SetUp();
   
@@ -93,13 +94,15 @@ void LineRenderer::Editor(){
     if(ImGui::Button("Gift Wrapping")){
         GiftWraping();
     }
+
+       
     return;
 }
 
 void LineRenderer::SetUp(){
     projet = this->obj->GetProjet();
     lastIdx = 0;
-  
+    start = true;
     return;
 }
 
@@ -109,8 +112,10 @@ void LineRenderer::CreateLine(){
     if(lstObject.size() <= 1 ) 
         return;
 
-    projet->GetScene()->RemoveObjectScene(lstLines);
-    lstLines.clear();
+    if(lstLines.size() > 0){
+        projet->GetScene()->RemoveObjectScene(lstLines);
+        lstLines.clear();
+    }
 
     for (int i = 0; i < lstObject.size(); i++)
     {
@@ -143,16 +148,6 @@ void LineRenderer::CreateLine(){
 
 void LineRenderer::Update(){
 
-    if(RenderLine){
-        CreateLine();
-    }
-    else if(!RenderLine && lstLines.size() > 0){
-        for(Object* l : lstLines){
-            projet->GetScene()->RemoveObjectScene(l);
-        }
-        lstLines.clear();
-    }
-
     glm::mat4* MVP = projet->getAppState()->GetMVP();
     if(MVP == nullptr){
         return;
@@ -180,6 +175,16 @@ void LineRenderer::Update(){
         targetMouse->SetPosition(glm::vec3({pos.x,pos.y,pos.z}));
         targetMouse->SetScale(glm::vec3({.2f,.2f,.2f}));
         lstObject.push_back(targetMouse);
+        std::cout << lstObject.size() << std::endl;
+    }
+
+
+    if(RenderLine){
+        CreateLine();
+    }
+    else if(!RenderLine && lstLines.size() > 0){
+        projet->GetScene()->RemoveObjectScene(lstLines);
+        lstLines.clear();
     }
 
     return;

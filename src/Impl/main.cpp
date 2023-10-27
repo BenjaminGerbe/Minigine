@@ -160,7 +160,10 @@ int main(int, char**){
         Scene* sceneBuffer = projet.GetScene();
         std::vector<LightComp*> Lights = sceneBuffer->GetLightComp();
         std::vector<CameraComp*> Cameras = sceneBuffer->GetCameras();
-        for(Object* obj : projet.GetScene()->GetObjects() ){
+        int idx = 0;
+        for (int i = 0; i < projet.GetScene()->GetObjects().size(); i++)
+        {
+            Object* obj = projet.GetScene()->GetObjects()[i];
             for(Component* c: obj->GetComponents()){
                 if(c->GetID() == c_Light && std::find(Lights.begin(),Lights.end(),dynamic_cast<LightComp*>(c)) == Lights.end()){
                     sceneBuffer->AddLight(dynamic_cast<LightComp*>(c));
@@ -168,7 +171,7 @@ int main(int, char**){
                 if(c->GetID() == c_Camera && std::find(Cameras.begin(),Cameras.end(),dynamic_cast<CameraComp*>(c)) == Cameras.end()){
                     sceneBuffer->AddCamera(dynamic_cast<CameraComp*>(c));
                 }
-                c->Update();
+                    c->Update();
             }
         }
      

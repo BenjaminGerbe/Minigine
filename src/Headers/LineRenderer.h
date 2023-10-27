@@ -11,6 +11,8 @@
 #include <vector>
 #include <math.h> 
 #include <limits>
+#include <chrono>
+#include <iostream>
 
 class LineRenderer:public Component{
     Object* targetMouse;
@@ -19,6 +21,7 @@ class LineRenderer:public Component{
     std::vector<Object*> lstLines;
     int lastIdx;
     bool RenderLine;
+    bool start ;
     
     public :
     virtual void Editor();
