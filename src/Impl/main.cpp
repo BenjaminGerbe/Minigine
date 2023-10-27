@@ -53,7 +53,7 @@ int main(int, char**){
     std::cout << "Launch Minigine" << std::endl; 
     scene = new Scene();
    // Application Setup
-    app = ApplicationState((int)(1920*1.5f),(int)(1080*1.5f));
+    app = ApplicationState((int)(1920),(int)(1080));
     int err = app.SetupApplication();    
 
     projet.AddScene(scene);

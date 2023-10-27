@@ -68,9 +68,9 @@ void DisplayerManager::RenderGameView(GameView* GameView,Projet* projet){
         float width =  projet->getAppState()->GetWidth();
         float height =  projet->getAppState()->GetHeight();
 
-        if(width != size.x || height != size.y-110){
+        if(width != size.x || height != size.y-65){
             projet->getAppState()->SetWidth(size.x);
-            projet->getAppState()->SetHeight(size.y-110);
+            projet->getAppState()->SetHeight(size.y-65);
 
             renderContext->UpdateRender(width,height);
         }

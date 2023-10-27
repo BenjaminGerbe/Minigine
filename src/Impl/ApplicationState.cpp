@@ -67,7 +67,7 @@ int ApplicationState::SetupApplication(){
         glfwSetFramebufferSizeCallback(window,framebuffer_size_callback);
 
         GLFWimage images;
-        images.pixels = stbi_load("heart.png ", &w, &h, &c, 0);;
+        images.pixels = stbi_load("Minigine.png ", &w, &h, &c, 0);;
         images.width = w;
         images.height = h;
 
