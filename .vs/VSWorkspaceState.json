@@ -1,11 +1,4 @@
 {
-  "ExpandedNodes": [
-    "",
-    "\\src",
-    "\\src\\Impl"
-  ],
-  "SelectedNode": "\\src\\CMakeLists.txt",
-  "PreviewInSolutionExplorer": false,
   "OutputFoldersPerTargetSystem": {
     "Local Machine": [
       "build\\src\\Debug\\x64-Debug",
@@ -13,5 +6,12 @@
       "out\\build\\x86-Debug",
       "out\\install\\x86-Debug"
     ]
-  }
+  },
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\Impl"
+  ],
+  "SelectedNode": "\\CMakeLists.txt",
+  "PreviewInSolutionExplorer": false
 }

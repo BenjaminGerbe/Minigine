@@ -1,5 +1,115 @@
 #include "../Headers/LineRenderer.h"
 
+struct PolyPoint{
+    int idx;
+    float angle;
+    float length;
+    glm::vec3 position;
+};
+
+void LineRenderer::GrahamScan(){
+
+    // CreatePolygone
+
+    if(lstObject.size() <= 0)
+        return;
+
+    glm::vec3 v({1.0f,0.0f,0.0f});
+
+    std::vector<PolyPoint> Poly;
+    float size = lstObject.size();
+    float epsilon = std::numeric_limits<float>::epsilon();
+    glm::vec3 B({0.0f,0.0f,0.0f});
+
+    for (int i = 0; i < (int)size; i++)
+    {
+        B += lstObject[i]->GetPosition();
+    }
+
+    B = glm::vec3(B.x/size,B.y/size,B.y/size);
+
+    for (int i = 0; i < lstObject.size(); i++)
+    {
+        glm::vec3 a = lstObject[i]->GetPosition();
+        glm::vec3 pp = a-B;
+
+        float l = glm::length(pp);
+        pp = glm::normalize(pp);
+        float dot = glm::dot(v,pp);
+        float angle = std::acosf(dot);
+
+        PolyPoint p;
+        p.angle = angle;
+        p.length = l;
+        p.idx= i;
+        p.position =  lstObject[i]->GetPosition();
+
+        Poly.push_back(p);
+        if(Poly.size() <= 1)
+            continue;
+
+        int c = Poly.size()-1;
+        for (int i = 0; i < Poly.size(); i++)
+        {
+            if( Poly[c].angle < Poly[i].angle ||
+             ( (Poly[c].angle - Poly[i].angle) < epsilon && Poly[c].length < Poly[i].length) ){
+                PolyPoint tmp = Poly[c];
+                Poly[c] = Poly[i];
+                Poly[i] = tmp;
+            }
+        }
+
+    }
+
+    int nonConvex = false;
+
+    int i = 0;
+    while(i < Poly.size()){
+        int prec = i-1;
+        int nxt =( i+1)%Poly.size();
+        if(prec < 0){
+            prec = Poly.size() -1;
+        }
+
+        glm::vec a = Poly[i].position;
+        glm::vec3 b = Poly[prec].position - a;
+        glm::vec3 c = Poly[nxt].position - a;
+        
+        b = glm::normalize(b);
+        c = glm::normalize(c);
+        
+        float dot = glm::dot(b,c);
+        float angle = std::acosf(dot);
+
+        glm::mat3 mat({
+            a.x,a.y,1.0,
+            b.x,b.y,1.0,
+            c.x,c.y,1.0,
+        });
+
+        if(glm::determinant(mat) >= 0){
+            Poly.erase(Poly.begin() +i);
+        }
+        i++;
+    }
+    
+    std::vector<Object*> Points;
+    for (int i = 0; i < Poly.size(); i++)
+    {
+        Points.push_back(lstObject[Poly[i].idx]);
+    }
+    
+
+    Object* A = new Object(projet->GetObjs()[4]->GetMesh(),"Graham scan",ClassicObject);
+    A->SetProjet(projet);
+    LineRenderer* lr = new LineRenderer(Points,A);
+    A->SetObjectType(o_LineRenderer);
+    A->AddComponent(lr);
+    lr->SetUp();
+  
+    projet->GetScene()->AddObjectScene(A);
+    return;
+}
 
 void LineRenderer::GiftWraping(){
 
@@ -93,6 +203,10 @@ void LineRenderer::Editor(){
     ImGui::Spacing();
     if(ImGui::Button("Gift Wrapping")){
         GiftWraping();
+    }
+    ImGui::Spacing();
+    if(ImGui::Button("Graham-Scan")){
+        GrahamScan();
     }
 
        
