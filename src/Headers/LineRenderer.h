@@ -73,9 +73,13 @@ class LineRenderer:public Component{
     
     void GiftWraping();
 
+    void GrahamScan();
+
     LineRenderer operator=(const LineRenderer& copy){
         return *this;
     }
+
+
 
     ~LineRenderer(){
        // delete targetMouse;
