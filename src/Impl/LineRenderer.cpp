@@ -31,6 +31,7 @@ void LineRenderer::GrahamScan(){
     for (int i = 0; i < lstObject.size(); i++)
     {
         glm::vec3 a = lstObject[i]->GetPosition();
+        glm::vec b = B + v;
         glm::vec3 pp = a-B;
 
         float l = glm::length(pp);
@@ -38,11 +39,21 @@ void LineRenderer::GrahamScan(){
         float dot = glm::dot(v,pp);
         float angle = std::acosf(dot);
 
+        glm::mat3 mat({
+            a.x,a.y,1.0,
+            B.x,B.y,1.0,
+            b.x,b.y,1.0,
+        });
+
+        if(glm::determinant(mat) < 0){
+            angle = (glm::pi<float>()*2.0f)-angle;
+        }
+
         PolyPoint p;
         p.angle = angle;
         p.length = l;
         p.idx= i;
-        p.position =  lstObject[i]->GetPosition();
+        p.position = a;
 
         Poly.push_back(p);
         if(Poly.size() <= 1)
@@ -62,37 +73,36 @@ void LineRenderer::GrahamScan(){
     }
 
     int nonConvex = false;
+    while(!nonConvex){
+        nonConvex = true;
+        int i = Poly.size()-1;
+        while(i >=0){
+            int prec = i-1;
+            int nxt =( i+1)%Poly.size();
+            if(prec < 0){
+                prec = Poly.size() -1;
+            }
 
-    int i = 0;
-    while(i < Poly.size()){
-        int prec = i-1;
-        int nxt =( i+1)%Poly.size();
-        if(prec < 0){
-            prec = Poly.size() -1;
+            glm::vec a = Poly[prec].position;
+            glm::vec3 b = Poly[i].position;
+            glm::vec3 c = Poly[nxt].position;
+            
+            glm::mat3 mat({
+                a.x,a.y,1.0,
+                b.x,b.y,1.0,
+                c.x,c.y,1.0,
+            });
+
+            if(glm::determinant(mat) < 0 ){
+                nonConvex = false;
+                Poly.erase(Poly.begin() +i);
+            }
+
+            i--;
         }
-
-        glm::vec a = Poly[i].position;
-        glm::vec3 b = Poly[prec].position - a;
-        glm::vec3 c = Poly[nxt].position - a;
-        
-        b = glm::normalize(b);
-        c = glm::normalize(c);
-        
-        float dot = glm::dot(b,c);
-        float angle = std::acosf(dot);
-
-        glm::mat3 mat({
-            a.x,a.y,1.0,
-            b.x,b.y,1.0,
-            c.x,c.y,1.0,
-        });
-
-        if(glm::determinant(mat) >= 0){
-            Poly.erase(Poly.begin() +i);
-        }
-        i++;
     }
     
+
     std::vector<Object*> Points;
     for (int i = 0; i < Poly.size(); i++)
     {
