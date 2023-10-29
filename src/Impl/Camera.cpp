@@ -1,4 +1,7 @@
 #include "../Headers/Camera.h"
+#include "../Headers/Projet.h"
+#include "../Headers/Scene.h"
+
 
 void CameraComp::Editor(){
 
@@ -35,4 +38,9 @@ void CameraComp::SetUp(){
 
 void CameraComp::Update(){
     return;
+}
+
+CameraComp::~CameraComp(){
+    delete[] MVP;
+    obj->GetProjet()->GetScene()->GetRemoveCamera(this);
 }

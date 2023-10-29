@@ -9,7 +9,6 @@ void Transform::Editor(){
     rot[0] = obj->GetRotation().x; rot[1] = obj->GetRotation().y; rot[2] = obj->GetRotation().z;
     sca[0] = obj->GetScale().x; sca[1] = obj->GetScale().y; sca[2] = obj->GetScale().z;
 
-    ImGui::Text("Transformations");
     ImGui::DragFloat3("Position",pos,0.1f);
     ImGui::DragFloat3("Rotation",rot,0.1f);
     ImGui::DragFloat3("Scale",sca,0.1f);

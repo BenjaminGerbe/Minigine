@@ -1,4 +1,6 @@
 #include "../Headers/Light.h"
+#include "../Headers/Projet.h"
+#include "../Headers/Scene.h"
 
 void LightComp::Editor(){
     ImGui::Spacing();
@@ -15,4 +17,9 @@ void LightComp::SetUp(){
 
 void LightComp::Update(){
     return;
+}
+
+LightComp::~LightComp(){
+    obj->GetProjet()->GetScene()->GetRemoveLight(this);
+    delete color;
 }

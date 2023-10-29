@@ -5,6 +5,7 @@
 #include "imgui_impl_opengl3.h"
 #include "Object.h"
 
+
 class LightComp:public Component{
     private:
     float* color;
@@ -19,6 +20,11 @@ class LightComp:public Component{
         SetID();
         color = new float[3];
         intensity = 1.0f;
+    }
+
+    virtual LightComp* Clone(Object* obj){
+        LightComp* comp = new LightComp(obj);
+        return comp;
     }
 
     LightComp(std::string id,int i,YAML::Node& yamlFile,Object* obj):Component(id,i,yamlFile,obj){
@@ -51,9 +57,7 @@ class LightComp:public Component{
         return intensity;
     }
 
-    ~LightComp(){
-        delete color;
-    }
+    ~LightComp();
 
     virtual void SetID(){
         ID = c_Light;

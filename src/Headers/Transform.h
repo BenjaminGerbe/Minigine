@@ -18,7 +18,13 @@ class Transform: public Component{
     }
 
     Transform(const Transform& copy):Component(copy){
+        headerName = "Transformation";
+        SetID();
+    }
 
+    virtual Transform* Clone(Object* obj){
+        Transform* comp = new Transform(obj);
+        return comp;
     }
 
     Transform(std::string id,int i,YAML::Node& yamlFile,Object* obj):Component(id,i,yamlFile,obj){
@@ -69,5 +75,6 @@ class Transform: public Component{
 
     Transform operator=(const Transform& copy){
         return *this;
+
     }
 };

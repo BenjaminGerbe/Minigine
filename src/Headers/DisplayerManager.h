@@ -21,6 +21,11 @@
 #include <ext/scalar_constants.hpp> // glm::pi
 #include <gtc/type_ptr.hpp>
 
+// imgui include
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include "imgui_internal.h"
 
 class DisplayerManager{
     std::vector<RenderContextDisplay*> RenderContextDisplays;
@@ -50,7 +55,7 @@ class DisplayerManager{
         rcGameView = new RenderContextGame();
     }
     
-    void ObjectEditor(Scene* scene);
+    void ObjectEditor(Projet* projet);
     void AddRenderContextDisplay(RenderContextDisplay* renderWindow);
     void SceneViewParameter();
     void MachineState(Projet* projet);

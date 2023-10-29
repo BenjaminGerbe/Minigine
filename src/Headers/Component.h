@@ -42,6 +42,11 @@ class Component
         this->headerName = copy.headerName;
     }
 
+    virtual Component* Clone(Object* obj){
+        Component* comp = new Component(obj);
+        return comp;
+    }
+
     Component(std::string id,int i,YAML::Node& yamlFile,Object* obj){
         this->obj = obj;
         this->ID = (ComponentID)yamlFile[id][i]["ID"].as<int>();
@@ -81,6 +86,10 @@ class Component
 
     Object* GetObj(){
         return obj;
+    }
+
+    void SetObj(Object* obj){
+        this->obj = obj;
     }
 
     virtual void Editor();

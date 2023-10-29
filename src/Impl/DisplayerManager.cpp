@@ -96,10 +96,13 @@ void DisplayerManager::RenderGameView(GameView* GameView,Projet* projet){
     ImGui::End();
 }
 
-void DisplayerManager::ObjectEditor(Scene* scene){
+void DisplayerManager::ObjectEditor(Projet* projet){
    
     if(!openObjectView)
         return;
+
+    Scene* scene = projet->GetScene();
+   
 
     ImGui::Begin("Object View",&openObjectView);
 
@@ -115,15 +118,57 @@ void DisplayerManager::ObjectEditor(Scene* scene){
                 obj->SetName(std::string(buff));
             }
             ImGui::PopStyleVar(1);
-            ImGui::Separator();
-           
-            for(Component* c : obj->GetComponents()){
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY()+10.0f);    
+        
+            auto col = IM_COL32(54, 54, 54, 204);
+            for (size_t i = 0; i < obj->GetComponents().size(); i++)
+            {
+                Component* c = obj->GetComponents()[i];
                 ImGui::SetNextItemOpen(c->GetOpen());
                 c->SetOpen(false);
-                if (ImGui::CollapsingHeader(c->GetHeaderName())){
+                ImGui::AlignTextToFramePadding();
+                float size = ImGui::GetWindowWidth();
+                bool treeopen = ImGui::TreeNodeEx(c->GetHeaderName(), ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed);
+                ImVec2 pos = ImVec2(ImGui::GetItemRectMin().x+size-50.0f,ImGui::GetItemRectMin().y+12.0f);
+               
+                
+                if(c->GetID() != c_Transform){
+                    if(ImGui::CloseButton(ImGui::GetID(c->GetHeaderName()),pos)){
+                        obj->DeleteComponent(i);
+                        ImGui::TreePop();
+                        continue;
+                    }
+                }
+                
+
+                if (treeopen)
+                {
                     c->Editor();
                     c->SetOpen(true);
+                    ImGui::TreePop();
                 }
+
+
+            }
+
+            ImGui::Separator();
+
+            if (ImGui::BeginCombo("Add Component", "", ImGuiComboFlags_NoPreview)) 
+            {
+                for (int n = 0; n < projet->GetComponents().size(); n++)
+                {
+                    char nbuffer[32];
+                    strcpy(nbuffer,projet->GetComponents()[n]->GetHeaderName());
+                
+                    if (ImGui::Selectable(nbuffer)){
+                        Component* comp = projet->GetComponents()[n]->Clone(obj);
+                        comp->SetUp();
+                        obj->AddComponent(comp);
+
+                    }
+
+                }
+                ImGui::EndCombo();
             }
             
         }  
@@ -132,17 +177,18 @@ void DisplayerManager::ObjectEditor(Scene* scene){
 }
 
 void DisplayerManager::SceneEditor(Projet* projet){
-
+    
     if(!openSceneEditor)
         return;
 
-    ImGui::Begin("Scene Editor",&openSceneEditor);
+    ImGui::Begin("Scene Editor",&openSceneEditor,ImGuiWindowFlags_NoScrollbar);
 
     Scene* scene = projet->GetScene();
     std::vector<Object*> objets = projet->GetObjs();
-
+    std::vector<Object*> ObjetsScene = scene->GetObjects();
     static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
-
+    ImGuiIO& io = ImGui::GetIO();
+    int sizeY = ImGui::GetWindowSize().y;
 
     if (ImGui::BeginCombo("Add Object", "", ImGuiComboFlags_NoPreview)) 
     {
@@ -160,37 +206,54 @@ void DisplayerManager::SceneEditor(Projet* projet){
                 
             }
 
-         
-                
+
         }
         ImGui::EndCombo();
     }
 
-    ImGui::SameLine();
-    if(ImGui::Button("-") && selectedObjects >= 0 && scene->GetObjects().size() > 0){
-        scene->RemoveObjectScene(selectedObjects);
+    // ImGui::SameLine();
+    // if(ImGui::Button("-") && selectedObjects >= 0 && scene->GetObjects().size() > 0){
+    //     scene->RemoveObjectScene(selectedObjects);
 
-        if(selectedObjects > scene->GetObjects().size()-1){
-            selectedObjects = scene->GetObjects().size()-1;
-        }        
-    }
+    //     if(selectedObjects > scene->GetObjects().size()-1){
+    //         selectedObjects = scene->GetObjects().size()-1;
+    //     }        
+    // }
 
+    static bool isDrag  = false;
+    static int dragItem = -1;
+    static int hoverItem = -1;
+    bool itemHover = false;
+    static ImVec2 dragStartPos = io.MousePos;
+    static ImVec2 p_min;
+    static ImVec2 p_max;
 
-    if (ImGui::BeginTable("split2", 2,0 ))
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered,ImVec4(0.0f,0.0f,0.0f,0.0f));
+    ImGui::PushStyleColor(ImGuiCol_Header,ImVec4(0.24f,0.51f,0.72f,0.5f));
+    ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt,ImVec4(0.1f,0.1f,0.1f,0.9f));
+    static auto col = IM_COL32(54, 54, 54, 204);
+    float hCell = 30.0f;
+    if (ImGui::BeginTable("editortab", 1,ImGuiTableFlags_RowBg))
     {
         static int item_current_idx = 0;
+
         for (int i = 0; i < scene->GetObjects().size(); i++)
         {   
+
+            int popCount= 0;
             char buff[16];
             std::strcpy(buff,scene->GetObjects()[i]->GetName());
 
             char label[32];
             sprintf(label, "%s##%d",buff,i);
-            
+
+           
+
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
+
             const bool is_selected = (item_current_idx == i);
-          
+
             if(scene->GetObjects()[i]->GetObjectType() == Light){
                 ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.91f,0.96f,0.25f,1.0f));
             }
@@ -203,24 +266,76 @@ void DisplayerManager::SceneEditor(Projet* projet){
             else{
                 ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.85f,0.85f,0.85f,1.0f));
             }
+
+            if(hoverItem == i){
+                col = IM_COL32(54, 54, 54, 204);
+                if(is_selected ){
+                    col = IM_COL32(63, 131, 186, 125);
+                }
+
+                ImGui::GetWindowDrawList()->AddRectFilled(p_min, p_max,col);
+            }
+
+            if(ImGui::Selectable(label, is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap)){
+                item_current_idx = i;
+                selectedObjects = i;
+              
+            }
             
-            if(ImGui::Selectable(label, is_selected, ImGuiSelectableFlags_SpanAllColumns)){
+            if(hoverItem == i){
+                p_min = ImGui::GetItemRectMin();
+                p_max = ImGui::GetItemRectMax();
+            }
+          
+            ImGui::PopStyleColor(1);
+            if(ImGui::IsMouseHoveringRect(ImGui::GetItemRectMin(),ImGui::GetItemRectMax())){
+                itemHover = true;
+                hoverItem = i;
+            }
+    
+            if(ImGui::IsItemClicked(0)){
+                isDrag = true;
+                dragStartPos = io.MousePos;
+                dragItem = i;
                 item_current_idx = i;
                 selectedObjects = i;
             }
-            ImGui::PopStyleColor(1);
 
-            ImGui::TableNextColumn();
+            if(ImGui::IsMouseReleased(0) && isDrag && itemHover){
+                scene->SwapItem(i,dragItem);
+                ImGui::ResetMouseDragDelta();
+                isDrag = false;
+                item_current_idx = i;
+                selectedObjects = i;
+            }
+
+           ImGui::SameLine();
 
             char poly[64];
             int ret = snprintf(poly, sizeof poly, "%d", scene->GetObjects()[i]->GetMesh()->TriangleToDraw()/(sizeof(unsigned int)*3));
             ImGui::Text(poly);
- 
+
+       
         }
 
+
+
+        ImGui::Text("");
+        hCell = ImGui::GetTextLineHeight();
+        int completeLine = std::floor(((sizeY) /hCell)  - (scene->GetObjects().size()));
+        completeLine = (((0) > (completeLine)) ? (0) : (completeLine));
+        for (int i = 0; i <completeLine; i++)
+        {
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("");
+        } 
+
         ImGui::EndTable();
+       
     }
-    
+    ImGui::PopStyleColor(3);
+
     ImGui::End();
 };
 
@@ -383,6 +498,8 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered,ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive,ImVec4(0.9f, 0.94f, 0.97f, 1.00f));
       
+        std::vector<Object*> objects = projet->GetObjs();
+
         if (ImGui::BeginMainMenuBar())
         {
             if (ImGui::BeginMenu("File"))
@@ -411,6 +528,18 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
                 }
                 if (ImGui::MenuItem("Scene View Option",NULL)) {
                     openSceneViewOption = true;
+                }
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Objects"))
+            {
+                if (ImGui::MenuItem("Create Empty Object",NULL)) {
+                    Object* obj = new Object(*projet->GetEmpty());
+                    obj->SetName("Empty Object");
+                    projet->GetScene()->AddObjectScene(obj);
+                    obj->SetProjet(projet);
+                    obj->SetUp();
                 }
                 ImGui::EndMenu();
             }

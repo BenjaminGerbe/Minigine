@@ -100,6 +100,9 @@ void Scene::Render(glm::mat4* _MVP,int flags){
                     glUniform3fv(glGetUniformLocation(ID, "dir.color"), 1, Lights[0]->GetColor()); 
                     glUniform1f(glGetUniformLocation(ID, "dir.intensity"),  Lights[0]->GetIntensity()); 
                 }
+                else{
+                    glUniform1f(glGetUniformLocation(ID, "dir.intensity"),  0.0f);    
+                }
 
                 glDrawElements(GL_TRIANGLES,Objects[i]->GetMesh()->TriangleToDraw(),GL_UNSIGNED_INT,(void*)0);
         }
@@ -140,6 +143,10 @@ void Scene::RemoveObjectScene(Object* object){
         }
    }
    
+}
+
+void Scene::SwapItem(int i, int k){
+    std::swap(Objects[i],Objects[k]);
 }
 
 void Scene::RemoveObjectScene(std::vector<Object*> objects){

@@ -51,6 +51,12 @@ class CameraComp : public Component{
         size = yamlFile[id][i]["Size"].as<float>();
     }
 
+    
+    virtual CameraComp* Clone(Object* obj){
+        CameraComp* comp = new CameraComp(obj);
+        return comp;
+    }
+
     glm::mat4* GetMVP(float width,float height){
         this->obj->GetTransformation();
      
@@ -68,9 +74,7 @@ class CameraComp : public Component{
         return MVP;
     }
 
-    ~CameraComp(){
-        delete[] MVP;
-    }
+    ~CameraComp();
 
     virtual void Save(std::string id,int i,YAML::Node& yamlFile){
         Component::Save(id,i,yamlFile);

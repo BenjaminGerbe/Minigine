@@ -1,4 +1,5 @@
 #include "../Headers/LineRenderer.h"
+#include "../Headers/Projet.h"
 
 struct PolyPoint{
     int idx;
@@ -313,3 +314,17 @@ void LineRenderer::Update(){
 
     return;
 }
+
+void LineRenderer::CopyObject( std::vector<Object*> point){
+   
+    this->lstObject;
+    this->lstLines;
+    projet = this->obj->GetProjet();
+
+    for(Object* o : point){
+        Object* t = new Object(*o);
+        lstObject.push_back(t);
+        projet->GetScene()->AddObjectScene(t);
+    }
+}
+

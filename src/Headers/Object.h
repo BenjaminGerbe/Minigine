@@ -78,6 +78,8 @@ class Object{
         return projet;
     }
 
+    void DeleteComponent(int i);
+
     void SetUp();
 
     void DeleteComponents();

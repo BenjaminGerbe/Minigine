@@ -1,6 +1,5 @@
 #pragma once
 #include "Component.h"
-#include "Projet.h"
 #include <vec3.hpp> // glm::vec3
 #include <vec4.hpp> // glm::vec4
 #include <mat4x4.hpp> // glm::mat4
@@ -38,20 +37,18 @@ class LineRenderer:public Component{
         RenderLine = false;
     }
 
+        
+    virtual LineRenderer* Clone(Object* obj){
+        LineRenderer* comp = new LineRenderer(obj);
+        return comp;
+    }
+
     LineRenderer( std::vector<Object*> point,Object* obj):Component(obj){
         headerName = "LineRenderer";
         RenderLine = false;
         SetID();
 
-        this->lstObject;
-        this->lstLines;
-        projet = this->obj->GetProjet();
-
-        for(Object* o : point){
-            Object* t = new Object(*o);
-            lstObject.push_back(t);
-            projet->GetScene()->AddObjectScene(t);
-        }
+       CopyObject(point);
 
     }
 
@@ -59,6 +56,8 @@ class LineRenderer:public Component{
         headerName = "LineRenderer";
         RenderLine = yamlFile[id][i]["RenderLine"].as<bool>();
     }
+    
+    void CopyObject( std::vector<Object*> point);
 
     virtual void Save(std::string id,int i,YAML::Node& yamlFile){
         Component::Save(id,i,yamlFile);

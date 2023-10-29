@@ -18,8 +18,10 @@
 
 #include "Object.h"
 #include "../Headers/GLShader.h"
-#include "Light.h"
 #include "Camera.h"
+#include "Light.h"
+
+class LightComp;
 
 enum SceneFlags{
     s_Grid = 1<<0,
@@ -94,6 +96,26 @@ class Scene{
         return this->Lights;
     }
 
+    void GetRemoveLight(LightComp* light ){
+        for (int i = 0; i < Lights.size(); i++)
+        {
+            if(Lights[i] == light){
+                Lights.erase(Lights.begin()+i);
+                break;
+            }
+        }
+    }
+
+    void GetRemoveCamera(CameraComp* cam ){
+        for (int i = 0; i < Cameras.size(); i++)
+        {
+            if(Cameras[i] == cam){
+                Cameras.erase(Cameras.begin()+i);
+                break;
+            }
+        }
+    }
+    
     void Scene::RemoveObjectScene(std::vector<Object*> objects);
 
     void AddLight(LightComp* light){
@@ -117,6 +139,8 @@ class Scene{
     void AddCamera(CameraComp* cam){
         Cameras.push_back(cam);
     }
+
+    void SwapItem(int i, int k);
 
     int VertexToRender(){
         return 0;

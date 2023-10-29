@@ -27,15 +27,13 @@
 #include "../Headers/RenderContext.h"
 #include "../Headers/RenderContextDisplay.h"
 #include "../Headers/DisplayerManager.h"
-#include "../data.h"
 #include "../Headers/Saver.h"
 #include "../Headers/Projet.h"
-
-
+#include "../data.h"
 
 static ApplicationState app; 
 Scene* scene;
-Projet projet;
+
 DisplayerManager displayerManager;
 GameView gameView;
 #include "TCHAR.h"
@@ -56,6 +54,7 @@ int main(int, char**){
     app = ApplicationState((int)(1920),(int)(1080));
     int err = app.SetupApplication();    
 
+    Projet& projet = *(new Projet());
     projet.AddScene(scene);
     projet.SetAppState(&app);
 
@@ -67,18 +66,12 @@ int main(int, char**){
     Mesh* m_Dragon = new Mesh(DragonVertices,sizeof(DragonVertices),DragonIndices,sizeof(DragonIndices),8,std::hash<std::string>()("DRAGON"));
     Mesh* m_blank = new Mesh(nullptr,0.0f,nullptr,0.0f,0,std::hash<std::string>()("BLANK"));
 
-    Object Cube(m_Cube,"cube",ClassicObject);
-    Object Dragon(m_Dragon,"dragon",ClassicObject);
-    Object Light(m_blank,"light",Light);
-    Object Camera(m_blank,"camera",Camera);
-    Object LineRenderer(m_blank,"LineRenderer",o_LineRenderer);
+    projet.AddPrimitive(m_blank);
+    projet.AddPrimitive(m_Cube);
+    projet.AddPrimitive(m_Dragon);
 
-    projet.AddObjs(&Cube);
-    projet.AddObjs(&Dragon);
-    projet.AddObjs(&Light);
-    projet.AddObjs(&Camera);
-    projet.AddObjs(&LineRenderer);
-
+    projet.SetUpDefaultObject();
+    projet.SetUpComponents();
 
     displayerManager.AddRenderContextDisplay(new RenderContextDisplay());
 
@@ -120,7 +113,6 @@ int main(int, char**){
     colors[ImGuiCol_FrameBgActive]          = ImVec4(0.45f, 0.45f, 0.45f, 0.54f);
     colors[ImGuiCol_TitleBg]                = ImVec4(0.16f, 0.16f, 0.16f, 1.00f);
     colors[ImGuiCol_TitleBgActive]          = ImVec4(0.12f, 0.12f, 0.12f, 1.00f);
-    colors[ImGuiCol_Header]                 = ImVec4(0.30f, 0.27f, 0.24f, 0.80f);
     colors[ImGuiCol_HeaderHovered]          = ImVec4(0.21f, 0.21f, 0.21f, 0.80f);
     colors[ImGuiCol_Tab]                    = ImVec4(0.00f, 0.00f, 0.00f, 0.97f);
     colors[ImGuiCol_TabHovered]             = ImVec4(0.28f, 0.28f, 0.28f, 1.00f);
@@ -128,6 +120,8 @@ int main(int, char**){
     colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.00f, 0.00f, 0.00f, 0.97f);
     colors[ImGuiCol_DockingPreview]         = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
     colors[ImGuiCol_TabActive]              = ImVec4(0.28f, 0.28f, 0.28f, 1.00f);
+    colors[ImGuiCol_Header]                 = ImVec4(0.21f, 0.20f, 0.21f, 0.80f);
+
 
 
 
@@ -185,10 +179,10 @@ int main(int, char**){
 
         displayerManager.RenderAllRenderWindows((int)(width/2.0),(int)(height/2.0),&projet);
         displayerManager.SceneEditor(&projet);
-        displayerManager.ObjectEditor(projet.GetScene());
+        displayerManager.ObjectEditor(&projet);
         displayerManager.RenderGameView(&gameView,&projet);
 
-        ImGui::ShowStyleEditor();
+       // ImGui::ShowStyleEditor();
         ImGui::ShowDemoWindow();
         
 

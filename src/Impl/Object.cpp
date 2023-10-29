@@ -21,25 +21,9 @@ void Object::SetUp(){
 void Object::CopyComponents(std::vector<Component*> copy){
         DeleteComponents();
 
-        for(Component* c: copy){
-                if(c->GetID() == c_Transform){
-                        Transform& tr = *dynamic_cast<Transform*>(c);
-                        Transform* nTr = new Transform(tr);
-                        components.push_back(nTr);
-                }
-                else if(c->GetID() == c_Light){
-                        LightComp& tr = *dynamic_cast<LightComp*>(c);
-                        LightComp* nTr = new LightComp(tr);
-                        components.push_back(nTr);
-                }
-                else if(c->GetID() == c_LineRenderer){
-                        LineRenderer& tr = *dynamic_cast<LineRenderer*>(c);
-                        LineRenderer* nTr = new LineRenderer(tr);
-                        components.push_back(nTr);
-                }
-                else{
-                       components.push_back( new Component(*c));
-                }
+        for (Component* c : copy) {
+                Component* newComponent = c->Clone(this);
+                components.push_back(newComponent);
         }
 }
 
@@ -64,6 +48,12 @@ void Object::AddComponents(){
 
 void Object::SetObjectType(ObjectType type){
         this->objectType = type;
+}
+
+void Object::DeleteComponent(int i){
+        Component* comp = components[i];
+        components.erase(components.begin()+i);
+        delete comp;
 }
 
 glm::mat4 Object::GetTransformation(){
