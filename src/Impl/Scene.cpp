@@ -3,16 +3,16 @@
 
 unsigned int squareIndices[] = {
     // Face avant
-    0, 2,1,
-    2, 0,3
+    0, 1,2,
+    2, 3,0
 };
 
 float SquareVertices[] = {
-    // Sommets du cube
-    -0.5f, -0.5f, 0.0f,  // Sommet 0
-     0.5f, -0.5f, 0.0f,  // Sommet 1
-      0.5f,  0.5f, 0.0f,  // Sommet 2
-    -0.5f,  0.5f, 0.0f, 
+
+    -1.0f, -1.0f, 0.0f,  // Sommet 0
+    1.0f, -1.0f, 0.0f,  // Sommet 1
+    1.0f,  1.0f, 0.0f,  // Sommet 2
+    -1.0f,  1.0f, 0.0f, 
 };
 
 float SquareUV[] = {
@@ -75,7 +75,7 @@ void Scene::SetUp(){
 
 void Scene::Render(glm::mat4* _MVP,int flags){
 
-
+  
         for (int i = 0; i < Objects.size(); i++)
         {
                 GLuint ID = Objects[i]->GetMesh()->GetVAO();
@@ -85,7 +85,7 @@ void Scene::Render(glm::mat4* _MVP,int flags){
                 if(flags & WireFrame){
                     glUseProgram(programShaderWireFrame);
                 } 
-
+              
                 glm::mat4 cameraView = _MVP[0];
                 cameraView *= Objects[i]->GetTransformation();
                 glm::mat4 matrices[3];
@@ -96,13 +96,15 @@ void Scene::Render(glm::mat4* _MVP,int flags){
                 glBufferData(GL_UNIFORM_BUFFER,sizeof(glm::mat4)*3,matrices,GL_STREAM_DRAW);
 
                 if(Lights.size() > 0){
-                    glUniform3fv(glGetUniformLocation(ID, "dir.direction"), 1, &Lights[0]->GetObj()->GetForward()[0]); 
-                    glUniform3fv(glGetUniformLocation(ID, "dir.color"), 1, Lights[0]->GetColor()); 
-                    glUniform1f(glGetUniformLocation(ID, "dir.intensity"),  Lights[0]->GetIntensity()); 
+                    glUniform3fv(glGetUniformLocation(programShader, "dir.direction"), 1, &Lights[0]->GetObj()->GetForward()[0]); 
+                    glUniform3fv(glGetUniformLocation(programShader, "dir.color"), 1, Lights[0]->GetColor()); 
+                    glUniform1f(glGetUniformLocation(programShader, "dir.intensity"),  Lights[0]->GetIntensity()); 
                 }
                 else{
-                    glUniform1f(glGetUniformLocation(ID, "dir.intensity"),  0.0f);    
+                    glUniform1f(glGetUniformLocation(programShader, "dir.intensity"),  0.0f);    
                 }
+
+               
 
                 glDrawElements(GL_TRIANGLES,Objects[i]->GetMesh()->TriangleToDraw(),GL_UNSIGNED_INT,(void*)0);
         }
@@ -110,22 +112,24 @@ void Scene::Render(glm::mat4* _MVP,int flags){
         if((flags & s_Grid_None))
             return;
 
+
         glBindVertexArray(VAOS);  
         glUseProgram(programShaderGrid);
         glm::mat4 cameraView =  _MVP[0];
         cameraView *= glm::scale(glm::mat4(1.0f),glm::vec3({50,1,50}));
         cameraView *= glm::rotate(glm::mat4(1.0f), 90 * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0, 0.0));
         cameraView *= glm::translate(glm::mat4(1.0f),glm::vec3({0.,0.,0.0}));
-
-        glm::mat4 matrices[2];
+        static float t =0;
+        t+=0.0005f;
+        glm::mat4 matrices[3];
         matrices[0] =  cameraView;
         matrices[1] =  _MVP[1];
+        matrices[2] =  glm::mat4(1.0);
         glBindBuffer(GL_UNIFORM_BUFFER,UBO);
-        glBufferData(GL_UNIFORM_BUFFER,sizeof(glm::mat4)*2,matrices,GL_STREAM_DRAW);
-
-        glDisable(GL_CULL_FACE);  
+        glBufferData(GL_UNIFORM_BUFFER,sizeof(glm::mat4)*3,matrices,GL_STREAM_DRAW);
+        glUniform1f(glGetUniformLocation(programShaderGrid, "time_"), t);    
+     
         glDrawElements(GL_TRIANGLES,  sizeof(squareIndices)/sizeof(unsigned int),GL_UNSIGNED_INT,(void*)0);
-        glEnable(GL_CULL_FACE);  
 }
 
 
