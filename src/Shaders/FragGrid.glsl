@@ -49,7 +49,7 @@ void main()
 	
 	float t = -origin.z / (end.z - origin.z);
 	vec3 impact =  origin + t*(end-origin);
-
+	float dist = mix(1.0,0.0,t*5.0);
 	depth = computeDepth(impact);
 	vec2 uv = mod(impact.xy,1.0);
 	vec3 color = vec3(0.5,0.5,0.5);
@@ -59,12 +59,12 @@ void main()
 	}
 
 	if(uv.y <= 0.0+size || uv.y >= 1.0-size ){
-		color = vec3(0.24,0.18,0.78);
+		color = vec3(0.24,0.18,0.88);
 	}
 
     float xCol = grid(uv.x);
     float yCol = grid(uv.y);
     float col = max(xCol, yCol)*(1.0);
-    FragColor = vec4(col.x*color,col.x);
+    FragColor = vec4(col.x*(color*dist.x),col.x*(dist.x));
 	gl_FragDepth = depth;
 }
