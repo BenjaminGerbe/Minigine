@@ -34,7 +34,7 @@ class Projet{
     }
 
     Object* GetCube(){
-        return objects[0];
+        return objects[1];
     }
 
     Object* GetDragon(){
@@ -54,7 +54,7 @@ class Projet{
     }
 
     Object* GetEmpty(){
-        return objects[5];
+        return objects[0];
     }
 
     Scene* GetScene(){

@@ -12,6 +12,12 @@ void Saver::SaveScene(Scene* scene){
         yamlFile[id]["ObjectName"] = name;
         yamlFile[id]["ObjectType"] = (int)obj->GetObjectType();
         yamlFile[id]["MeshFileID"] = obj->GetMesh()->GetID();
+        
+        yamlFile[id]["Color"].push_back(obj->GetColor().x);
+        yamlFile[id]["Color"].push_back(obj->GetColor().y);
+        yamlFile[id]["Color"].push_back(obj->GetColor().z);
+        
+        
         yamlFile[id]["ComponentSize"] = obj->GetComponents().size();
         for (int i = 0; i < obj->GetComponents().size(); i++)
         {
@@ -66,6 +72,13 @@ void Saver::LoadScene(Projet* projet){
         Object* tempObj = new Object(mesh,name,Loader);
         int componentSize =  yamlFile[id]["ComponentSize"].as<int>();
 
+        ImVec4 col = ImVec4(1.0f,1.0f,1.0f,1.0f);
+        col.x = yamlFile[id]["Color"][0].as<float>();
+        col.y = yamlFile[id]["Color"][1].as<float>();
+        col.z = yamlFile[id]["Color"][2].as<float>();
+
+        tempObj->SetColor(col);
+        
         for (int j = 0; j < componentSize; j++)
         {
             ComponentID ID = (ComponentID)yamlFile[id][j]["ID"].as<int>();

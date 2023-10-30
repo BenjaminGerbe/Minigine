@@ -54,7 +54,37 @@ class DisplayerManager{
         openSceneViewOption = true;
         rcGameView = new RenderContextGame();
     }
+
+    DisplayerManager(DisplayerManager& copy){
+        selectedSceneView = copy.selectedObjects;
+        memoryUsage = copy.memoryUsage;
+        fpsCounter = copy.fpsCounter;
+        openMachineState = copy.openMachineState;
+        openObjectView = copy.openMachineState;
+        openSceneEditor = copy.openSceneEditor;
+        openSceneViewOption = copy.openSceneEditor;
+        rcGameView = copy.rcGameView; 
+    }
+
+    DisplayerManager operator=(DisplayerManager& copy){
+        selectedSceneView = copy.selectedObjects;
+        memoryUsage = copy.memoryUsage;
+        fpsCounter = copy.fpsCounter;
+        openMachineState = copy.openMachineState;
+        openObjectView = copy.openMachineState;
+        openSceneEditor = copy.openSceneEditor;
+        openSceneViewOption = copy.openSceneEditor;
+        rcGameView = copy.rcGameView; 
+
+        return *this;
+    }
     
+    ~DisplayerManager(){
+        for (size_t i = 0; i < RenderContextDisplays.size(); i++) {
+            delete RenderContextDisplays[i];
+        }
+    }
+
     void ObjectEditor(Projet* projet);
     void AddRenderContextDisplay(RenderContextDisplay* renderWindow);
     void SceneViewParameter();
@@ -64,13 +94,5 @@ class DisplayerManager{
     void RenderAllRenderWindows(int width,int height,Projet* projet);
     void RenderSceneViewOption();
     void RenderGameView(GameView* GameView,Projet* projet);
-
-    ~DisplayerManager(){
-        for (size_t i = 0; i < RenderContextDisplays.size(); i++) {
-            delete RenderContextDisplays[i];
-        }
-    }
-
-  
 
 };

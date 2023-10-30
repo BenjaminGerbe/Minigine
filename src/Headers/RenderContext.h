@@ -1,9 +1,7 @@
-// this class Specify a render context which a specific Scene can be Render, 
-// we can specify camera, and some polygone render specic ou things like that, 
-// /!\ so don't specify glDrawElements or things like that ine the scene, it must be done here
+// RenderContext is in charge to create Texture and FBO, it will bind the correct FBO and call glPolyMode to have
+// wireframe or shaded for exemple
 
 #pragma once
-// glm include
 #include <vec3.hpp> // glm::vec3
 #include <vec4.hpp> // glm::vec4
 #include <mat4x4.hpp> // glm::mat4
@@ -14,7 +12,6 @@
 #include <cassert>
 #include <string>
 #include <iostream>
-
 #include "../Headers/Scene.h"
 
 enum RenderType{
@@ -25,15 +22,13 @@ enum RenderType{
 class RenderContext{
 
     protected: 
-
-    unsigned int FBO;
-    unsigned int RBO;
-    unsigned int Tex;
-    float height;
-    float width;
+    GLuint FBO;
+    GLuint RBO;
+    GLuint Tex;
+    int height;
+    int width;
     char* label;
     glm::vec3 cameraPosition;
-
 
     public :
     RenderContext() = default;
@@ -71,32 +66,22 @@ class RenderContext{
     virtual int GetWidth();
     virtual int GetHeight();
     virtual unsigned int RenderScene(glm::mat4* MVP,Scene* scene);
-
 };
 
 class RenderContextNOFramed : public RenderContext{
     public :
+
     virtual void SetUp(int width,int height);
     virtual unsigned int RenderScene(glm::mat4* MVP,Scene* scene);
 
-    RenderContextNOFramed() = default;
-    RenderContextNOFramed(const RenderContextNOFramed& render){
-        FBO = render.FBO;
-        Tex = render.Tex;
-        height = render.height;
-        width = render.width;
-        label = render.label;
-        cameraPosition = render.cameraPosition;
+    RenderContextNOFramed():RenderContext(){
+    };
+
+    RenderContextNOFramed(const RenderContextNOFramed& render):RenderContext(render){
     }
 
     RenderContextNOFramed operator=(const RenderContextNOFramed& render){
-        FBO = render.FBO;
-        Tex = render.Tex;
-        height = render.height;
-        width = render.width;
-        label = render.label;
-        cameraPosition = render.cameraPosition;
-
+        RenderContext::operator=(render);
         return *this;
     }
 
@@ -106,24 +91,14 @@ class RenderContextShaded : public RenderContext{
     public :
     virtual unsigned int RenderScene(glm::mat4* MVP,Scene* scene);
 
-    RenderContextShaded() = default;
-    RenderContextShaded(const RenderContextShaded& render){
-        FBO = render.FBO;
-        Tex = render.Tex;
-        height = render.height;
-        width = render.width;
-        label = render.label;
-        cameraPosition = render.cameraPosition;
+    RenderContextShaded():RenderContext(){
+
+    };
+    RenderContextShaded(const RenderContextShaded& render):RenderContext(render){
     }
 
     RenderContextShaded operator=(const RenderContextShaded& render){
-        FBO = render.FBO;
-        Tex = render.Tex;
-        height = render.height;
-        width = render.width;
-        label = render.label;
-        cameraPosition = render.cameraPosition;
-
+        RenderContext::operator=(render);
         return *this;
     }
 };
@@ -132,24 +107,14 @@ class RenderContextGame: public RenderContext{
     public :
     virtual unsigned int RenderScene(glm::mat4* MVP,Scene* scene);
 
-    RenderContextGame() = default;
-    RenderContextGame(const RenderContextGame& render){
-        FBO = render.FBO;
-        Tex = render.Tex;
-        height = render.height;
-        width = render.width;
-        label = render.label;
-        cameraPosition = render.cameraPosition;
+    RenderContextGame():RenderContext(){
+
+    };
+    RenderContextGame(const RenderContextGame& render):RenderContext(render){
     }
 
     RenderContextGame operator=(const RenderContextGame& render){
-        FBO = render.FBO;
-        Tex = render.Tex;
-        height = render.height;
-        width = render.width;
-        label = render.label;
-        cameraPosition = render.cameraPosition;
-
+        RenderContext::operator=(render);
         return *this;
     }
 };
@@ -159,24 +124,15 @@ class RenderContextWireFrame: public RenderContext{
     public :
     virtual unsigned int RenderScene(glm::mat4* MVP,Scene* scene);
 
-    RenderContextWireFrame() = default;
-    RenderContextWireFrame(const RenderContextWireFrame& render){
-        FBO = render.FBO;
-        Tex = render.Tex;
-        height = render.height;
-        width = render.width;
-        label = render.label;
-        cameraPosition = render.cameraPosition;
+    RenderContextWireFrame():RenderContext(){
+
+    };
+    RenderContextWireFrame(const RenderContextWireFrame& render):RenderContext(render){
+        
     }
 
     RenderContextWireFrame operator=(const RenderContextWireFrame& render){
-        FBO = render.FBO;
-        Tex = render.Tex;
-        height = render.height;
-        width = render.width;
-        label = render.label;
-        cameraPosition = render.cameraPosition;
-
+        RenderContext::operator=(render);
         return *this;
     }
     
@@ -187,24 +143,13 @@ class RenderContextShadedWireFrame : public RenderContext{
 
     unsigned int RenderScene(glm::mat4* MVP,Scene* scene);
 
-    RenderContextShadedWireFrame() = default;
-    RenderContextShadedWireFrame(const RenderContextShadedWireFrame& render){
-        FBO = render.FBO;
-        Tex = render.Tex;
-        height = render.height;
-        width = render.width;
-        label = render.label;
-        cameraPosition = render.cameraPosition;
+    RenderContextShadedWireFrame():RenderContext(){
+    };
+    RenderContextShadedWireFrame(const RenderContextShadedWireFrame& render):RenderContext(render){
     }
 
     RenderContextShadedWireFrame operator=(const RenderContextShadedWireFrame& render){
-        FBO = render.FBO;
-        Tex = render.Tex;
-        height = render.height;
-        width = render.width;
-        label = render.label;
-        cameraPosition = render.cameraPosition;
-
+        RenderContext::operator=(render);
         return *this;
     }
 };

@@ -1,11 +1,11 @@
+// RenderContextDisplay is like a sub widows that is call in displayerManager
+// it create the im gui widows with with correct fbo, it render the scene...
+
 #pragma once
 #include<vector>
-
-// imgui include
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-
 #include "RenderContext.h"
 
 class Scene;
@@ -26,8 +26,8 @@ class RenderContextDisplay{
     float perspectiveFov;
     float nearClip;
     float farClip;
-    float height;
-    float width;
+    int height;
+    int width;
 
     public :
     RenderContextDisplay(){
@@ -48,119 +48,41 @@ class RenderContextDisplay{
         farClip = 1000.0f;
     }
 
-    
-
     RenderContextDisplay(const RenderContextDisplay& copy){
         this->p_open = copy.p_open;
         this->idx_renderContext = copy.idx_renderContext;
         this->renderContextes = std::vector<RenderContext*>(copy.renderContextes);
+        this->position = copy.position;
+        this->padding = copy.position;
+        this->rotation = copy.rotation;
+        this->p_open = copy.p_open;
+        this->renderType = copy.renderType;
+        this->perspectiveFov = copy.perspectiveFov;
+        this->nearClip = copy.nearClip;
+        this->farClip = copy.farClip;
+        this->OrthographiqueSize = copy.OrthographiqueSize;
 
-        MVP = new glm::mat4[2];
-        MVP[0] = copy.MVP[0];
-        MVP[1] =  copy.MVP[1];
-    }
-
-    void SetRenderType(RenderType type){
-        renderType = type;
-    }
-
-    float GetNearClip(){
-        return this->nearClip;
-    }
-
-    void SetNearClip(float n){
-        this->nearClip = n;
-    }
-
-    float GetFarClip(){
-        return this->farClip;
-    }
-
-    void SetFarClip(float n){
-        this->farClip = n;
-    }
-
-    RenderType GetRenderType(){
-        return this->renderType;
-    }
-
-    void SetOrthoSize(float s){
-        this->OrthographiqueSize = s;
-    }
-
-    float GetOrthoSize(){
-        return this->OrthographiqueSize;
-    }
-
-    
-    void SetFov(float s){
-        this->perspectiveFov = s;
-    }
-
-    float GetFov(){
-        return this->perspectiveFov;
-    }
-
-    glm::mat4* GetTransform(){
-
-        
-        MVP[0] =  glm::translate(glm::mat4(1.f), -position);
-        MVP[0] *= glm::rotate(glm::mat4(1.0f), rotation.x * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        MVP[0] *= glm::rotate(glm::mat4(1.0f), rotation.y * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        MVP[0] *= glm::rotate(glm::mat4(1.0f), rotation.z * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        MVP[0] *= glm::translate(glm::mat4(1.f), -padding);
-
-        return MVP;
-    }
-
-    std::vector<RenderContext*> getRenderContextes(){
-        return this->renderContextes;
-    }
-
-    glm::vec3 GetRight(){
-        glm::vec4 right = glm::vec4({1.0f,0.0f,0.0f,0.0f});
- 
-        return glm::vec3(right*MVP[0]);
-    }
-
-    glm::vec3 GetForward(){
-        glm::vec4 forward = glm::vec4({0.0f,0.0f,1.0f,0.0f});
- 
-        return glm::vec3(forward*MVP[0]);
-    }
-
-    glm::vec3 GetPosition(){
-        return position;
-    }
-
-    glm::vec3 GetPadding(){
-        return padding;
-    }
-
-    glm::vec3 GetRotation(){
-        return rotation;
-    }
-
-    void SetPosition(glm::vec3 pos){
-        position = pos;
-    }
-
-     void SetPadding(glm::vec3 pad){
-        padding = pad;
-    }
-
-    void SetRotation(glm::vec3 rot){
-       rotation = rot;
+        this->MVP[0] = copy.MVP[0];
+        this->MVP[1] = copy.MVP[1];
     }
 
     RenderContextDisplay operator=(const RenderContextDisplay& copy){
         this->p_open = copy.p_open;
         this->idx_renderContext = copy.idx_renderContext;
         this->renderContextes = std::vector<RenderContext*>(copy.renderContextes);
+        this->position = copy.position;
+        this->padding = copy.position;
+        this->rotation = copy.rotation;
+        this->p_open = copy.p_open;
+        this->renderType = copy.renderType;
+        this->perspectiveFov = copy.perspectiveFov;
+        this->nearClip = copy.nearClip;
+        this->farClip = copy.farClip;
+        this->OrthographiqueSize = copy.OrthographiqueSize;
 
-        MVP = new glm::mat4[2];
-        MVP[0] = copy.MVP[0];
-        MVP[1] =  copy.MVP[1];
+        this->MVP[0] = copy.MVP[0];
+        this->MVP[1] = copy.MVP[1];
+
         return *this;
     }
 
@@ -172,14 +94,29 @@ class RenderContextDisplay{
         delete[] MVP;
     }
 
-    bool GetOpen(){
-        return this->p_open;
-    } 
+    void SetRenderType(RenderType type){ renderType = type; }
+    void SetFov(float s){ this->perspectiveFov = s; }
+    void SetNearClip(float n){ this->nearClip = n;}
+    void SetFarClip(float n){ this->farClip = n;}
+    void SetOrthoSize(float s){ this->OrthographiqueSize = s; }
+    void SetPosition(glm::vec3 pos){ position = pos;}
+    void SetPadding(glm::vec3 pad){ padding = pad;}
+    void SetRotation(glm::vec3 rot){ rotation = rot;}
 
-    void AddRender(RenderContext* render){
-        renderContextes.push_back(render);
-        item_current = renderContextes[0]->GetLabel();
-    }
+    std::vector<RenderContext*> GetRenderContextes(){  return this->renderContextes;}
+    glm::vec3 GetRight(){ glm::vec4 right = glm::vec4({1.0f,0.0f,0.0f,0.0f}); return glm::vec3(right*MVP[0]); }
+    glm::vec3 GetForward(){  glm::vec4 forward = glm::vec4({0.0f,0.0f,1.0f,0.0f}); return glm::vec3(forward*MVP[0]); }
+    glm::vec3 GetPosition(){ return position;}
+    glm::vec3 GetPadding(){  return padding;}
+    glm::vec3 GetRotation(){ return rotation;}
+    RenderType GetRenderType(){ return this->renderType; }
+    float GetNearClip(){ return this->nearClip;}
+    float GetFarClip(){ return this->farClip; }
+    float GetOrthoSize(){ return this->OrthographiqueSize; }
+    bool GetOpen(){ return this->p_open;} 
+    float GetFov(){ return this->perspectiveFov; }
 
     bool DisplayRenderWindow(int width,int height,Scene* scene,char* label);
+    void AddRender(RenderContext* render);
+    glm::mat4* GetTransform();
 };

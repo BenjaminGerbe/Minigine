@@ -6,9 +6,7 @@ bool isToDelete(RenderContextDisplay *element){
 
 void DisplayerManager::MachineState(Projet* projet){
     if(!openMachineState) return;
-    ImGui::Begin("Profiler",&openMachineState);
-
-    
+        ImGui::Begin("Profiler",&openMachineState);
         MEMORYSTATUSEX memInfo;
         memInfo.dwLength = sizeof(MEMORYSTATUSEX);
         GlobalMemoryStatusEx(&memInfo);
@@ -49,8 +47,6 @@ void DisplayerManager::MachineState(Projet* projet){
 
         char bufferFps[64];
         ret = snprintf(bufferFps, sizeof (bufferFps), "%f",  fpsCounter[fpsCounter.size()-1]);
-
-       
         ImGui::PlotLines("Fps Counter",&fpsCounter[0],25,0,bufferFps,0.0f,120.0f,ImVec2(0,65.0f));
         ImGui::PopStyleColor(2);
 
@@ -60,18 +56,18 @@ void DisplayerManager::MachineState(Projet* projet){
 void DisplayerManager::RenderGameView(GameView* GameView,Projet* projet){
     ImGui::Begin("GameView");
     Scene* scene = projet->GetScene();
+    ApplicationState* appState = projet->getAppState();
     if(scene->GetCameras().size() > 0){
         RenderContext* renderContext = rcGameView;
         
         ImVec2 size = ImGui::GetWindowSize();
 
-        float width =  projet->getAppState()->GetWidth();
-        float height =  projet->getAppState()->GetHeight();
+        int width =  appState->GetWidth();
+        int height =  appState->GetHeight();
 
         if(width != size.x || height != size.y-65){
-            projet->getAppState()->SetWidth(size.x);
-            projet->getAppState()->SetHeight(size.y-65);
-
+            appState->SetWidth(size.x);
+            appState->SetHeight(size.y-65);
             renderContext->UpdateRender(width,height);
         }
       
@@ -102,8 +98,6 @@ void DisplayerManager::ObjectEditor(Projet* projet){
         return;
 
     Scene* scene = projet->GetScene();
-   
-
     ImGui::Begin("Object View",&openObjectView);
 
         if(selectedObjects >= 0 && scene->GetObjects().size() > 0 && selectedObjects < scene->GetObjects().size() ){
@@ -118,8 +112,17 @@ void DisplayerManager::ObjectEditor(Projet* projet){
                 obj->SetName(std::string(buff));
             }
             ImGui::PopStyleVar(1);
+            float color[4];
+            color[0] = obj->GetColor().x;
+            color[1] = obj->GetColor().y;
+            color[2] = obj->GetColor().z;
+            color[3] = obj->GetColor().w;
+            unsigned int flags;
+            ImGui::SameLine();
+            ImGui::ColorEdit4("MyColor##3", (float*)&color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel );
+            obj->SetColor(ImVec4(color[0],color[1],color[2],color[3]));
             ImGui::SetCursorPosY(ImGui::GetCursorPosY()+10.0f);    
-        
+
             auto col = IM_COL32(54, 54, 54, 204);
             for (size_t i = 0; i < obj->GetComponents().size(); i++)
             {
@@ -190,35 +193,16 @@ void DisplayerManager::SceneEditor(Projet* projet){
     ImGuiIO& io = ImGui::GetIO();
     int sizeY = ImGui::GetWindowSize().y;
 
-    if (ImGui::BeginCombo("Add Object", "", ImGuiComboFlags_NoPreview)) 
-    {
-        for (int n = 0; n < projet->GetObjs().size(); n++)
-        {
-            char nbuffer[32];
-            strcpy(nbuffer,objets[n]->GetStrName().c_str());
-           
-            if (ImGui::Selectable(nbuffer)){
-                
-                Object* obj = new Object(objets[n]->GetMesh(),objets[n]->GetStrName(),objets[n]->GetObjectType());
-                projet->GetScene()->AddObjectScene(obj);
-                obj->SetProjet(projet);
-                obj->SetUp();
-                
-            }
-
-
-        }
-        ImGui::EndCombo();
+    if(ImGui::IsKeyDown(ImGuiKey_Delete) && selectedObjects >= 0 && selectedObjects < scene->GetObjects().size()){
+        scene->RemoveObjectScene(selectedObjects);
+        if(selectedObjects < scene->GetObjects().size()-1){
+            selectedObjects = scene->GetObjects().size()-1;
+        }    
+        else{
+            selectedObjects = -1;
+        }    
+    
     }
-
-    // ImGui::SameLine();
-    // if(ImGui::Button("-") && selectedObjects >= 0 && scene->GetObjects().size() > 0){
-    //     scene->RemoveObjectScene(selectedObjects);
-
-    //     if(selectedObjects > scene->GetObjects().size()-1){
-    //         selectedObjects = scene->GetObjects().size()-1;
-    //     }        
-    // }
 
     static bool isDrag  = false;
     static int dragItem = -1;
@@ -254,18 +238,7 @@ void DisplayerManager::SceneEditor(Projet* projet){
 
             const bool is_selected = (item_current_idx == i);
 
-            if(scene->GetObjects()[i]->GetObjectType() == Light){
-                ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.91f,0.96f,0.25f,1.0f));
-            }
-            else if(scene->GetObjects()[i]->GetObjectType() == Camera){
-                ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.18f,0.39f,0.96f,1.0f));
-            }
-            else if(scene->GetObjects()[i]->GetObjectType() == o_LineRenderer){
-                ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.96f,0.39f,0.18f,1.0f));
-            }
-            else{
-                ImGui::PushStyleColor(ImGuiCol_Text,ImVec4(0.85f,0.85f,0.85f,1.0f));
-            }
+            ImGui::PushStyleColor(ImGuiCol_Text,scene->GetObjects()[i]->GetColor());
 
             if(hoverItem == i){
                 col = IM_COL32(54, 54, 54, 204);
@@ -343,16 +316,16 @@ void DisplayerManager::AddRenderContextDisplay(RenderContextDisplay* renderWindo
         RenderContextDisplays.push_back(renderWindow);
 
         renderWindow->AddRender(new RenderContextShaded());
-        renderWindow->getRenderContextes()[0]->SetLabel("Shaded");
+        renderWindow->GetRenderContextes()[0]->SetLabel("Shaded");
         renderWindow->AddRender(new RenderContextShadedWireFrame());
-        renderWindow->getRenderContextes()[1]->SetLabel("ShadedWireFrame");
+        renderWindow->GetRenderContextes()[1]->SetLabel("ShadedWireFrame");
         renderWindow->AddRender(new RenderContextWireFrame());
-        renderWindow->getRenderContextes()[2]->SetLabel("WireFrame");
+        renderWindow->GetRenderContextes()[2]->SetLabel("WireFrame");
 
         std::cout << " je t'en suplie change ca " << std::endl;
-        for (int i = 0; i < renderWindow->getRenderContextes().size(); i++)
+        for (int i = 0; i < renderWindow->GetRenderContextes().size(); i++)
         {
-            renderWindow->getRenderContextes()[i]->SetUp(1920,1080);
+            renderWindow->GetRenderContextes()[i]->SetUp(1920,1080);
         }
 };
 
@@ -534,13 +507,20 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
 
             if (ImGui::BeginMenu("Objects"))
             {
-                if (ImGui::MenuItem("Create Empty Object",NULL)) {
-                    Object* obj = new Object(*projet->GetEmpty());
-                    obj->SetName("Empty Object");
-                    projet->GetScene()->AddObjectScene(obj);
-                    obj->SetProjet(projet);
-                    obj->SetUp();
+
+                for (int n = 0; n < projet->GetObjs().size(); n++)
+                {
+                    char nbuffer[32];
+                    strcpy(nbuffer,objects[n]->GetStrName().c_str());
+
+                    if (ImGui::MenuItem(nbuffer,NULL)) {
+                        Object* obj = new Object(*objects[n]);
+                        projet->GetScene()->AddObjectScene(obj);
+                        obj->SetProjet(projet);
+                        obj->SetUp();
+                    }
                 }
+
                 ImGui::EndMenu();
             }
             ImGui::EndMainMenuBar();

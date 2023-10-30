@@ -124,8 +124,6 @@ int main(int, char**){
     colors[ImGuiCol_Header]                 = ImVec4(0.21f, 0.20f, 0.21f, 0.80f);
 
 
-
-
     ImGui::GetStyle().WindowRounding = 9.0f;
     ImGui::GetStyle().FramePadding = ImVec2(11.0f,11.0f);
     ImGui::GetStyle().WindowBorderSize = 0.0f;

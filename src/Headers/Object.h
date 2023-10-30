@@ -10,6 +10,11 @@
 #include <string>  
 #include <vector>
 
+// imgui include
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 class Component;
 class Scene;
 class Projet;
@@ -35,6 +40,7 @@ class Object{
     std::string name;
     ObjectType objectType;
     std::vector<Component*> components;
+    ImVec4 color;
 
     public:
 
@@ -56,6 +62,7 @@ class Object{
         rotation = glm::vec3(copy.rotation);
         position = glm::vec3(copy.position);
         scale = glm::vec3(copy.scale);
+        this->color = copy.color;
         this->programShader = copy.programShader;
 
         CopyComponents(copy.components);
@@ -66,7 +73,7 @@ class Object{
         this->name = copy.name;
         this->objectType = copy.objectType;
         this->programShader = copy.programShader;
-
+        this->color = copy.color;
         CopyComponents(copy.components);
     }
 
@@ -76,6 +83,14 @@ class Object{
 
     Projet* GetProjet(){
         return projet;
+    }
+
+    void SetColor(ImVec4 color){
+        this->color = color;
+    }
+
+    ImVec4 GetColor(){
+        return this->color;
     }
 
     void DeleteComponent(int i);

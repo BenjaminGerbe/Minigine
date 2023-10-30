@@ -1,10 +1,7 @@
 #include "../Headers/RenderContext.h"
 
-
 // Shaded ============
 unsigned int RenderContextShaded::RenderScene(glm::mat4* MVP,Scene* scene){
-    
- 
     glBindFramebuffer(GL_FRAMEBUFFER,FBO);
     glViewport(0,0,(int)width,(int)height);
     glClearColor(0.23f,0.23f,0.23f,1.0f);
@@ -17,8 +14,6 @@ unsigned int RenderContextShaded::RenderScene(glm::mat4* MVP,Scene* scene){
 };
 
 unsigned int RenderContextGame::RenderScene(glm::mat4* MVP,Scene* scene){
-    
- 
     glBindFramebuffer(GL_FRAMEBUFFER,FBO);
     glViewport(0,0,(int)width,(int)height);
     glClearColor(0.23f,0.23f,0.23f,1.0f);
@@ -30,7 +25,7 @@ unsigned int RenderContextGame::RenderScene(glm::mat4* MVP,Scene* scene){
     return Tex;
 };
 
-// WireFrame
+// WireFrame ================
 unsigned int RenderContextWireFrame::RenderScene(glm::mat4* MVP,Scene* scene){
     
     glBindFramebuffer(GL_FRAMEBUFFER,FBO);
@@ -69,7 +64,7 @@ unsigned int RenderContextShadedWireFrame::RenderScene(glm::mat4* MVP,Scene* sce
 };
 
 
-// NO frame
+// NO frame =======================
 unsigned int RenderContextNOFramed::RenderScene(glm::mat4* MVP, Scene* scene){
 
     glBindFramebuffer(GL_FRAMEBUFFER,0);
@@ -86,8 +81,6 @@ unsigned int RenderContextNOFramed::RenderScene(glm::mat4* MVP, Scene* scene){
 void RenderContextNOFramed::SetUp(int width,int height ){
     this->width = width;
     this->height = height;
-
- 
 };
 
 // RenderContext =========
@@ -122,8 +115,8 @@ void RenderContext::SetUp(int width,int height){
 }
     
 void RenderContext::UpdateRender(int width,int height){
-   this->width = width;
-   this->height = height;
+    this->width = width;
+    this->height = height;
 
     glDeleteTextures(1,&Tex);
     glGenTextures(1,&Tex);
@@ -142,11 +135,7 @@ void RenderContext::UpdateRender(int width,int height){
     glBindRenderbuffer(GL_RENDERBUFFER,RBO);
     glRenderbufferStorage(GL_RENDERBUFFER,GL_DEPTH24_STENCIL8,width,height);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_STENCIL_ATTACHMENT,GL_RENDERBUFFER,RBO);
-
-    
     glBindFramebuffer(GL_FRAMEBUFFER,0);
-
-   // MVP[1] = glm::perspectiveFov(glm::radians(45.0f), (float)width, (float)height, 0.5f, 1000.0f);
 }
 
 int RenderContext::GetHeight(){

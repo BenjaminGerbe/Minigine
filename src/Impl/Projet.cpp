@@ -11,17 +11,18 @@ void Projet::SetUpComponents(){
 }
 
 void Projet::SetUpDefaultObject(){
+    Object* Empty = new Object(defaultPrimitive[0],"Empty",ClassicObject);
     Object* Cube = new Object(defaultPrimitive[1],"cube",ClassicObject);
     Object* Dragon = new Object(defaultPrimitive[2],"dragon",ClassicObject);
     Object* oLight = new Object(defaultPrimitive[0],"light",Light);
     Object* oCamera = new Object(defaultPrimitive[0],"camera",Camera);
     Object* LineRenderer = new Object(defaultPrimitive[0],"LineRenderer",o_LineRenderer);
-    Object* Empty = new Object(defaultPrimitive[0],"Empty",ClassicObject);
 
+    objects.push_back(Empty);
     objects.push_back(Cube);
     objects.push_back(Dragon);
     objects.push_back(oLight);
     objects.push_back(oCamera);
     objects.push_back(LineRenderer);
-    objects.push_back(Empty);
+
 }

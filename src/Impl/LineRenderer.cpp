@@ -247,7 +247,8 @@ void LineRenderer::CreateLine(){
         glm::vec3 a = lstObject[i]->GetPosition();
         glm::vec3 b = lstObject[(i+1)%lstObject.size()]->GetPosition();
 
-        Object* A = new Object(projet->GetObjs()[0]->GetMesh(),"Line",projet->GetObjs()[0]->GetObjectType());
+        Object* A = new Object(*projet->GetCube());
+        A->SetName("Line");
         glm::vec3 vec = a-b;
         float normal = glm::length(vec);
         vec = glm::normalize(vec);
@@ -295,7 +296,8 @@ void LineRenderer::Update(){
     ImGuiIO& io = ImGui::GetIO();
 
     if(ImGui::IsMouseClicked(0) && projet->getAppState()->GetGameViewHovered()){
-        targetMouse = new Object(projet->GetObjs()[0]->GetMesh(),"Point",projet->GetObjs()[0]->GetObjectType());
+        targetMouse = new Object(*projet->GetCube());
+        targetMouse->SetName("Point");
         projet->GetScene()->AddObjectScene(targetMouse);
         targetMouse->SetPosition(glm::vec3({pos.x,pos.y,pos.z}));
         targetMouse->SetScale(glm::vec3({.2f,.2f,.2f}));

@@ -28,6 +28,7 @@ void Object::CopyComponents(std::vector<Component*> copy){
 }
 
 void Object::AddComponents(){
+        this->color = ImVec4(0.85f,0.85f,0.85f,1.0f);
         if(objectType == Loader)
                 return;
 
@@ -35,14 +36,17 @@ void Object::AddComponents(){
 
         if(objectType == Light){
                 this->components.push_back(new LightComp(this));
+                this->color = ImVec4(0.91f,0.96f,0.25f,1.0f);
         }
 
         if(objectType == Camera){
                this->components.push_back(new CameraComp(this));
+               this->color = ImVec4(0.18f,0.39f,0.96f,1.0f);
         }
 
         if(objectType == o_LineRenderer){
                 this->components.push_back(new LineRenderer(this));
+                this->color = ImVec4(0.96f,0.39f,0.18f,1.0f);
         }
 }
 
