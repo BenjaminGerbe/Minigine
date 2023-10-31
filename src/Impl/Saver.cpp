@@ -69,7 +69,7 @@ void Saver::LoadScene(Projet* projet){
         Mesh* mesh = FindMesh(projet,fileNameID);
            
         ObjectType type =  (ObjectType)yamlFile[id]["ObjectType"].as<int>(); 
-        Object* tempObj = new Object(mesh,name,Loader);
+        Object* tempObj = new Object(mesh,name,o_Loader);
         int componentSize =  yamlFile[id]["ComponentSize"].as<int>();
 
         ImVec4 col = ImVec4(1.0f,1.0f,1.0f,1.0f);

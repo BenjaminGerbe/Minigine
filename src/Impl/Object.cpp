@@ -29,17 +29,17 @@ void Object::CopyComponents(std::vector<Component*> copy){
 
 void Object::AddComponents(){
         this->color = ImVec4(0.85f,0.85f,0.85f,1.0f);
-        if(objectType == Loader)
+        if(objectType == o_Loader)
                 return;
 
         this->components.push_back(new Transform(this));
 
-        if(objectType == Light){
+        if(objectType == o_Light){
                 this->components.push_back(new LightComp(this));
                 this->color = ImVec4(0.91f,0.96f,0.25f,1.0f);
         }
 
-        if(objectType == Camera){
+        if(objectType == o_Camera){
                this->components.push_back(new CameraComp(this));
                this->color = ImVec4(0.18f,0.39f,0.96f,1.0f);
         }
@@ -63,7 +63,6 @@ void Object::DeleteComponent(int i){
 glm::mat4 Object::GetTransformation(){
         
         transformation = glm::mat4(1.0f);
-        
         transformation *= glm::translate(glm::mat4(1.0f),position);
         transformation *= glm::rotate(glm::mat4(1.0f), rotation.x * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         transformation *= glm::rotate(glm::mat4(1.0f), rotation.y * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 1.0f, 0.0f));

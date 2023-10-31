@@ -54,7 +54,7 @@ class Scene{
         std::vector<Object*> tmp;
         for (int i = 0; i < scene.Objects.size(); i++)
         {
-            tmp.push_back(new Object(scene.Objects[i]->GetMesh(),scene.Objects[i]->GetName(),scene.Objects[i]->GetObjectType()));
+            tmp.push_back(new Object(*scene.Objects[i]));
         }
 
         Objects = tmp;
@@ -67,7 +67,7 @@ class Scene{
         std::vector<Object*> tmp;
         for (int i = 0; i < copy.Objects.size(); i++)
         {
-            tmp.push_back(new Object(copy.Objects[i]->GetMesh(),copy.Objects[i]->GetName(),copy.Objects[i]->GetObjectType()));
+            tmp.push_back(new Object(*copy.Objects[i]));
         }
 
         for (int i = 0; i < Objects.size(); i++)
@@ -89,62 +89,22 @@ class Scene{
     void SetUp();
 
     void RemoveObjectScene(int idx);
-
     void RemoveObjectScene(Object* object);
+    std::vector<LightComp*> GetLightComp(){   return this->Lights; }
 
-    std::vector<LightComp*> GetLightComp(){
-        return this->Lights;
-    }
-
-    void GetRemoveLight(LightComp* light ){
-        for (int i = 0; i < Lights.size(); i++)
-        {
-            if(Lights[i] == light){
-                Lights.erase(Lights.begin()+i);
-                break;
-            }
-        }
-    }
-
-    void GetRemoveCamera(CameraComp* cam ){
-        for (int i = 0; i < Cameras.size(); i++)
-        {
-            if(Cameras[i] == cam){
-                Cameras.erase(Cameras.begin()+i);
-                break;
-            }
-        }
-    }
-    
+    void GetRemoveLight(LightComp* light );
+    void GetRemoveCamera(CameraComp* cam );
     void Scene::RemoveObjectScene(std::vector<Object*> objects);
+    void AddLight(LightComp* light){ Lights.push_back(light); };
+    void AddObjectScene(Object* object){ Objects.push_back(object); }
+    void Render(glm::mat4* _MVP,int flags);
+    std::vector<Object*> GetObjects(){ return this->Objects; }
 
-    void AddLight(LightComp* light){
-        Lights.push_back(light);
-    };
+    std::vector<CameraComp*> GetCameras(){ return this->Cameras; }
 
-    void AddObjectScene(Object* object){
-         Objects.push_back(object);
-    }
-
-     void Render(glm::mat4* _MVP,int flags);
-
-    std::vector<Object*> GetObjects(){
-        return this->Objects;
-    }
-
-    std::vector<CameraComp*> GetCameras(){
-        return this->Cameras;
-    }
-
-    void AddCamera(CameraComp* cam){
-        Cameras.push_back(cam);
-    }
-
+    void AddCamera(CameraComp* cam){ Cameras.push_back(cam); }
     void SwapItem(int i, int k);
 
-    int VertexToRender(){
-        return 0;
-    }
 };
 
 

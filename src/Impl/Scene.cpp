@@ -22,6 +22,28 @@ float SquareUV[] = {
     0.0,1.0
 };
 
+void Scene::GetRemoveLight(LightComp* light){
+    for (int i = 0; i < Lights.size(); i++)
+    {
+        if(Lights[i] == light){
+            Lights.erase(Lights.begin()+i);
+            break;
+        }
+    }
+}
+
+
+void Scene::GetRemoveCamera(CameraComp* cam ){
+    for (int i = 0; i < Cameras.size(); i++)
+    {
+        if(Cameras[i] == cam){
+            Cameras.erase(Cameras.begin()+i);
+            break;
+        }
+    }
+}
+
+
 
 void Scene::SetUp(){
 

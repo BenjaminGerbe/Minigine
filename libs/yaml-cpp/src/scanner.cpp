@@ -1,6 +1,5 @@
 #include <cassert>
 #include <memory>
-
 #include "exp.h"
 #include "scanner.h"
 #include "token.h"

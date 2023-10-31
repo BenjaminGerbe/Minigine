@@ -3,19 +3,21 @@
 #include "../Headers/Camera.h"
 #include "../Headers/LineRenderer.h"
 #include "../Headers/Light.h"
+#include "../Headers/MeshComponent.h"
 
 void Projet::SetUpComponents(){
     Components.push_back(new CameraComp(objects[5]));
     Components.push_back(new LightComp(objects[5]));
     Components.push_back(new LineRenderer(objects[5]));
+    Components.push_back(new MeshComponent(objects[5]));
 }
 
 void Projet::SetUpDefaultObject(){
-    Object* Empty = new Object(defaultPrimitive[0],"Empty",ClassicObject);
-    Object* Cube = new Object(defaultPrimitive[1],"cube",ClassicObject);
-    Object* Dragon = new Object(defaultPrimitive[2],"dragon",ClassicObject);
-    Object* oLight = new Object(defaultPrimitive[0],"light",Light);
-    Object* oCamera = new Object(defaultPrimitive[0],"camera",Camera);
+    Object* Empty = new Object(defaultPrimitive[0],"Empty",o_ClassicObject);
+    Object* Cube = new Object(defaultPrimitive[1],"cube",o_ClassicObject);
+    Object* Dragon = new Object(defaultPrimitive[2],"dragon",o_ClassicObject);
+    Object* oLight = new Object(defaultPrimitive[0],"light",o_Light);
+    Object* oCamera = new Object(defaultPrimitive[0],"camera",o_Camera);
     Object* LineRenderer = new Object(defaultPrimitive[0],"LineRenderer",o_LineRenderer);
 
     objects.push_back(Empty);

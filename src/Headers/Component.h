@@ -7,7 +7,8 @@ enum ComponentID{
     c_Transform,
     c_Light,
     c_Camera,
-    c_LineRenderer
+    c_LineRenderer,
+    c_Mesh
 };
 
 class Component

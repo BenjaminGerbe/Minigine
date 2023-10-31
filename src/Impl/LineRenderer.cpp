@@ -111,7 +111,7 @@ void LineRenderer::GrahamScan(){
     }
     
 
-    Object* A = new Object(projet->GetObjs()[4]->GetMesh(),"Graham scan",ClassicObject);
+    Object* A = new Object(*projet->GetLineRenderer());
     A->SetProjet(projet);
     LineRenderer* lr = new LineRenderer(Points,A);
     A->SetObjectType(o_LineRenderer);
@@ -195,7 +195,7 @@ void LineRenderer::GiftWraping(){
         assert(false);
     }
     
-    Object* A = new Object(projet->GetObjs()[4]->GetMesh(),"LineRenderer",ClassicObject);
+    Object* A = new Object(*projet->GetLineRenderer());
     A->SetProjet(projet);
     LineRenderer* lr = new LineRenderer(Pivots,A);
     A->SetObjectType(o_LineRenderer);

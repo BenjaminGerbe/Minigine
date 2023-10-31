@@ -30,7 +30,6 @@ void DisplayerManager::MachineState(Projet* projet){
 
         ImGui::PlotLines("Memory Usage",&memoryUsage[0],500,0,buffer,0,150.0f,ImVec2(0,65.0f));
 
-
         ApplicationState* appState = projet->getAppState();
         double currentTime = appState->GetGlfTime();
         
