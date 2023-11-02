@@ -102,7 +102,8 @@ class Object{
     ObjectType GetObjectType(){ return objectType;}
     std::string GetStrName(){ return this->name; }
     std::vector<Component*> GetComponents(){ return components; }
-    
+
+    void SetMesh(Mesh* mesh){ this->mesh = mesh;};
     void SetName(std::string str){ name = str; }
     void SetPosition(glm::vec3 position){ this->position = position; }
     void SetRotation(glm::vec3 rotation){ this->rotation = rotation;}

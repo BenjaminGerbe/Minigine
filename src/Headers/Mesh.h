@@ -26,11 +26,12 @@ class Mesh{
     float* uv;
     int lenV;
     int lenI;
+    char* name;
     uint32_t ID;
 
     public :
 
-    Mesh(float* _vertices,int lenV,unsigned int* _indices,int lenI,int stride,uint32_t _ID):indices(_indices),vertices(_vertices),ID(_ID){
+    Mesh(float* _vertices,int lenV,unsigned int* _indices,int lenI,int stride,char* _name):indices(_indices),vertices(_vertices),name(_name){
         unsigned int VBO,EBO;
         glGenBuffers(1,&VBO);
         glGenBuffers(1,&EBO);
@@ -44,7 +45,8 @@ class Mesh{
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT)*stride, (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
-   
+
+        ID = std::hash<std::string>()(name);
 
         this->lenV = lenV;
         this->lenI = lenI;
@@ -52,6 +54,10 @@ class Mesh{
 
     int TriangleToDraw(){
         return lenI;
+    }
+
+    char* GetName(){
+        return this->name;
     }
 
     uint32_t GetID(){

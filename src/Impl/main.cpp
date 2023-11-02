@@ -62,9 +62,9 @@ int main(int, char**){
         return 1;
     }
 
-    Mesh* m_Cube = new Mesh(verticesArray,sizeof(verticesArray),indicesArray,sizeof(indicesArray),6,std::hash<std::string>()("CUBE"));
-    Mesh* m_Dragon = new Mesh(DragonVertices,sizeof(DragonVertices),DragonIndices,sizeof(DragonIndices),8,std::hash<std::string>()("DRAGON"));
-    Mesh* m_blank = new Mesh(nullptr,0.0f,nullptr,0.0f,0,std::hash<std::string>()("BLANK"));
+    Mesh* m_Cube = new Mesh(verticesArray,sizeof(verticesArray),indicesArray,sizeof(indicesArray),6,"CUBE");
+    Mesh* m_Dragon = new Mesh(DragonVertices,sizeof(DragonVertices),DragonIndices,sizeof(DragonIndices),8,"DRAGON");
+    Mesh* m_blank = new Mesh(nullptr,0.0f,nullptr,0.0f,0,"BLANK");
 
     projet.AddPrimitive(m_blank);
     projet.AddPrimitive(m_Cube);

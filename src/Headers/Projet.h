@@ -69,6 +69,10 @@ class Projet{
         return defaultPrimitive[i];
     }
 
+    std::vector<Mesh*> GetPrimitive(){
+        return this->defaultPrimitive;
+    }
+
     void AddPrimitive(Mesh* mesh){
         defaultPrimitive.push_back(mesh);
     }

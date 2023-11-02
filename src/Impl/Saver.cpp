@@ -95,6 +95,9 @@ void Saver::LoadScene(Projet* projet){
             else if(ID == c_LineRenderer){
                 tempObj->AddComponent(new LineRenderer(id,j,yamlFile,tempObj));
             }
+            else if(ID == c_Mesh){
+                tempObj->AddComponent(new MeshComponent(id,j,yamlFile,tempObj));
+            }
         }
         
         tempObj->SetObjectType(type);

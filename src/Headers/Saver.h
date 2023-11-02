@@ -8,6 +8,7 @@
 #include "Light.h"
 #include "Camera.h"
 #include "LineRenderer.h"
+#include "MeshComponent.h"
 
 namespace Saver{
     void SaveScene(Scene* scene);

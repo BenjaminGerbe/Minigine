@@ -4,8 +4,10 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "Object.h"
-    
+#include "Projet.h"
+
 class MeshComponent: public Component{
+    Projet* projet;
 
     public :
     virtual void Editor();
