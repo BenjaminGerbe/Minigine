@@ -31,6 +31,9 @@
 #include "../Headers/Projet.h"
 #include "../data.h"
 
+#include "../stbload/stb_image.h"
+#include "../stbload/stb_image_write.h"
+
 static ApplicationState app; 
 Scene* scene;
 
@@ -42,11 +45,7 @@ GameView gameView;
 static PDH_HQUERY cpuQuery;
 static PDH_HCOUNTER cpuTotal;
 
-
-
 int main(int, char**){
-
-   
 
     std::cout << "Launch Minigine" << std::endl; 
     scene = new Scene();
@@ -61,6 +60,19 @@ int main(int, char**){
     if(err == 1){
         return 1;
     }
+
+    int w;
+    int h;
+    int c;
+    GLuint texID;
+    unsigned char* data = stbi_load("Minigine.png",&w,&h,&c,0);
+    glGenTextures(1,&texID);
+    glBindTexture(GL_TEXTURE_2D,texID);
+    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,w,h,0,GL_RGBA,GL_UNSIGNED_BYTE,data);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    projet.AddTexID(texID);
+    glBindTexture(GL_TEXTURE_2D,0);
 
     Mesh* m_Cube = new Mesh(verticesArray,sizeof(verticesArray),indicesArray,sizeof(indicesArray),6,"CUBE");
     Mesh* m_Dragon = new Mesh(DragonVertices,sizeof(DragonVertices),DragonIndices,sizeof(DragonIndices),8,"DRAGON");

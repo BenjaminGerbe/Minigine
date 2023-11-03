@@ -98,6 +98,4 @@ void ApplicationState::ApplicationEvents(){
   
      //  ImGui::SetMouseCursor(ImGuiMouseCursor_None); 
     glfwSetCursorPosCallback(window, cursor_position_callback); 
-
-    
 }

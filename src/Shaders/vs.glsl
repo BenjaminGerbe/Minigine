@@ -18,7 +18,7 @@ uniform DirectionalLight dir;
 
 void main()
 {	
-	vec3 col = vec3(0.19,0.65,0.32);
+	vec3 col = vec3(1.0,0.65,0.32);
 	vec3 L = normalize(dir.direction);
 	vec3 N = Normal;
 	float Diffuse = max(dot( normalize(N),-(L)),.1f);

@@ -9,13 +9,12 @@ file(GLOB_RECURSE Classes
      "*.cpp"
 )
 
-file(GLOB_RECURSE Shaders
+file(GLOB_RECURSE Ressources
      "*.glsl"
+     "*.png"
 )
 
-# stbload
 
-include_directories(stb_load)
 
 # glew
 include_directories(../libs/GLEW/include)
@@ -36,6 +35,9 @@ include_directories(../libs/GLM)
 #TinyXML2
 include_directories(../libs/tinyxml2)
 
+# stbload
+include_directories(../libs/stb_load)
+
 
 
 set(ICON_FILE "${CMAKE_SOURCE_DIR}/Minigine.ico")
@@ -46,12 +48,12 @@ enable_language(RC)
 include_directories(${PROJECT_SOURCE_DIR})
 add_executable ( ${CMAKE_PROJECT_NAME} ${Classes} "${CMAKE_SOURCE_DIR}/resources.rc")
 
-foreach(shader_file ${Shaders})
+foreach(Ressources_file ${Ressources})
     add_custom_command(
         TARGET ${CMAKE_PROJECT_NAME} PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-                ${shader_file}
-                $<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/${shader_name})
+                ${Ressources_file}
+                $<TARGET_FILE_DIR:${CMAKE_PROJECT_NAME}>/${Ressources_name})
 endforeach()
 
 set_source_files_properties("Headers/data.h" PROPERTIES COMPILE_FLAGS "-w")

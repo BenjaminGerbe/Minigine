@@ -111,12 +111,13 @@ void LineRenderer::GrahamScan(){
     }
     
 
-    Object* A = new Object(*projet->GetLineRenderer());
+    Object* A = new Object(*projet->GetEmpty());
     A->SetProjet(projet);
     LineRenderer* lr = new LineRenderer(Points,A);
     A->SetObjectType(o_LineRenderer);
     A->AddComponent(lr);
     lr->SetUp();
+    A->SetName("Graham-scan");
   
     projet->GetScene()->AddObjectScene(A);
     return;
@@ -195,13 +196,13 @@ void LineRenderer::GiftWraping(){
         assert(false);
     }
     
-    Object* A = new Object(*projet->GetLineRenderer());
+    Object* A = new Object(*projet->GetEmpty());
     A->SetProjet(projet);
     LineRenderer* lr = new LineRenderer(Pivots,A);
     A->SetObjectType(o_LineRenderer);
     A->AddComponent(lr);
     lr->SetUp();
-  
+    A->SetName("Gift-Wraping");
     projet->GetScene()->AddObjectScene(A);
 
     for(Object* o : Pivots){

@@ -121,7 +121,30 @@ void DisplayerManager::ObjectEditor(Projet* projet){
             ImGui::ColorEdit4("MyColor##3", (float*)&color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel );
             obj->SetColor(ImVec4(color[0],color[1],color[2],color[3]));
             ImGui::SetCursorPosY(ImGui::GetCursorPosY()+10.0f);    
+            ImGui::SameLine();
+            ImGui::PushStyleColor(ImGuiCol_Button,ImVec4(0.0,0.0,0.0,0.0));
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,ImVec2(0.0,(ImGui::GetFrameHeight()-35.0)/2.0f));
+            static bool closeModalPopupTex = false;
+            if(ImGui::ImageButton((void*)(intptr_t)projet->getTexID()[0],ImVec2(35,35))){
+                ImGui::OpenPopup("MyHelpMenu");
+                closeModalPopupTex = true;
+            }
+        
 
+            if (ImGui::BeginPopupModal("MyHelpMenu",&closeModalPopupTex))
+            {
+                for (int i = 0; i < projet->getTexID().size(); i++)
+                {
+                    if(ImGui::ImageButton((void*)(intptr_t)projet->getTexID()[i],ImVec2(50,50))){
+
+                    }
+                }
+                
+                ImGui::EndPopup();
+            }
+
+            ImGui::PopStyleColor();
+            ImGui::PopStyleVar();
             auto col = IM_COL32(54, 54, 54, 204);
             for (size_t i = 0; i < obj->GetComponents().size(); i++)
             {
@@ -247,7 +270,8 @@ void DisplayerManager::SceneEditor(Projet* projet){
 
                 ImGui::GetWindowDrawList()->AddRectFilled(p_min, p_max,col);
             }
-
+            ImGui::Image((void*)(intptr_t)projet->getTexID()[0],ImVec2(20,20));            
+            ImGui::SameLine();
             if(ImGui::Selectable(label, is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap)){
                 item_current_idx = i;
                 selectedObjects = i;

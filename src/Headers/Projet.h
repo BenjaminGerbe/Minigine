@@ -13,6 +13,7 @@ class Projet{
     ApplicationState* appState;
     std::vector<Mesh*> defaultPrimitive;
     std::vector<Component*> Components;
+    std::vector<GLuint> texID;
 
     public :
     Projet(){
@@ -33,24 +34,32 @@ class Projet{
         this->appState = appState;
     }
 
+    std::vector<GLuint> getTexID(){
+        return  texID;
+    }
+
+    void AddTexID(GLuint id){
+        texID.push_back(id);
+    }
+
     Object* GetCube(){
         return objects[1];
     }
 
     Object* GetDragon(){
-        return objects[1];
-    }
-
-    Object* GetLight(){
         return objects[2];
     }
 
-    Object* GetCamera(){
+    Object* GetLight(){
         return objects[3];
     }
 
-    Object* GetLineRenderer(){
+    Object* GetCamera(){
         return objects[4];
+    }
+
+    Object* GetLineRenderer(){
+        return objects[5];
     }
 
     Object* GetEmpty(){

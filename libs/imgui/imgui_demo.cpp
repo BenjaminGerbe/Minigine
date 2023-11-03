@@ -1223,7 +1223,7 @@ static void ShowDemoWindowWidgets()
             // Read about UV coordinates here: https://github.com/ocornut/imgui/wiki/Image-Loading-and-Displaying-Examples
             ImGui::PushID(i);
             if (i > 0)
-                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(i - 1.0f, i - 1.0f));
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(i - 1.0f, i - 1.0f));
             ImVec2 size = ImVec2(32.0f, 32.0f);                         // Size of the image we want to make visible
             ImVec2 uv0 = ImVec2(0.0f, 0.0f);                            // UV coordinates for lower-left
             ImVec2 uv1 = ImVec2(32.0f / my_tex_w, 32.0f / my_tex_h);    // UV coordinates for (32,32) in our texture
