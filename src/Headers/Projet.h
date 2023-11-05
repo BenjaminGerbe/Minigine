@@ -6,6 +6,7 @@
 #include "Component.h"
 
 
+class Material;
 
 class Projet{
     Scene* scene;
@@ -14,6 +15,7 @@ class Projet{
     std::vector<Mesh*> defaultPrimitive;
     std::vector<Component*> Components;
     std::vector<GLuint> texID;
+    std::vector<Material*> Materials;
 
     public :
     Projet(){
@@ -82,6 +84,10 @@ class Projet{
         return this->defaultPrimitive;
     }
 
+    std::vector<Material*> GetMaterials(){
+        return this->Materials;
+    }
+
     void AddPrimitive(Mesh* mesh){
         defaultPrimitive.push_back(mesh);
     }
@@ -90,7 +96,10 @@ class Projet{
         return Components;
     }
 
-    
+    void AddMaterial(Material* mat){
+        this->Materials.push_back(mat);
+    }
+
 
     void SetUpDefaultPrimitive();
     void SetUpDefaultObject();

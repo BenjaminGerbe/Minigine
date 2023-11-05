@@ -101,9 +101,10 @@ void Scene::Render(glm::mat4* _MVP,int flags){
         for (int i = 0; i < Objects.size(); i++)
         {
                 GLuint ID = Objects[i]->GetMesh()->GetVAO();
+                GLuint shaderID = Objects[i]->GetMaterial()->GetShader()->GetIDX();
                 glBindVertexArray(ID);  
 
-                glUseProgram(programShader);
+                glUseProgram(shaderID);
                 if(flags & WireFrame){
                     glUseProgram(programShaderWireFrame);
                 } 
@@ -117,13 +118,16 @@ void Scene::Render(glm::mat4* _MVP,int flags){
                 glBindBuffer(GL_UNIFORM_BUFFER,UBO);
                 glBufferData(GL_UNIFORM_BUFFER,sizeof(glm::mat4)*3,matrices,GL_STREAM_DRAW);
 
+
+                Objects[i]->GetMaterial()->ApplyParameter();
+
                 if(Lights.size() > 0){
-                    glUniform3fv(glGetUniformLocation(programShader, "dir.direction"), 1, &Lights[0]->GetObj()->GetForward()[0]); 
-                    glUniform3fv(glGetUniformLocation(programShader, "dir.color"), 1, Lights[0]->GetColor()); 
-                    glUniform1f(glGetUniformLocation(programShader, "dir.intensity"),  Lights[0]->GetIntensity()); 
+                    glUniform3fv(glGetUniformLocation(shaderID, "dir.direction"), 1, &Lights[0]->GetObj()->GetForward()[0]); 
+                    glUniform3fv(glGetUniformLocation(shaderID, "dir.color"), 1, Lights[0]->GetColor()); 
+                    glUniform1f(glGetUniformLocation(shaderID, "dir.intensity"),  Lights[0]->GetIntensity()); 
                 }
                 else{
-                    glUniform1f(glGetUniformLocation(programShader, "dir.intensity"),  0.0f);    
+                    glUniform1f(glGetUniformLocation(shaderID, "dir.intensity"),  0.0f);    
                 }
 
                

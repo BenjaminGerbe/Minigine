@@ -125,18 +125,19 @@ void DisplayerManager::ObjectEditor(Projet* projet){
             ImGui::PushStyleColor(ImGuiCol_Button,ImVec4(0.0,0.0,0.0,0.0));
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,ImVec2(0.0,(ImGui::GetFrameHeight()-35.0)/2.0f));
             static bool closeModalPopupTex = false;
-            if(ImGui::ImageButton((void*)(intptr_t)projet->getTexID()[0],ImVec2(35,35))){
-                ImGui::OpenPopup("MyHelpMenu");
+            if(ImGui::ImageButton((void*)(intptr_t)obj->GetTexId(),ImVec2(35,35))){
+                ImGui::OpenPopup("ImagePopUp");
                 closeModalPopupTex = true;
             }
         
 
-            if (ImGui::BeginPopupModal("MyHelpMenu",&closeModalPopupTex))
+            if (ImGui::BeginPopupModal("ImagePopUp",&closeModalPopupTex))
             {
                 for (int i = 0; i < projet->getTexID().size(); i++)
                 {
                     if(ImGui::ImageButton((void*)(intptr_t)projet->getTexID()[i],ImVec2(50,50))){
-
+                        obj->SetTexID(projet->getTexID()[i]);
+                        closeModalPopupTex = false;
                     }
                 }
                 
@@ -270,7 +271,7 @@ void DisplayerManager::SceneEditor(Projet* projet){
 
                 ImGui::GetWindowDrawList()->AddRectFilled(p_min, p_max,col);
             }
-            ImGui::Image((void*)(intptr_t)projet->getTexID()[0],ImVec2(20,20));            
+            ImGui::Image((void*)(intptr_t)scene->GetObjects()[i]->GetTexId(),ImVec2(20,20));            
             ImGui::SameLine();
             if(ImGui::Selectable(label, is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap)){
                 item_current_idx = i;
@@ -451,6 +452,7 @@ void DisplayerManager::RenderSceneViewOption(){
         float OrthoSize =obj->GetOrthoSize();
         float Fov =obj->GetFov();
         float nar[2];
+        ImGui::SetNextItemOpen(true);
 
         nar[0] = obj->GetNearClip();
         nar[1] = obj->GetFarClip();
@@ -459,6 +461,8 @@ void DisplayerManager::RenderSceneViewOption(){
             ImGui::DragFloat3("Position",pos,0.1f);
             ImGui::DragFloat3("Rotation",rot,0.1f);
         }
+
+        ImGui::SetNextItemOpen(true);
 
         if (ImGui::CollapsingHeader("Settings##sett")){
             if(obj->GetRenderType() == Orthographic){

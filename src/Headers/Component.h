@@ -8,7 +8,8 @@ enum ComponentID{
     c_Light,
     c_Camera,
     c_LineRenderer,
-    c_Mesh
+    c_Mesh,
+    c_Material
 };
 
 class Component
@@ -18,8 +19,6 @@ class Component
     ComponentID ID;
     bool open;
     char* headerName;
-
-
 
     virtual void SetID(){
         ID = c_None;

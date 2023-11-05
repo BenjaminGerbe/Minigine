@@ -29,6 +29,8 @@
 #include "../Headers/DisplayerManager.h"
 #include "../Headers/Saver.h"
 #include "../Headers/Projet.h"
+#include "../Headers/Shader.h"
+#include "../Headers/Material.h"
 #include "../data.h"
 
 #include "../stbload/stb_image.h"
@@ -44,6 +46,24 @@ GameView gameView;
 
 static PDH_HQUERY cpuQuery;
 static PDH_HCOUNTER cpuTotal;
+
+void LoadProjetImage(char* path,Projet& projet){
+    int w,h,c;
+    GLuint texID;
+    unsigned char* data = stbi_load(path,&w,&h,&c,0);
+
+    GLenum v = GL_RGBA;
+    if(c <= 3){
+        v = GL_RGB;
+    }
+    glGenTextures(1,&texID);
+    glBindTexture(GL_TEXTURE_2D,texID);
+    glTexImage2D(GL_TEXTURE_2D,0,v,w,h,0,v,GL_UNSIGNED_BYTE,data);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    projet.AddTexID(texID);
+    glBindTexture(GL_TEXTURE_2D,0);
+}
 
 int main(int, char**){
 
@@ -61,18 +81,22 @@ int main(int, char**){
         return 1;
     }
 
-    int w;
-    int h;
-    int c;
-    GLuint texID;
-    unsigned char* data = stbi_load("Minigine.png",&w,&h,&c,0);
-    glGenTextures(1,&texID);
-    glBindTexture(GL_TEXTURE_2D,texID);
-    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,w,h,0,GL_RGBA,GL_UNSIGNED_BYTE,data);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    projet.AddTexID(texID);
-    glBindTexture(GL_TEXTURE_2D,0);
+
+    // Create Shader/Material
+    Shader* shader = new Shader("frag.glsl","vs.glsl");
+    Shader* pbrShader = new Shader("PBR.vs.glsl","PBR.fs.glsl");
+    Material* mat = new Material(shader,"Default Material");
+    PBRMaterial* PBRmat = new PBRMaterial(pbrShader,"PBR Material");
+
+    projet.AddMaterial(mat);
+    projet.AddMaterial(PBRmat);
+
+    LoadProjetImage("Minigine.png",projet);
+    LoadProjetImage("Cube.png",projet);
+    LoadProjetImage("Light.png",projet);
+    LoadProjetImage("brickwall.jpg",projet);
+    LoadProjetImage("brickwall_normal.jpg",projet);
+
 
     Mesh* m_Cube = new Mesh(verticesArray,sizeof(verticesArray),indicesArray,sizeof(indicesArray),6,"CUBE");
     Mesh* m_Dragon = new Mesh(DragonVertices,sizeof(DragonVertices),DragonIndices,sizeof(DragonIndices),8,"DRAGON");
@@ -115,11 +139,6 @@ int main(int, char**){
     ImGui::StyleColorsDark();
     ImVec4* colors = ImGui::GetStyle().Colors;
 
-    
-    // colors[ImGuiCol_TitleBgActive]          = ImVec4(1.00f, 0.79f, 0.80f, 1.00f);
-    // colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.83f, 0.89f, 0.83f, 1.00f);
-    // colors[ImGuiCol_MenuBarBg]              = ImVec4(0.88f, 0.93f, 1.00f, 1.00f);
-    // colors[ImGuiCol_TitleBg]                = ImVec4(1.00f, 0.79f, 0.80f, 1.00f);
     colors[ImGuiCol_WindowBg]               = ImVec4(0.12f, 0.12f, 0.12f, 0.94f);
     colors[ImGuiCol_FrameBg]                = ImVec4(0.41f, 0.41f, 0.41f, 0.54f);
     colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.41f, 0.41f, 0.41f, 0.54f);

@@ -12,6 +12,7 @@ file(GLOB_RECURSE Classes
 file(GLOB_RECURSE Ressources
      "*.glsl"
      "*.png"
+     "*.jpg"
 )
 
 

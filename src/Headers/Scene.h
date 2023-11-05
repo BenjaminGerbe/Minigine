@@ -16,10 +16,13 @@
 #include <ext/scalar_constants.hpp> // glm::pi
 #include <gtc/type_ptr.hpp>
 
+
 #include "Object.h"
 #include "../Headers/GLShader.h"
 #include "Camera.h"
 #include "Light.h"
+#include "Material.h"
+#include "Shader.h"
 
 class LightComp;
 

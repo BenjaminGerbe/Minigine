@@ -12,6 +12,7 @@ void Saver::SaveScene(Scene* scene){
         yamlFile[id]["ObjectName"] = name;
         yamlFile[id]["ObjectType"] = (int)obj->GetObjectType();
         yamlFile[id]["MeshFileID"] = obj->GetMesh()->GetID();
+        yamlFile[id]["TexID"] = obj->GetTexId();
         
         yamlFile[id]["Color"].push_back(obj->GetColor().x);
         yamlFile[id]["Color"].push_back(obj->GetColor().y);
@@ -69,13 +70,16 @@ void Saver::LoadScene(Projet* projet){
         Mesh* mesh = FindMesh(projet,fileNameID);
            
         ObjectType type =  (ObjectType)yamlFile[id]["ObjectType"].as<int>(); 
-        Object* tempObj = new Object(mesh,name,o_Loader);
+        Object* tempObj = new Object(mesh,projet->GetMaterials()[0],name,o_Loader);
         int componentSize =  yamlFile[id]["ComponentSize"].as<int>();
 
         ImVec4 col = ImVec4(1.0f,1.0f,1.0f,1.0f);
         col.x = yamlFile[id]["Color"][0].as<float>();
         col.y = yamlFile[id]["Color"][1].as<float>();
         col.z = yamlFile[id]["Color"][2].as<float>();
+
+        GLuint texID = yamlFile[id]["TexID"].as<GLuint>();
+        tempObj->SetTexID(texID);
 
         tempObj->SetColor(col);
         
@@ -97,6 +101,9 @@ void Saver::LoadScene(Projet* projet){
             }
             else if(ID == c_Mesh){
                 tempObj->AddComponent(new MeshComponent(id,j,yamlFile,tempObj));
+            }
+            else if(ID == c_Material){
+                tempObj->AddComponent(new MaterialComp(id,j,yamlFile,tempObj));
             }
         }
         
