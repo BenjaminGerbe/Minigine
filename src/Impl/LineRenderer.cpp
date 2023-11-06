@@ -8,6 +8,127 @@ struct PolyPoint{
     glm::vec3 position;
 };
 
+struct Segment{
+    glm::vec3 A;
+    glm::vec3 B;
+};
+
+void LineRenderer::Triangulation(){
+    if(lstObject.size() <= 2)
+        return;
+
+    float xmin = lstObject[0]->GetPosition().x;
+    float ymin = lstObject[0]->GetPosition().y;
+    float epsilon = std::numeric_limits<float>::epsilon();
+    int size = lstObject.size();
+    std::vector<Object*> points(lstObject);
+    bool finish = false;
+
+    while(!finish){
+        finish = true;
+        for (int i = 0; i < lstObject.size()-1; i++)
+        {
+            glm::vec3 pt0 = points[i]->GetPosition();
+            glm::vec3 pt1 = points[i+1]->GetPosition();
+            
+            if(pt1.x < pt0.x || ( std::abs( pt1.x - pt0.x) < epsilon && pt1.y < pt0.y)){
+                std::swap(points[i],points[i+1]);
+                finish = false;
+            }
+            
+        }
+    }
+    
+    std::vector<Segment> segments;
+    for (int i = 0; i < 3; i++)
+    {
+        int nxt = (i+1)%3;
+        Segment tmp;
+        tmp.A = points[i]->GetPosition();
+        tmp.B = points[nxt]->GetPosition();
+        segments.push_back(tmp);
+    }
+    
+    points.erase(points.begin()+0);
+    points.erase(points.begin()+0);
+    points.erase(points.begin()+0);
+    
+    for (int i = 0; i < points.size(); i++)
+    {
+        glm::vec3 position = points[i]->GetPosition();
+        std::vector<int> segmentsToAdd;
+        for (int j = 0; j < segments.size(); j++)
+        {
+            glm::vec3 p1 = segments[j].A;
+            glm::vec3 p2 = segments[j].B;
+            glm::vec3 d = p2-p1;
+            glm::vec3 normal(d.y,-d.x,p1.z);
+
+            glm::mat3 mat({
+            p1.x,p1.y,1.0,
+            p2.x,p2.y,1.0,
+            position.x,position.y,1.0,
+            });
+
+            glm::vec3 dir = glm::normalize(position -p1);
+            if(glm::determinant(mat) < 0){
+                //dir = -dir;
+            }
+            normal = glm::normalize(normal);
+            if(glm::dot(normal,dir) > 0){
+                std::cout << "see" << std::endl;
+                segmentsToAdd.push_back(j);
+            }
+        }
+        
+       for (int k = 0; k < segmentsToAdd.size(); k++)
+       {
+            Segment seg;
+            seg.A = segments[segmentsToAdd[k]].A;
+            seg.B = points[i]->GetPosition();
+            segments.push_back(seg);
+
+            seg;
+            seg.A = segments[segmentsToAdd[k]].B;
+            seg.B = points[i]->GetPosition();
+            segments.push_back(seg);
+       }
+       
+    }
+    
+    
+    for (int i = 0; i < segments.size(); i++)
+    {
+        glm::vec3 a = segments[i].A;
+        glm::vec3 b = segments[i].B;
+
+        Object* A = new Object(*projet->GetCube());
+        A->SetName("Line");
+        glm::vec3 vec = a-b;
+        float normal = glm::length(vec);
+        vec = glm::normalize(vec);
+        A->SetScale(glm::vec3(0.2,normal,0.2));
+        glm::vec3 c = glm::vec3(0,1,0);
+        float dot = glm::dot(vec,c);
+        float angle = std::acosf(dot);
+        c = a + c;
+        glm::mat3 mat({
+            a.x,a.y,1.0,
+            b.x,b.y,1.0,
+            c.x,c.y,1.0,
+        });
+        if(glm::determinant(mat) < 0){
+            angle =-angle;
+        }
+        A->SetPosition(a - vec*(normal/2.0f));
+        A->SetRotation(glm::vec3({0.0f,0.0f, angle * (180.0/glm::pi<float>()) }));
+        projet->GetScene()->AddObjectScene(A);
+        lstLines.push_back(A);
+    }
+    
+    return;
+}
+
 void LineRenderer::GrahamScan(){
 
     // CreatePolygone
@@ -39,6 +160,7 @@ void LineRenderer::GrahamScan(){
         pp = glm::normalize(pp);
         float dot = glm::dot(v,pp);
         float angle = std::acosf(dot);
+
 
         glm::mat3 mat({
             a.x,a.y,1.0,
@@ -220,7 +342,9 @@ void LineRenderer::Editor(){
     if(ImGui::Button("Graham-Scan")){
         GrahamScan();
     }
-
+    if(ImGui::Button("Triangulation")){
+        Triangulation();
+    }
        
     return;
 }
@@ -311,8 +435,8 @@ void LineRenderer::Update(){
         CreateLine();
     }
     else if(!RenderLine && lstLines.size() > 0){
-        projet->GetScene()->RemoveObjectScene(lstLines);
-        lstLines.clear();
+        // projet->GetScene()->RemoveObjectScene(lstLines);
+        // lstLines.clear();
     }
 
     return;

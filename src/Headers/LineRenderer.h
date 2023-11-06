@@ -74,9 +74,13 @@ class LineRenderer:public Component{
 
     void GrahamScan();
 
+    void Triangulation();
+
     LineRenderer operator=(const LineRenderer& copy){
         return *this;
     }
+
+
 
 
 
