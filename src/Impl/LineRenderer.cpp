@@ -40,13 +40,38 @@ void LineRenderer::Triangulation(){
     }
     
     std::vector<Segment> segments;
+    std::vector<Segment> segmentsToRender;
     for (int i = 0; i < 3; i++)
     {
         int nxt = (i+1)%3;
+        int prec = (i-1);
+        if(prec < 0){
+            prec=2;
+        }
+
+        glm::vec3 precV = points[prec]->GetPosition();
+        glm::vec3 nxtV = points[nxt]->GetPosition();
+        glm::vec3 currentV = points[i]->GetPosition();
+
+        glm::mat3 m({
+        precV.x,precV.y,1.0,
+        currentV.x,currentV.y,1.0,
+        nxtV.x,nxtV.y,1.0,
+        });
+
         Segment tmp;
-        tmp.A = points[i]->GetPosition();
-        tmp.B = points[nxt]->GetPosition();
+
+        if(glm::determinant(m) < 0){
+            tmp.A = points[nxt]->GetPosition();
+            tmp.B = points[i]->GetPosition();
+        }
+        else{
+            tmp.A = points[i]->GetPosition();
+            tmp.B = points[nxt]->GetPosition();
+        }
+
         segments.push_back(tmp);
+        segmentsToRender.push_back(tmp);
     }
     
     points.erase(points.begin()+0);
@@ -54,7 +79,7 @@ void LineRenderer::Triangulation(){
     points.erase(points.begin()+0);
     
     for (int i = 0; i < points.size(); i++)
-    {
+    {   
         glm::vec3 position = points[i]->GetPosition();
         std::vector<int> segmentsToAdd;
         for (int j = 0; j < segments.size(); j++)
@@ -62,7 +87,7 @@ void LineRenderer::Triangulation(){
             glm::vec3 p1 = segments[j].A;
             glm::vec3 p2 = segments[j].B;
             glm::vec3 d = p2-p1;
-            glm::vec3 normal(d.y,-d.x,p1.z);
+            glm::vec3 normal(-d.y,d.x,p1.z);
 
             glm::mat3 mat({
             p1.x,p1.y,1.0,
@@ -70,13 +95,13 @@ void LineRenderer::Triangulation(){
             position.x,position.y,1.0,
             });
 
-            glm::vec3 dir = glm::normalize(position -p1);
+            glm::vec3 dir = glm::normalize(p1 - position);
             if(glm::determinant(mat) < 0){
-                //dir = -dir;
+              //  normal = -normal;
+                std::cout << "clockWize" << std::endl;
             }
             normal = glm::normalize(normal);
             if(glm::dot(normal,dir) > 0){
-                std::cout << "see" << std::endl;
                 segmentsToAdd.push_back(j);
             }
         }
@@ -84,23 +109,80 @@ void LineRenderer::Triangulation(){
        for (int k = 0; k < segmentsToAdd.size(); k++)
        {
             Segment seg;
-            seg.A = segments[segmentsToAdd[k]].A;
-            seg.B = points[i]->GetPosition();
-            segments.push_back(seg);
+            Segment seg2;
+            glm::vec3 precV = segments[segmentsToAdd[k]].A;
+            glm::vec3 nxtV = points[i]->GetPosition();
+            glm::vec3 currentV = segments[segmentsToAdd[k]].B;
 
-            seg;
-            seg.A = segments[segmentsToAdd[k]].B;
-            seg.B = points[i]->GetPosition();
-            segments.push_back(seg);
+            glm::mat3 m({
+            precV.x,precV.y,1.0,
+            currentV.x,currentV.y,1.0,
+            nxtV.x,nxtV.y,1.0,
+            });
+
+            if(glm::determinant(m) < 0){
+                seg.A = precV;
+                seg.B = nxtV;
+                seg2.A =nxtV;
+                seg2.B = currentV;
+            }
+            else{
+                seg.A = nxtV;
+                seg.B =  precV;
+                seg2.A = currentV;
+                seg2.B = nxtV;
+            }
+
+            bool find1 = false;
+            bool find2 = false;
+            int idx1 = -1;
+            int idx2 = -1;
+            for (int l = 0; l < segments.size(); l++)
+            {
+                Segment s = segments[l];
+                if( glm::length(s.A-seg.A) < epsilon && glm::length( s.B-seg.B) < epsilon ||
+                glm::length(s.B-seg.A) < epsilon && glm::length( s.A-seg.B) < epsilon ){
+                    find1 = true;
+                    idx1 = l;
+                }
+
+                if( glm::length(s.A-seg2.A) < epsilon && glm::length( s.B-seg2.B) < epsilon ||
+                glm::length(s.B-seg2.A) < epsilon && glm::length( s.A-seg2.B) < epsilon ){
+                    find2 = true;
+                    idx2 = l;
+                }
+            }
+
+            
+            if(!find1){
+                segments.push_back(seg);
+                segmentsToRender.push_back(seg);
+            }
+            else{
+                segments.erase(segments.begin() + idx1);
+            }
+
+            if(!find2){
+                segments.push_back(seg2);
+                segmentsToRender.push_back(seg2);
+            }
+            else{
+                segments.erase(segments.begin() + idx2);
+            }
+           
        }
-       
+
+        for (int k = segmentsToAdd.size()-1; k >= 0; k--)
+        {
+            segments.erase(segments.begin()+segmentsToAdd[k]);
+        }
     }
     
     
-    for (int i = 0; i < segments.size(); i++)
+    for (int i = 0; i < segmentsToRender.size(); i++)
     {
-        glm::vec3 a = segments[i].A;
-        glm::vec3 b = segments[i].B;
+        glm::vec3 a = segmentsToRender[i].A;
+        glm::vec3 b = segmentsToRender[i].B;
 
         Object* A = new Object(*projet->GetCube());
         A->SetName("Line");

@@ -17,7 +17,7 @@ void MaterialComp::Editor(){
         ImGui::EndCombo();
     }
 
-    obj->GetMaterial()->Editor();
+   obj->GetMaterial()->Editor();
 
     return;
 };
