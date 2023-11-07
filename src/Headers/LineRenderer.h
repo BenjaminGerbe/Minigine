@@ -13,14 +13,58 @@
 #include <chrono>
 #include <iostream>
 
+struct PolyPoint{
+    int idx;
+    float angle;
+    float length;
+    glm::vec3 position;
+};
+
+struct Segment{
+    glm::vec3 A;
+    glm::vec3 B;
+};
+
+struct Triangle{
+    Segment A;
+    Segment B;
+    Segment C;
+
+    Segment operator[](int i){
+        if(i==0){
+            return A;
+        }
+        else if(i==1){
+            return B;
+        }
+        else if(i == 2){
+            return C;
+        }
+    }
+
+    void operator()(int i,Segment s){
+        if(i==0){
+            A = s;
+        }
+        else if(i==1){
+            B = s;
+        }
+        else if(i == 2){
+            C= s;
+        }
+    }
+};
+
 class LineRenderer:public Component{
     Object* targetMouse;
     Projet* projet;
     std::vector<Object*> lstObject;
     std::vector<Object*> lstLines;
+    std::vector<Object*> SegmentTriangles;
     int lastIdx;
     bool RenderLine;
     bool start ;
+    bool Delaunay;
     
     public :
     virtual void Editor();
