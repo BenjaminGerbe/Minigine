@@ -13,6 +13,36 @@ struct Segment{
     glm::vec3 B;
 };
 
+struct Triangle{
+    Segment A;
+    Segment B;
+    Segment C;
+
+    Segment operator[](int i){
+        if(i==0){
+            return A;
+        }
+        else if(i==1){
+            return B;
+        }
+        else if(i == 2){
+            return C;
+        }
+    }
+
+    void operator()(int i,Segment s){
+        if(i==0){
+            A = s;
+        }
+        else if(i==1){
+            B = s;
+        }
+        else if(i == 2){
+            C= s;
+        }
+    }
+};
+
 void LineRenderer::Triangulation(){
     if(lstObject.size() <= 2)
         return;
@@ -41,6 +71,8 @@ void LineRenderer::Triangulation(){
     
     std::vector<Segment> segments;
     std::vector<Segment> segmentsToRender;
+    std::vector<Triangle> lstTriangle;
+    Triangle trgl;
     for (int i = 0; i < 3; i++)
     {
         int nxt = (i+1)%3;
@@ -72,12 +104,22 @@ void LineRenderer::Triangulation(){
 
         segments.push_back(tmp);
         segmentsToRender.push_back(tmp);
+
+        trgl(i,tmp);
     }
     
+    Triangle tr;
+    tr.A = trgl.C;
+    tr.B = trgl.B;
+    tr.C = trgl.A;
+
     points.erase(points.begin()+0);
     points.erase(points.begin()+0);
     points.erase(points.begin()+0);
     
+    lstTriangle.push_back(tr);
+
+
     for (int i = 0; i < points.size(); i++)
     {   
         glm::vec3 position = points[i]->GetPosition();
@@ -100,12 +142,15 @@ void LineRenderer::Triangulation(){
               //  normal = -normal;
                 std::cout << "clockWize" << std::endl;
             }
+
             normal = glm::normalize(normal);
             if(glm::dot(normal,dir) > 0){
                 segmentsToAdd.push_back(j);
             }
         }
         
+
+
        for (int k = 0; k < segmentsToAdd.size(); k++)
        {
             Segment seg;
@@ -135,39 +180,35 @@ void LineRenderer::Triangulation(){
 
             bool find1 = false;
             bool find2 = false;
-            int idx1 = -1;
-            int idx2 = -1;
-            for (int l = 0; l < segments.size(); l++)
+
+            for (int l = segments.size()-1; l >=0 ; l--)
             {
                 Segment s = segments[l];
                 if( glm::length(s.A-seg.A) < epsilon && glm::length( s.B-seg.B) < epsilon ||
                 glm::length(s.B-seg.A) < epsilon && glm::length( s.A-seg.B) < epsilon ){
                     find1 = true;
-                    idx1 = l;
+                    segments.erase(segments.begin() + l);
                 }
 
                 if( glm::length(s.A-seg2.A) < epsilon && glm::length( s.B-seg2.B) < epsilon ||
                 glm::length(s.B-seg2.A) < epsilon && glm::length( s.A-seg2.B) < epsilon ){
                     find2 = true;
-                    idx2 = l;
+                    segments.erase(segments.begin() + l);
                 }
             }
 
-            
+            Triangle trgle;
+            trgle.A = segments[segmentsToAdd[k]];   
+            trgle.B = seg;
+            trgle.C = seg2;  
+            lstTriangle.push_back(trgle);
+
             if(!find1){
                 segments.push_back(seg);
-                segmentsToRender.push_back(seg);
             }
-            else{
-                segments.erase(segments.begin() + idx1);
-            }
-
+           
             if(!find2){
                 segments.push_back(seg2);
-                segmentsToRender.push_back(seg2);
-            }
-            else{
-                segments.erase(segments.begin() + idx2);
             }
            
        }
@@ -177,35 +218,56 @@ void LineRenderer::Triangulation(){
             segments.erase(segments.begin()+segmentsToAdd[k]);
         }
     }
-    
-    
-    for (int i = 0; i < segmentsToRender.size(); i++)
-    {
-        glm::vec3 a = segmentsToRender[i].A;
-        glm::vec3 b = segmentsToRender[i].B;
 
-        Object* A = new Object(*projet->GetCube());
-        A->SetName("Line");
-        glm::vec3 vec = a-b;
-        float normal = glm::length(vec);
-        vec = glm::normalize(vec);
-        A->SetScale(glm::vec3(0.2,normal,0.2));
-        glm::vec3 c = glm::vec3(0,1,0);
-        float dot = glm::dot(vec,c);
-        float angle = std::acosf(dot);
-        c = a + c;
-        glm::mat3 mat({
-            a.x,a.y,1.0,
-            b.x,b.y,1.0,
-            c.x,c.y,1.0,
-        });
-        if(glm::determinant(mat) < 0){
-            angle =-angle;
+    for (int i = 0; i < 3; i++)
+    {
+        
+       std::cout <<" ("<< lstTriangle[1][i].A.x << "," <<  lstTriangle[1][i].A.y << " )" <<std::endl;
+       std::cout <<" ("<< lstTriangle[1][i].B.x << "," <<  lstTriangle[1][i].B.y << " )" <<std::endl;
+    }
+
+    std::cout << " === " << std::endl;
+
+    for (int i = 0; i < 3; i++)
+    {
+        
+       std::cout <<" ("<< lstTriangle[0][i].A.x << "," <<  lstTriangle[0][i].A.y << " )" <<std::endl;
+       std::cout <<" ("<< lstTriangle[0][i].B.x << "," <<  lstTriangle[0][i].B.y << " )" <<std::endl;
+    }
+
+
+    
+    for (int i = 0; i < lstTriangle.size(); i++)
+    {
+        for (int k = 0; k < 3; k++)
+        {
+            glm::vec3 a = lstTriangle[i][k].A;
+            glm::vec3 b = lstTriangle[i][k].B;
+
+            Object* A = new Object(*projet->GetCube());
+            A->SetName("Line");
+            glm::vec3 vec = a-b;
+            float normal = glm::length(vec);
+            vec = glm::normalize(vec);
+            A->SetScale(glm::vec3(0.2,normal,0.2));
+            glm::vec3 c = glm::vec3(0,1,0);
+            float dot = glm::dot(vec,c);
+            float angle = std::acosf(dot);
+            c = a + c;
+            glm::mat3 mat({
+                a.x,a.y,1.0,
+                b.x,b.y,1.0,
+                c.x,c.y,1.0,
+            });
+            if(glm::determinant(mat) < 0){
+                angle =-angle;
+            }
+            A->SetPosition(a - vec*(normal/2.0f));
+            A->SetRotation(glm::vec3({0.0f,0.0f, angle * (180.0/glm::pi<float>()) }));
+            projet->GetScene()->AddObjectScene(A);
+            lstLines.push_back(A);
         }
-        A->SetPosition(a - vec*(normal/2.0f));
-        A->SetRotation(glm::vec3({0.0f,0.0f, angle * (180.0/glm::pi<float>()) }));
-        projet->GetScene()->AddObjectScene(A);
-        lstLines.push_back(A);
+        
     }
     
     return;
