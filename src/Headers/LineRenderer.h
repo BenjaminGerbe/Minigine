@@ -23,35 +23,30 @@ struct PolyPoint{
 struct Segment{
     glm::vec3 A;
     glm::vec3 B;
+    bool visible;
+
+    Segment(){
+        visible = true;
+    }
 };
 
 struct Triangle{
-    Segment A;
-    Segment B;
-    Segment C;
+    Segment* lst[3];
 
-    Segment operator[](int i){
-        if(i==0){
-            return A;
-        }
-        else if(i==1){
-            return B;
-        }
-        else if(i == 2){
-            return C;
-        }
+    Segment* operator[](int i){
+        return lst[i];
     }
 
-    void operator()(int i,Segment s){
-        if(i==0){
-            A = s;
-        }
-        else if(i==1){
-            B = s;
-        }
-        else if(i == 2){
-            C= s;
-        }
+    Segment* GetSegment(int i){
+        return lst[i];
+    }
+
+    void SetSegment(int i,Segment* s){
+        lst[i] = s;
+    }
+
+    void operator()(int i,Segment* s){
+        lst[i] = s;
     }
 };
 
