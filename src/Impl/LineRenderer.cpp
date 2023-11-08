@@ -1,7 +1,7 @@
 #include "../Headers/LineRenderer.h"
 #include "../Headers/Projet.h"
 
-Segment* FindSegment(std::vector<Triangle*> tr,Segment s){
+void FindSegment(std::vector<Triangle*> tr,Segment* s){
 
     float epsilon = std::numeric_limits<float>::epsilon();
     for (int i = 0; i < tr.size(); i++)
@@ -9,39 +9,20 @@ Segment* FindSegment(std::vector<Triangle*> tr,Segment s){
         Triangle triangle = *tr[i];
         for (int k = 0; k < 3; k++)
         {
-            if( (glm::length(triangle[k]->A-s.A) < epsilon &&
-              glm::length(triangle[k]->B-s.B) < epsilon )|| 
-              (glm::length(triangle[k]->A-s.B) < epsilon &&
-              glm::length(triangle[k]->B-s.A) < epsilon)
+            if( (glm::length(triangle[k]->A-s->A) < epsilon &&
+              glm::length(triangle[k]->B-s->B) < epsilon )|| 
+              (glm::length(triangle[k]->A-s->B) < epsilon &&
+              glm::length(triangle[k]->B-s->A) < epsilon)
               ){
-               //triangle[k]->visible = false;
-                return triangle[k];
+               s->visible = false;
+               triangle[k]->visible = false;
             }
         }
         
     }
-    return nullptr;
+  
 }
 
-Segment* FindSegment(Triangle* tr,Segment s){
-
-    float epsilon = std::numeric_limits<float>::epsilon();
-    
-    Triangle triangle = *tr;
-    for (int k = 0; k < 3; k++)
-    {
-        if( (glm::length(triangle[k]->A-s.A) < epsilon &&
-            glm::length(triangle[k]->B-s.B) < epsilon )|| 
-            (glm::length(triangle[k]->A-s.B) < epsilon &&
-            glm::length(triangle[k]->B-s.A) < epsilon)
-            ){
-            //triangle[k]->visible = false;
-            return triangle[k];
-        }
-    }
-        
-    return nullptr;
-}
  void LineRenderer::Triangulation(){
     float xmin = lstObject[0]->GetPosition().x;
     float ymin = lstObject[0]->GetPosition().y;
@@ -70,44 +51,40 @@ Segment* FindSegment(Triangle* tr,Segment s){
 
     Triangle* Trgle = new Triangle();
     //First Triangle
-    for (int i = 0; i < 3; i++)
-    {
-        int nxt = (i+1)%3;
-        int prec = (i-1);
-        if(prec < 0){
-            prec=2;
-        }
+   
+    glm::vec3 pt1 = points[0]->GetPosition();
+    glm::vec3 pt2 = points[1]->GetPosition();
+    glm::vec3 pt3 = points[2]->GetPosition();
 
-        glm::vec3 precV = points[prec]->GetPosition();
-        glm::vec3 nxtV = points[nxt]->GetPosition();
-        glm::vec3 currentV = points[i]->GetPosition();
-
-        glm::mat3 m({
-        precV.x,precV.y,1.0,
-        currentV.x,currentV.y,1.0,
-        nxtV.x,nxtV.y,1.0,
-        });
-
-        Segment* tmp = new Segment();
-        
-        tmp->A = points[i]->GetPosition();
-        tmp->B = points[nxt]->GetPosition();
-
-       
-        garbage.push_back(tmp);
-
-        if(glm::determinant(m) < 0){
-            tmp->A = points[nxt]->GetPosition();
-            tmp->B = points[i]->GetPosition();
-        }
-        //VisibleSegments.push_back(tmp);
-        (*Trgle)(i,tmp);
+    glm::mat3 mat({
+    pt1.x,pt1.y,1.0,
+    pt2.x,pt2.y,1.0,
+    pt3.x,pt3.y,1.0,
+    });
+//
+    if(glm::determinant(mat) < 0 ){
+        std::swap(pt1,pt2);
     }
 
-    Segment* seg1 = Trgle->GetSegment(0);
-    Segment* seg2 = Trgle->GetSegment(2);
-    (*Trgle)(0,seg2);
-    (*Trgle)(2,seg1);
+    Segment* seg1F = new Segment();
+    seg1F->A = pt1;
+    seg1F->B = pt2;
+    Segment* seg2F = new Segment();
+    seg2F->A = pt2;
+    seg2F->B = pt3;
+    Segment* seg3F = new Segment();
+    seg3F->A = pt3;
+    seg3F->B = pt1;
+
+    
+    garbage.push_back(seg1F);
+    garbage.push_back(seg2F);
+    garbage.push_back(seg3F);
+
+    Trgle->SetSegment(0,seg1F);
+    Trgle->SetSegment(1,seg2F);
+    Trgle->SetSegment(2,seg3F);
+
     lstTriangles.push_back(Trgle);
 
     for (int i = 0; i < 3; i++)
@@ -141,21 +118,22 @@ Segment* FindSegment(Triangle* tr,Segment s){
                 C.x,C.y,1.0,
                 B.x,B.y,1.0,
                 });
-            //glm::determinant(mat) < 0 && 
-                if(glm::dot(dir,normal) > 0){
+            //
+                if(glm::determinant(mat) < 0 && glm::dot(dir,normal) > 0){
                     continue;
                 }
 
                 Triangle* _triangle = new Triangle();
                
+                Segment* seg1 = new Segment();
+                seg1->A = A;
+                seg1->B = C;
+                Segment* seg2 = new Segment();
+                seg2->A = C;
+                seg2->B = B;
 
-                Segment seg1;
-                seg1.A = A;
-                seg1.B = C;
-                Segment seg2;
-                seg2.A = C;
-                seg2.B = B;
-           
+                garbage.push_back(seg1);
+                garbage.push_back(seg2);
 
                 if(Delaunay){
                     
@@ -164,65 +142,49 @@ Segment* FindSegment(Triangle* tr,Segment s){
                     glm::vec3 _C = B;
                     glm::vec3 _D = C;
 
+                 
                     glm::mat4 m({
                         _A.x,_A.y,std::pow(_A.x,2)+std::pow(_A.y,2),1,
-                        _B.x,_B.y,std::pow(_B.x,2)+std::pow(_B.y,2),1,
+                        _D.x,_D.y,std::pow(_D.x,2)+std::pow(_D.y,2),1,
                         _C.x,_C.y,std::pow(_C.x,2)+std::pow(_C.y,2),1,
-                        _D.x,_D.y,std::pow(_D.x,2)+std::pow(_D.y,2),1
+                        _B.x,_B.y,std::pow(_B.x,2)+std::pow(_B.y,2),1
                     });
 
-                    if(glm::determinant(m)<0){
-                        // triangle[1]->A = _B;
-                        // triangle[1]->B = _D;
+                     
 
+                    if(glm::determinant(m)>0 ){
 
+                        Segment* s1 = triangle.GetSegment(0); 
+                        Segment* s2 = triangle.GetSegment(1); 
+                        Segment* s3 = triangle.GetSegment(2); 
+                        s1->A = _A;
+                        s1->B = _D;
+                        s2->A = _D;
+                        s2->B = _B;
+                        s3->A = _B;
+                        s3->B = _A;
 
+                        seg =  new Segment();
+                        garbage.push_back(seg);
                         seg->A = _B;
                         seg->B = _D;
-                        int kidx = (k+1)%3;
-                        //Segment* trSeg2 = triangle.GetSegment(kidx);
-                        // trSeg2->A=_D;
-                        // trSeg2->B=_A;
-                        //triangle.SetSegment(k,seg);
-                        //  seg->A = _D;
-                        //  seg->B = _C;
-
-                        //  seg1.A = _B;
-                        //  seg1.B = _A;
-
-                        // seg1.A = _C;
-                        // seg1.B = _B;
-                        // _triangle->SetSegment(0, triangle[0]);  
+                        seg1->A = _D;
+                        seg1->B = _C;
+                        seg2->A = _C;
+                        seg2->B = _B;
+                      
                     }
                 }
-         
+
+
+                FindSegment(lstTriangles,seg);
+                FindSegment(lstTriangles,seg1);
+                FindSegment(lstTriangles,seg2);
+
                 _triangle->SetSegment(0,seg);  
-                Segment* _segment =FindSegment(lstTriangles,seg1);
-                if(_segment == nullptr){
-                    _segment = new Segment();
-                    _segment->A = seg1.A;
-                    _segment->B = seg1.B;
-                    garbage.push_back(_segment);
-                }
-                else{
-                    _segment->visible = false;
-                }
+                _triangle->SetSegment(1,seg1);
+                _triangle->SetSegment(2,seg2);
 
-                _triangle->SetSegment(1,_segment);
-
-             
-                _segment =_segment =FindSegment(lstTriangles,seg2);
-                if(_segment == nullptr){
-                    _segment = new Segment();
-                    _segment->A = seg2.A;
-                    _segment->B = seg2.B;
-                    garbage.push_back(_segment);
-                }
-                else{
-                    _segment->visible = false;
-                }
-
-                _triangle->SetSegment(2,_segment);
                 seg->visible = false;
                 lstTriangles.push_back(_triangle);
             }
@@ -231,7 +193,7 @@ Segment* FindSegment(Triangle* tr,Segment s){
     }
     
 
-    for (int i = 0; i < (int)1; i++)
+    for (int i = 0; i < (int)lstTriangles.size(); i++)
     {
         for (int k = 0; k < 3; k++)
         {
