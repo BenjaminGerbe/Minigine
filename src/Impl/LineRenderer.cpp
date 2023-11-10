@@ -76,7 +76,6 @@ void FindSegment(std::vector<Triangle*> tr,Segment* s){
     seg3F->A = pt3;
     seg3F->B = pt1;
 
-    
     garbage.push_back(seg1F);
     garbage.push_back(seg2F);
     garbage.push_back(seg3F);
@@ -161,6 +160,7 @@ void FindSegment(std::vector<Triangle*> tr,Segment* s){
                         s1->B = _D;
                         s2->A = _D;
                         s2->B = _B;
+                        s2->visible = false;
                         s3->A = _B;
                         s3->B = _A;
 
@@ -175,7 +175,6 @@ void FindSegment(std::vector<Triangle*> tr,Segment* s){
                       
                     }
                 }
-
 
                 FindSegment(lstTriangles,seg);
                 FindSegment(lstTriangles,seg1);
@@ -236,269 +235,6 @@ void FindSegment(std::vector<Triangle*> tr,Segment* s){
 
     return;
  }
-
-// void LineRenderer::Triangulation(){
-//     if(lstObject.size() <= 2)
-//         return;
-
-//     float xmin = lstObject[0]->GetPosition().x;
-//     float ymin = lstObject[0]->GetPosition().y;
-//     float epsilon = std::numeric_limits<float>::epsilon();
-//     int size = lstObject.size();
-//     std::vector<Object*> points(lstObject);
-//     bool finish = false;
-
-//     while(!finish){
-//         finish = true;
-//         for (int i = 0; i < lstObject.size()-1; i++)
-//         {
-//             glm::vec3 pt0 = points[i]->GetPosition();
-//             glm::vec3 pt1 = points[i+1]->GetPosition();
-            
-//             if(pt1.x < pt0.x || ( std::abs( pt1.x - pt0.x) < epsilon && pt1.y < pt0.y)){
-//                 std::swap(points[i],points[i+1]);
-//                 finish = false;
-//             }
-            
-//         }
-//     }
-    
-//     std::vector<Segment> segments;
-//     std::vector<Segment> segmentsToRender;
-//     std::vector<Triangle> lstTriangle;
-//     Triangle trgl;
-//     for (int i = 0; i < 3; i++)
-//     {
-//         int nxt = (i+1)%3;
-//         int prec = (i-1);
-//         if(prec < 0){
-//             prec=2;
-//         }
-
-//         glm::vec3 precV = points[prec]->GetPosition();
-//         glm::vec3 nxtV = points[nxt]->GetPosition();
-//         glm::vec3 currentV = points[i]->GetPosition();
-
-//         glm::mat3 m({
-//         precV.x,precV.y,1.0,
-//         currentV.x,currentV.y,1.0,
-//         nxtV.x,nxtV.y,1.0,
-//         });
-
-//         Segment tmp;
-
-//         if(glm::determinant(m) < 0){
-//             tmp.A = points[nxt]->GetPosition();
-//             tmp.B = points[i]->GetPosition();
-//         }
-//         else{
-//             tmp.A = points[i]->GetPosition();
-//             tmp.B = points[nxt]->GetPosition();
-//         }
-
-//         segments.push_back(tmp);
-//         segmentsToRender.push_back(tmp);
-
-//         trgl(i,tmp);
-//     }
-    
-//     Triangle tr;
-//     tr.A = trgl.C;
-//     tr.B = trgl.B;
-//     tr.C = trgl.A;
-
-//     points.erase(points.begin()+0);
-//     points.erase(points.begin()+0);
-//     points.erase(points.begin()+0);
-    
-//     lstTriangle.push_back(tr);
-
-
-//     for (int i = 0; i < points.size(); i++)
-//     {   
-//         glm::vec3 position = points[i]->GetPosition();
-//         std::vector<int> segmentsToAdd;
-//         for (int j = 0; j < segments.size(); j++)
-//         {
-//             glm::vec3 p1 = segments[j].A;
-//             glm::vec3 p2 = segments[j].B;
-//             glm::vec3 d = p2-p1;
-//             glm::vec3 normal(-d.y,d.x,p1.z);
-
-//             glm::mat3 mat({
-//             p1.x,p1.y,1.0,
-//             p2.x,p2.y,1.0,
-//             position.x,position.y,1.0,
-//             });
-
-//             glm::vec3 dir = glm::normalize(p1 - position);
-//             if(glm::determinant(mat) < 0){
-//               //  normal = -normal;
-//                 std::cout << "clockWize" << std::endl;
-//             }
-
-//             normal = glm::normalize(normal);
-//             if(glm::dot(normal,dir) > 0){
-//                 segmentsToAdd.push_back(j);
-//             }
-//         }
-        
-
-
-//        for (int k = 0; k < segmentsToAdd.size(); k++)
-//        {
-//             Segment seg;
-//             Segment seg2;
-//             glm::vec3 precV = segments[segmentsToAdd[k]].A;
-//             glm::vec3 nxtV = points[i]->GetPosition();
-//             glm::vec3 currentV = segments[segmentsToAdd[k]].B;
-
-//             glm::mat3 m({
-//             precV.x,precV.y,1.0,
-//             currentV.x,currentV.y,1.0,
-//             nxtV.x,nxtV.y,1.0,
-//             });
-
-//             if(glm::determinant(m) < 0){
-//                 seg.A = precV;
-//                 seg.B = nxtV;
-//                 seg2.A =nxtV;
-//                 seg2.B = currentV;
-//             }
-//             else{
-//                 seg.A = nxtV;
-//                 seg.B =  precV;
-//                 seg2.A = currentV;
-//                 seg2.B = nxtV;
-//             }
-
-//             bool find1 = false;
-//             bool find2 = false;
-
-//             for (int l = segments.size()-1; l >=0 ; l--)
-//             {
-//                 Segment s = segments[l];
-//                 if( glm::length(s.A-seg.A) < epsilon && glm::length( s.B-seg.B) < epsilon ||
-//                 glm::length(s.B-seg.A) < epsilon && glm::length( s.A-seg.B) < epsilon ){
-//                     find1 = true;
-//                     segments.erase(segments.begin() + l);
-//                 }
-
-//                 if( glm::length(s.A-seg2.A) < epsilon && glm::length( s.B-seg2.B) < epsilon ||
-//                 glm::length(s.B-seg2.A) < epsilon && glm::length( s.A-seg2.B) < epsilon ){
-//                     find2 = true;
-//                     segments.erase(segments.begin() + l);
-//                 }
-//             }
-
-//             Triangle trgle;
-//             trgle.A = segments[segmentsToAdd[k]];   
-//             trgle.B = seg;
-//             trgle.C = seg2;  
-//             lstTriangle.push_back(trgle);
-
-//             if(!find1){
-//                 segments.push_back(seg);
-//             }
-           
-//             if(!find2){
-//                 segments.push_back(seg2);
-//             }
-           
-//        }
-
-//         for (int k = segmentsToAdd.size()-1; k >= 0; k--)
-//         {
-//             segments.erase(segments.begin()+segmentsToAdd[k]);
-//         }
-//     }
-
-//     if(Delaunay){
-//         for (int i = 0; i < lstTriangle.size()-1; i++)
-//             {
-//                 Triangle gl1 = lstTriangle[i];
-//                 Triangle gl2 = lstTriangle[i+1];
-//                 glm::vec3 A = gl1[1].B;
-//                 glm::vec3 B = gl1[2].B;
-//                 glm::vec3 C = gl1[1].A;
-//                 glm::vec3 D = gl2[2].A;
-
-//                 glm::mat4 m({
-//                     A.x,A.y,std::pow(A.x,2)+std::pow(A.y,2),1,
-//                     B.x,B.y,std::pow(B.x,2)+std::pow(B.y,2),1,
-//                     C.x,C.y,std::pow(C.x,2)+std::pow(C.y,2),1,
-//                     D.x,D.y,std::pow(D.x,2)+std::pow(D.y,2),1
-//                 });
-
-//                 if(glm::determinant(m) > 0){
-//                     Triangle tr1;
-//                     Triangle tr2;
-//                     Segment seg;
-//                     seg.A = A;
-//                     seg.B = B;
-//                     tr1.A = seg;
-//                     seg.A = B;
-//                     seg.B = D;
-//                     tr1.B = seg;
-//                     seg.A = D;
-//                     seg.B = A;
-//                     tr1.C = seg;
-
-//                     seg.A = D;
-//                     seg.B = B;
-//                     tr2.A = seg;
-//                     seg.A = B;
-//                     seg.B =C;
-//                     tr2.B = seg;
-//                     seg.A = C;
-//                     seg.B = D;
-//                     tr2.C = seg;
-
-                   
-//                     lstTriangle[i] = tr1;
-//                     lstTriangle[i+1] = tr2;
-//                 }
-
-//             }
-  
-//     }
-    
-
-//     for (int i = 0; i < lstTriangle.size(); i++)
-//     {
-//         for (int k = 0; k < 3; k++)
-//         {
-//             glm::vec3 a = lstTriangle[i][k].A;
-//             glm::vec3 b = lstTriangle[i][k].B;
-
-//             Object* A = new Object(*projet->GetCube());
-//             A->SetName("Line");
-//             glm::vec3 vec = a-b;
-//             float normal = glm::length(vec);
-//             vec = glm::normalize(vec);
-//             A->SetScale(glm::vec3(0.2,normal,0.2));
-//             glm::vec3 c = glm::vec3(0,1,0);
-//             float dot = glm::dot(vec,c);
-//             float angle = std::acosf(dot);
-//             c = a + c;
-//             glm::mat3 mat({
-//                 a.x,a.y,1.0,
-//                 b.x,b.y,1.0,
-//                 c.x,c.y,1.0,
-//             });
-//             if(glm::determinant(mat) < 0){
-//                 angle =-angle;
-//             }
-//             A->SetPosition(a - vec*(normal/2.0f));
-//             A->SetRotation(glm::vec3({0.0f,0.0f, angle * (180.0/glm::pi<float>()) }));
-//             projet->GetScene()->AddObjectScene(A);
-//             SegmentTriangles.push_back(A);
-//         }
-        
-//     }
-    
-//     return;
-// }
 
 void LineRenderer::GrahamScan(){
 
@@ -817,8 +553,8 @@ void LineRenderer::Update(){
         CreateLine();
     }
     else if(!RenderLine && lstLines.size() > 0){
-        // projet->GetScene()->RemoveObjectScene(lstLines);
-        // lstLines.clear();
+        projet->GetScene()->RemoveObjectScene(lstLines);
+        lstLines.clear();
     }
 
     return;
