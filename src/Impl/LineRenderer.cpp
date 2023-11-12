@@ -454,9 +454,11 @@ void LineRenderer::Editor(){
     if(ImGui::Button("Graham-Scan")){
         GrahamScan();
     }
+    ImGui::Spacing();
     if(ImGui::Button("Triangulation")){
         Triangulation();
     }
+    ImGui::Spacing();
     if(ImGui::Button("ClearTriangulation")){
         projet->GetScene()->RemoveObjectScene(SegmentTriangles);
         SegmentTriangles.clear();
