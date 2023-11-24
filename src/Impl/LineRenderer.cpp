@@ -269,7 +269,6 @@ void LineRenderer::GrahamScan(){
         float dot = glm::dot(v,pp);
         float angle = std::acosf(dot);
 
-
         glm::mat3 mat({
             a.x,a.y,1.0,
             B.x,B.y,1.0,
@@ -303,8 +302,6 @@ void LineRenderer::GrahamScan(){
 
     }
     
-   
-
     int nonConvex = false;
     while(!nonConvex){
         nonConvex = true;

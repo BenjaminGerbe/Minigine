@@ -21,7 +21,7 @@ void Projet::SetUpDefaultObject(){
     Object* oLight = new Object(defaultPrimitive[0],Materials[0],"light",o_Light);
     Object* oCamera = new Object(defaultPrimitive[0],Materials[0],"camera",o_Camera);
     Object* LineRenderer = new Object(defaultPrimitive[0],Materials[0],"LineRenderer",o_LineRenderer);
-
+    
     objects.push_back(Empty);
     objects.push_back(Cube);
     objects.push_back(Dragon);

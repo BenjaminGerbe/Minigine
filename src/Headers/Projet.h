@@ -19,7 +19,7 @@ class Projet{
 
     public :
     Projet(){
-       // SetUpDefaultPrimitive();
+        // SetUpDefaultPrimitive();
         // SetUpDefaultObject();
         // SetUpComponents();
     }

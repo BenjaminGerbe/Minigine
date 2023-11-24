@@ -81,7 +81,6 @@ int main(int, char**){
         return 1;
     }
 
-
     // Create Shader/Material
     Shader* shader = new Shader("frag.glsl","vs.glsl");
     Shader* pbrShader = new Shader("PBR.vs.glsl","PBR.fs.glsl");
@@ -97,14 +96,15 @@ int main(int, char**){
     LoadProjetImage("brickwall.jpg",projet);
     LoadProjetImage("brickwall_normal.jpg",projet);
 
-
     Mesh* m_Cube = new Mesh(verticesArray,sizeof(verticesArray),indicesArray,sizeof(indicesArray),6,"CUBE");
     Mesh* m_Dragon = new Mesh(DragonVertices,sizeof(DragonVertices),DragonIndices,sizeof(DragonIndices),8,"DRAGON");
+    Mesh* m_Plane = new Mesh(PlaneVertices,sizeof(PlaneVertices),PlaneIndices,sizeof(PlaneIndices),6,"PLANE");
     Mesh* m_blank = new Mesh(nullptr,0.0f,nullptr,0.0f,0,"BLANK");
 
     projet.AddPrimitive(m_blank);
     projet.AddPrimitive(m_Cube);
     projet.AddPrimitive(m_Dragon);
+    projet.AddPrimitive(m_Plane);
 
     projet.SetUpDefaultObject();
     projet.SetUpComponents();
@@ -154,7 +154,6 @@ int main(int, char**){
     colors[ImGuiCol_TabActive]              = ImVec4(0.28f, 0.28f, 0.28f, 1.00f);
     colors[ImGuiCol_Header]                 = ImVec4(0.21f, 0.20f, 0.21f, 0.80f);
 
-
     ImGui::GetStyle().WindowRounding = 9.0f;
     ImGui::GetStyle().FramePadding = ImVec2(11.0f,11.0f);
     ImGui::GetStyle().WindowBorderSize = 0.0f;
@@ -168,10 +167,8 @@ int main(int, char**){
         }
     }
 
-
     while(!glfwWindowShouldClose(window)){
         i += 0.1f;
-
 
         height = (float)app.GetHeight();
         width = (float)app.GetWidth();
@@ -185,6 +182,7 @@ int main(int, char**){
         std::vector<LightComp*> Lights = sceneBuffer->GetLightComp();
         std::vector<CameraComp*> Cameras = sceneBuffer->GetCameras();
         int idx = 0;
+
         for (int i = 0; i < projet.GetScene()->GetObjects().size(); i++)
         {
             Object* obj = projet.GetScene()->GetObjects()[i];
@@ -198,13 +196,13 @@ int main(int, char**){
                     c->Update();
             }
         }
-     
+
         // UI
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
 
         ImGui::NewFrame();
-       
+
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
         displayerManager.RenderAllRenderWindows((int)(width/2.0),(int)(height/2.0),&projet);
