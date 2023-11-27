@@ -106,7 +106,7 @@ void Scene::Render(glm::mat4* _MVP,int flags){
 
                 glUseProgram(shaderID);
                 if(flags & WireFrame){
-                    glUseProgram(programShaderWireFrame);
+                    glUseProgram(Objects[i]->GetMaterial()->GetShader()->GetWireFrame());
                 } 
               
                 glm::mat4 cameraView = _MVP[0];

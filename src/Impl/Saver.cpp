@@ -18,7 +18,6 @@ void Saver::SaveScene(Scene* scene){
         yamlFile[id]["Color"].push_back(obj->GetColor().y);
         yamlFile[id]["Color"].push_back(obj->GetColor().z);
         
-        
         yamlFile[id]["ComponentSize"] = obj->GetComponents().size();
         for (int i = 0; i < obj->GetComponents().size(); i++)
         {

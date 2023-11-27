@@ -13,6 +13,7 @@ file(GLOB_RECURSE Ressources
      "*.glsl"
      "*.png"
      "*.jpg"
+     "*.obj"
 )
 
 
@@ -39,6 +40,8 @@ include_directories(../libs/tinyxml2)
 # stbload
 include_directories(../libs/stb_load)
 
+# tiny obj
+include_directories(../libs/tinyobj)
 
 
 set(ICON_FILE "${CMAKE_SOURCE_DIR}/Minigine.ico")

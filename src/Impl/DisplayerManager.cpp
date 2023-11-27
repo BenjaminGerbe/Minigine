@@ -531,6 +531,17 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
                 }
                 ImGui::EndMenu();
             }
+            
+            if (ImGui::BeginMenu("Shader"))
+            {
+                if (ImGui::MenuItem("Recompile",NULL)) {
+                    for(auto mat : projet->GetMaterials()){
+                        mat->GetShader()->Compile();
+                    }
+                }
+                
+                ImGui::EndMenu();
+            }
 
             if (ImGui::BeginMenu("Objects"))
             {

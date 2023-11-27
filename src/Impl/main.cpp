@@ -33,6 +33,9 @@
 #include "../Headers/Material.h"
 #include "../data.h"
 
+#define TINYOBJLOADER_IMPLEMENTATION 
+#include "../tinyobj/tiny_obj_loader.h"
+
 #include "../stbload/stb_image.h"
 #include "../stbload/stb_image_write.h"
 
@@ -44,6 +47,49 @@ GameView gameView;
 #include "TCHAR.h"
 #include "pdh.h"
 
+struct ObjState {
+    std::vector<float> vertices;
+    std::vector<unsigned int> indices;
+};
+
+ObjState* LoadObj(const std::string& filePath) {
+    ObjState* objState = new ObjState();
+
+    tinyobj::ObjReaderConfig reader_config;
+    tinyobj::ObjReader reader;
+
+    if (!reader.ParseFromFile(filePath, reader_config)) {
+        if (!reader.Error().empty()) {
+            std::cerr << "Error loading obj file: " << reader.Error();
+        }
+        return objState; // Return an empty state if loading fails
+    }
+
+    if (!reader.Warning().empty()) {
+        std::cerr << "Warning loading obj file: " << reader.Warning();
+    }
+
+    const auto& attrib = reader.GetAttrib();
+    const auto& shapes = reader.GetShapes();
+
+    for (const auto& shape : shapes) {
+        for (const auto& index : shape.mesh.indices) {
+            objState->vertices.push_back(attrib.vertices[3 * index.vertex_index + 0]);
+            objState->vertices.push_back(attrib.vertices[3 * index.vertex_index + 1]);
+            objState->vertices.push_back(attrib.vertices[3 * index.vertex_index + 2]);
+
+            if (index.normal_index >= 0) {
+                objState->vertices.push_back( attrib.normals[3*size_t(index.normal_index)+0]);
+                objState->vertices.push_back( attrib.normals[3*size_t(index.normal_index)+1]);
+                objState->vertices.push_back( attrib.normals[3*size_t(index.normal_index)+2]);
+            }
+
+            objState->indices.push_back(static_cast<unsigned int>(objState->indices.size()));
+        }
+    }
+
+    return objState;
+}
 static PDH_HQUERY cpuQuery;
 static PDH_HCOUNTER cpuTotal;
 
@@ -81,14 +127,19 @@ int main(int, char**){
         return 1;
     }
 
+    ObjState* obj = LoadObj("WaterSurfaceobj.obj");
+
     // Create Shader/Material
     Shader* shader = new Shader("frag.glsl","vs.glsl");
     Shader* pbrShader = new Shader("PBR.vs.glsl","PBR.fs.glsl");
+    Shader* waterShader = new Shader("Watervs.glsl","Waterfs.glsl");
     Material* mat = new Material(shader,"Default Material");
+    WaterMaterial* mat_water = new WaterMaterial(waterShader,"Water Material");
     PBRMaterial* PBRmat = new PBRMaterial(pbrShader,"PBR Material");
 
     projet.AddMaterial(mat);
     projet.AddMaterial(PBRmat);
+    projet.AddMaterial(mat_water);
 
     LoadProjetImage("Minigine.png",projet);
     LoadProjetImage("Cube.png",projet);
@@ -98,7 +149,8 @@ int main(int, char**){
 
     Mesh* m_Cube = new Mesh(verticesArray,sizeof(verticesArray),indicesArray,sizeof(indicesArray),6,"CUBE");
     Mesh* m_Dragon = new Mesh(DragonVertices,sizeof(DragonVertices),DragonIndices,sizeof(DragonIndices),8,"DRAGON");
-    Mesh* m_Plane = new Mesh(PlaneVertices,sizeof(PlaneVertices),PlaneIndices,sizeof(PlaneIndices),6,"PLANE");
+    Mesh* m_Plane = new Mesh(&obj->vertices[0],obj->vertices.size()*sizeof(float),
+    &obj->indices[0],obj->indices.size()*(sizeof(unsigned int)),6,"PLANE");
     Mesh* m_blank = new Mesh(nullptr,0.0f,nullptr,0.0f,0,"BLANK");
 
     projet.AddPrimitive(m_blank);

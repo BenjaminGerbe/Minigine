@@ -21,6 +21,7 @@ void Projet::SetUpDefaultObject(){
     Object* oLight = new Object(defaultPrimitive[0],Materials[0],"light",o_Light);
     Object* oCamera = new Object(defaultPrimitive[0],Materials[0],"camera",o_Camera);
     Object* LineRenderer = new Object(defaultPrimitive[0],Materials[0],"LineRenderer",o_LineRenderer);
+    Object* Water = new Object(defaultPrimitive[3],Materials[2],"Water",o_ClassicObject);
     
     objects.push_back(Empty);
     objects.push_back(Cube);
@@ -28,5 +29,6 @@ void Projet::SetUpDefaultObject(){
     objects.push_back(oLight);
     objects.push_back(oCamera);
     objects.push_back(LineRenderer);
+    objects.push_back(Water);
 
 }

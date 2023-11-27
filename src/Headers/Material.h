@@ -124,3 +124,39 @@ class PBRMaterial: public Material{
         delete SpecularColor;
     }
 };
+
+
+class WaterMaterial: public Material{
+    float time;    
+    public : 
+
+    WaterMaterial(Shader* _shader,char* _name):Material(_shader,_name){
+       time = 0;
+    }
+    
+    WaterMaterial(WaterMaterial& copy):Material(copy){
+       
+    }
+
+    WaterMaterial operator=(WaterMaterial& copy){
+        this->operator=(copy);
+        time = time;
+
+       return *this;
+    }
+
+    virtual void Editor(){
+        //ImGui::ColorPicker3("Ambiante Color",Ambiante);
+        //ImGui::ColorPicker3("DiffuseColor",DiffuseColor);
+    }
+
+    virtual void ApplyParameter(){
+        glUniform1f(glGetUniformLocation(shader->GetIDX(), "time"),	glfwGetTime()); 
+        glUniform1f(glGetUniformLocation(shader->GetWireFrame(), "time"),	glfwGetTime()); 
+        
+        return;
+    }
+
+    ~WaterMaterial(){
+    }
+};

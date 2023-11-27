@@ -12,7 +12,7 @@
 #include <ext/scalar_constants.hpp> // glm::pi
 #include <gtc/type_ptr.hpp>
 
-struct Vertex
+struct $
 {
     glm::vec3 position;
     glm::vec3 normal;
