@@ -127,11 +127,23 @@ class PBRMaterial: public Material{
 
 
 class WaterMaterial: public Material{
-    float time;    
-    public : 
+    float time;   
+    float direction[2];
+    float frequency;
+    float amplitude;
+    float steepness;
+    float speed;
 
+    public : 
     WaterMaterial(Shader* _shader,char* _name):Material(_shader,_name){
        time = 0;
+       direction[0] = 1.0f;
+       direction[1] = 0.0f;
+
+       frequency = 1.0;
+       amplitude = 1.0;
+       steepness = .5;
+       speed = 1.0;
     }
     
     WaterMaterial(WaterMaterial& copy):Material(copy){
@@ -146,13 +158,29 @@ class WaterMaterial: public Material{
     }
 
     virtual void Editor(){
-        //ImGui::ColorPicker3("Ambiante Color",Ambiante);
-        //ImGui::ColorPicker3("DiffuseColor",DiffuseColor);
+        ImGui::DragFloat2("Direction",&direction[0]);
+        ImGui::DragFloat("Frequency",&frequency,0.1f);
+        ImGui::DragFloat("Amplitude",&amplitude,0.1f);
+        ImGui::DragFloat("Steepness",&steepness,0.1f);
+        ImGui::DragFloat("Speed",&speed);
     }
 
     virtual void ApplyParameter(){
+
         glUniform1f(glGetUniformLocation(shader->GetIDX(), "time"),	glfwGetTime()); 
-        glUniform1f(glGetUniformLocation(shader->GetWireFrame(), "time"),	glfwGetTime()); 
+        glUniform1fv(glGetUniformLocation(shader->GetIDX(), "wavesData.frequency"),1,	&frequency); 
+        glUniform1fv(glGetUniformLocation(shader->GetIDX(), "wavesData.steepness"),	1,&steepness); 
+        glUniform1fv(glGetUniformLocation(shader->GetIDX(), "wavesData.speed"),	1,&speed); 
+        glUniform2fv(glGetUniformLocation(shader->GetIDX(), "wavesData.direction"),	1,&direction[0]); 
+        glUniform1fv(glGetUniformLocation(shader->GetIDX(), "wavesData.amplitude"),	1,&amplitude); 
+
+
+        // glUniform1f(glGetUniformLocation(shader->GetWireFrame(), "time"),	glfwGetTime()); 
+        // glUniform1fv(glGetUniformLocation(shader->GetWireFrame(), "wavesData.amplitude"),1,&amplitude); 
+        // glUniform1fv(glGetUniformLocation(shader->GetWireFrame(), "wavesData.steepness"),1,	&steepness); 
+        // glUniform1fv(glGetUniformLocation(shader->GetWireFrame(), "wavesData.frequency"),1,	&frequency); 
+        // glUniform1fv(glGetUniformLocation(shader->GetWireFrame(), "wavesData.speed"),1,	&speed); 
+
         
         return;
     }

@@ -132,7 +132,7 @@ int main(int, char**){
     // Create Shader/Material
     Shader* shader = new Shader("frag.glsl","vs.glsl");
     Shader* pbrShader = new Shader("PBR.vs.glsl","PBR.fs.glsl");
-    Shader* waterShader = new Shader("Watervs.glsl","Waterfs.glsl");
+    Shader* waterShader = new Shader("Watervs2.glsl","Waterfs.glsl");
     Material* mat = new Material(shader,"Default Material");
     WaterMaterial* mat_water = new WaterMaterial(waterShader,"Water Material");
     PBRMaterial* PBRmat = new PBRMaterial(pbrShader,"PBR Material");
