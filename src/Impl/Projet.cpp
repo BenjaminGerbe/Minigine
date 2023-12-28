@@ -5,6 +5,7 @@
 #include "../Headers/Light.h"
 #include "../Headers/MaterialComponent.h"
 #include "../Headers/MeshComponent.h"
+#include "../Headers/WaterComponent.h"
 
 void Projet::SetUpComponents(){
     Components.push_back(new CameraComp(objects[5]));
@@ -12,6 +13,7 @@ void Projet::SetUpComponents(){
     Components.push_back(new LineRenderer(objects[5]));
     Components.push_back(new MeshComponent(objects[5]));
     Components.push_back(new MaterialComp(objects[5]));
+    Components.push_back(new WaterComp(objects[5]));
 }
 
 void Projet::SetUpDefaultObject(){

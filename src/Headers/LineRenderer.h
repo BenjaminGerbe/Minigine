@@ -24,7 +24,6 @@ struct Segment{
     glm::vec3 A;
     glm::vec3 B;
     bool visible;
-
     Segment(){
         visible = true;
     }
@@ -48,6 +47,79 @@ struct Triangle{
     void operator()(int i,Segment* s){
         lst[i] = s;
     }
+
+};
+
+struct TrianglePoint{
+
+    glm::vec3 s1;
+    glm::vec3 s2;
+    glm::vec3 s3;
+
+    TrianglePoint(){
+        s1 = glm::vec3(NULL);
+        s2 = glm::vec3(NULL);
+        s2 = glm::vec3(NULL);
+    }
+
+    glm::vec3 operator[](int i){
+        
+        int idx = i%3;
+
+        if(idx == 0) return s1;
+        if(idx == 1) return s2;
+        if(idx == 2) return s3;
+        
+        return s3;
+    }
+
+    
+    void setValue(int i, glm::vec3 value){
+        
+        int idx = i%3;
+        if(idx == 0) s1 = value;
+        if(idx == 1) s2 = value;
+        if(idx == 2) s3 = value;
+    }
+
+    bool isComplete(){
+        bool complete = true;
+        for (int i = 0; i < 3; i++)
+        {
+            if((*this)[i].x == NULL){
+                complete = false;
+                break;
+            }
+        }
+        
+        return complete;
+    }
+
+
+    bool operator==(TrianglePoint &trianglePoint){
+        float epsilon = std::numeric_limits<float>::epsilon();
+        
+        bool same = false;;
+
+        for (int i = 0; i < 3; i++)
+        {
+            same = false;
+            for (int j = 0; j < 3; j++)
+            {
+                if( glm::length((*this)[i] - trianglePoint[j]) < epsilon){
+                    same = true; 
+                }
+            }
+
+            if(!same){
+                break;
+            }
+        }
+        
+
+        return same;
+    }
+
 };
 
 class LineRenderer:public Component{
@@ -56,10 +128,14 @@ class LineRenderer:public Component{
     std::vector<Object*> lstObject;
     std::vector<Object*> lstLines;
     std::vector<Object*> SegmentTriangles;
+    std::vector<Segment*> Segments;
+    std::vector<Triangle*> trianglesPoints;
     int lastIdx;
     bool RenderLine;
     bool start ;
     bool Delaunay;
+    bool DelaunayTriangulation;
+    bool supression;
     
     public :
     virtual void Editor();
@@ -91,6 +167,8 @@ class LineRenderer:public Component{
 
     }
 
+    
+
     LineRenderer(std::string id,int i,YAML::Node& yamlFile,Object* obj):Component(id,i,yamlFile,obj){
         headerName = "LineRenderer";
         RenderLine = yamlFile[id][i]["RenderLine"].as<bool>();
@@ -108,12 +186,18 @@ class LineRenderer:public Component{
     }
 
     void CreateLine();
+
+    void CreateLine(std::vector<Segment*> segment);
+
+    void  LineRenderer::CreateLineTriangle(std::vector<Triangle*>lstTriangles);
     
     void GiftWraping();
 
     void GrahamScan();
 
     void Triangulation();
+
+    void TriangulationDelaunay();
 
     LineRenderer operator=(const LineRenderer& copy){
         return *this;

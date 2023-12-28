@@ -9,7 +9,8 @@ enum ComponentID{
     c_Camera,
     c_LineRenderer,
     c_Mesh,
-    c_Material
+    c_Material,
+    c_Water
 };
 
 class Component

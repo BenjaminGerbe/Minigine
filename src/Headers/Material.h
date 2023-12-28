@@ -62,8 +62,6 @@ class Material
     char* GetName(){
         return this->name;
     }
-
-
         
 };
 

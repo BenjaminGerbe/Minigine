@@ -104,6 +104,9 @@ void Saver::LoadScene(Projet* projet){
             else if(ID == c_Material){
                 tempObj->AddComponent(new MaterialComp(id,j,yamlFile,tempObj));
             }
+            else if(ID == c_Water){
+                tempObj->AddComponent(new WaterComp(id,j,yamlFile,tempObj));
+            }
         }
         
         tempObj->SetObjectType(type);
