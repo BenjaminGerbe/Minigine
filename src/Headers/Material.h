@@ -50,6 +50,12 @@ class Material
         return shader;
     }
 
+    void SetColor(float r,float g,float b){
+        color[0] = r;
+        color[1] = g;
+        color[2] = b;
+    }
+
     virtual void ApplyParameter(){
         glUniform3fv(glGetUniformLocation(shader->GetIDX(), "color"), 1,&color[0]); 
     }

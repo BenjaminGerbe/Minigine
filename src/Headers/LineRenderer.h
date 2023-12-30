@@ -31,6 +31,7 @@ struct Segment{
 
 struct Triangle{
     Segment* lst[3];
+    glm::vec3 circumcircle;
 
     Segment* operator[](int i){
         return lst[i];
@@ -127,6 +128,7 @@ class LineRenderer:public Component{
     Projet* projet;
     std::vector<Object*> lstObject;
     std::vector<Object*> lstLines;
+    std::vector<Object*> lstLinesVornoi;
     std::vector<Object*> SegmentTriangles;
     std::vector<Segment*> Segments;
     std::vector<Triangle*> trianglesPoints;
@@ -136,7 +138,8 @@ class LineRenderer:public Component{
     bool Delaunay;
     bool DelaunayTriangulation;
     bool supression;
-    
+    float time;
+    bool Voronoi;
     public :
     virtual void Editor();
     virtual void SetUp();
@@ -189,7 +192,7 @@ class LineRenderer:public Component{
 
     void CreateLine(std::vector<Segment*> segment);
 
-    void  LineRenderer::CreateLineTriangle(std::vector<Triangle*>lstTriangles);
+    void CreateLineTriangle(std::vector<Triangle*>lstTriangles);
     
     void GiftWraping();
 
@@ -198,6 +201,10 @@ class LineRenderer:public Component{
     void Triangulation();
 
     void TriangulationDelaunay();
+
+    void SuppressionDelaunay(glm::vec3 mousePosition);
+
+    void RenderVoronoi();
 
     LineRenderer operator=(const LineRenderer& copy){
         return *this;
