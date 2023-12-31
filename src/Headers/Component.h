@@ -10,7 +10,8 @@ enum ComponentID{
     c_LineRenderer,
     c_Mesh,
     c_Material,
-    c_Water
+    c_Water,
+    c_LineRenderer3D
 };
 
 class Component

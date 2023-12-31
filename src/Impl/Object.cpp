@@ -64,10 +64,10 @@ glm::mat4 Object::GetTransformation(){
         
         transformation = glm::mat4(1.0f);
         transformation *= glm::translate(glm::mat4(1.0f),position);
-        transformation *= glm::rotate(glm::mat4(1.0f), rotation.x * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         transformation *= glm::rotate(glm::mat4(1.0f), rotation.y * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        transformation *= glm::rotate(glm::mat4(1.0f), rotation.x * (glm::pi<float>() / 180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         transformation *= glm::rotate(glm::mat4(1.0f), rotation.z * (glm::pi<float>() / 180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
         transformation *= glm::scale(glm::mat4(1.0f),scale);  
-      
+
         return transformation;
 };

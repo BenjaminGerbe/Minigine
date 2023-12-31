@@ -107,6 +107,7 @@ class Object{
     glm::vec3 GetRotation(){ return rotation; }
     glm::vec3 GetScale(){ return scale; }
     glm::vec3 GetForward(){ return glm::vec3( GetTransformation() * glm::vec4({0.0,0.0,1.0,0.0})); }
+    glm::vec3 GetUp(){ return glm::vec3( GetTransformation() * glm::vec4({0.0,1.0,0.0,0.0})); }
     glm::mat4 GetTransformation();
     ObjectType GetObjectType(){ return objectType;}
     std::string GetStrName(){ return this->name; }

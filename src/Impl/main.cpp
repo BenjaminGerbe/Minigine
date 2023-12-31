@@ -135,6 +135,8 @@ int main(int, char**){
     Shader* waterShader = new Shader("Watervs2.glsl","Waterfs.glsl");
     Material* mat = new Material(shader,"Default Material");
     Material* red = new Material(shader,"Red");
+    Material* violet = new Material(shader,"Violet");
+    Material* bleu = new Material(shader,"Bleu");
     WaterMaterial* mat_water = new WaterMaterial(waterShader,"Water Material");
     PBRMaterial* PBRmat = new PBRMaterial(pbrShader,"PBR Material");
 
@@ -142,6 +144,8 @@ int main(int, char**){
     projet.AddMaterial(mat);
     projet.AddMaterial(PBRmat);
     projet.AddMaterial(mat_water);
+    projet.AddMaterial(violet);
+    projet.AddMaterial(bleu);
     projet.AddMaterial(red);
 
     LoadProjetImage("Minigine.png",projet);

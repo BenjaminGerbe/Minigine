@@ -11,6 +11,7 @@
 #include "MeshComponent.h"
 #include "MaterialComponent.h"
 #include "WaterComponent.h"
+#include "LineRenderer3D.h"
 
 namespace Saver{
     void SaveScene(Scene* scene);
