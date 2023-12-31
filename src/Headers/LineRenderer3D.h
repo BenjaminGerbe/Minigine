@@ -5,8 +5,11 @@
 #include "imgui_impl_opengl3.h"
 #include "Object.h"
     
+class Edge;
+class Face;
 
 enum Visible{
+    none,
     border,
     see,
     unsee
@@ -23,12 +26,40 @@ struct Edge{
     Vertex* v2;
     Visible visible;
     std::vector<Face*> faces;
+
+    
+    Vertex* operator[](int i){
+        if (i == 0){
+            return v1;
+        }
+        else if(i == 1){
+            return v2;
+        }
+
+        return v1;
+    }
+
+
 };
 struct Face{
     Edge* e1;
     Edge* e2;
     Edge* e3;
      Visible visible;
+
+     Edge* operator[](int i){
+        if (i == 0){
+            return e1;
+        }
+        else if(i == 1){
+            return e2;
+        }
+        else if(i == 2){
+            return e3;
+        }
+
+        return e1;
+     }
 };
 
 

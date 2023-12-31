@@ -22,7 +22,7 @@ void LineRenderer3D::GeneratePoint(){
 }
 
 void LineRenderer3D::CreateConvexShape(){
-    if(step < 0 || lstObject.size() < 4) return;
+    if(step < 1 || lstObject.size() < 4) return;
     if(step == 1 && step != laststep){
         update = true;
 
@@ -60,7 +60,7 @@ void LineRenderer3D::CreateConvexShape(){
             {0, 1, 3},
             {0, 2, 4},
             {1, 2, 5},
-            {3, 2, 5}
+            {3, 4, 5}
         };
 
         // Boucle pour créer les faces
@@ -71,26 +71,42 @@ void LineRenderer3D::CreateConvexShape(){
             f->e2 = edges[faceIndices[i][1]];
             f->e3 = edges[faceIndices[i][2]];
             faces.push_back(f);
-            edges[faceIndices[i][0]].push_back(f);
-            edges[faceIndices[i][1]].push_back(f);
-            edges[faceIndices[i][2]].push_back(f);
+            edges[faceIndices[i][0]]->faces.push_back(f);
+            edges[faceIndices[i][1]]->faces.push_back(f);
+            edges[faceIndices[i][2]]->faces.push_back(f);
         }
         lastIdx += 4;
     }
 
-    if(step != laststep){
+    if(step > 1 && step != laststep){
+        update = true;
         glm::vec3 P = lstObject[lastIdx]->GetPosition();
         for (int i = 0; i < faces.size(); i++)
         {
-            glm::vec3 tangent = glm::normalize(faces[i]->e1->v2->position - faces[i]->e1->v1->position);
-            glm::vec3 biNormal = glm::normalize(faces[i]->e2->v2->position - faces[i]->e2->v1->position);
+            std::vector<Vertex*> point;
+
+            for (int j = 0; j < 3; j++)
+            {   
+                for (int k = 0; k < 2; k++)
+                {
+                    Face f = *faces[i];
+                    Vertex* v = (*f[j])[k];
+                    if(std::find(point.begin(),point.end(),v) == point.end()){
+                        point.push_back(v);
+                    }
+                }
+            }
+            
+
+            glm::vec3 tangent = glm::normalize(point[1]->position - point[0]->position);
+            glm::vec3 biNormal = glm::normalize(point[2]->position -  point[0]->position);
             glm::vec3 normal = glm::cross(biNormal,tangent);
 
             int idx = 0;
 
             while(idx < vertices.size()){
                 if(vertices[idx] != faces[i]->e1->v1 || vertices[idx] !=  faces[i]->e1->v2  ||
-                vertices[idx] != faces[i]->e2->v1 || vertices[idx] !=  faces[i]->e2->v2 
+                vertices[idx] != faces[i]->e2->v1 || vertices[idx] !=  faces[i]->e2->v2 ||
                 vertices[idx] != faces[i]->e3->v1 || vertices[idx] !=  faces[i]->e3->v2 
              ){
                 break;
@@ -99,12 +115,12 @@ void LineRenderer3D::CreateConvexShape(){
              }
             }
 
-            glm::vec3 dir = glm::normalize( vertices[idx]->position - faces[i]->e1->v1->position);
-            if(glm::dot(dir,normal) < 0){
-                normal = -nomal;
+            glm::vec3 dir = glm::normalize(  faces[i]->e1->v1->position - vertices[idx]->position);
+            if(glm::dot(dir,normal) > 0){
+                normal = -normal;
             }
 
-            dir = glm::normalize( vertices[idx]->position - P);
+            dir = glm::normalize( P - vertices[idx]->position);
 
             if(glm::dot(dir,normal) > 0){
                 faces[i]->visible = see;
@@ -117,24 +133,42 @@ void LineRenderer3D::CreateConvexShape(){
         for (int i = 0; i < edges.size(); i++)
         {
             Edge* e = edges[i];
-            Visible v = edges[i]->visible;
-            for (int k = 1; k < edges[i]->faces.size(); k++)
-            {
-                if( edges[i]->faces[k]->visible == see && v == unsee || edges[i]->faces[k]->visible == unsee && v == see ){
-                    v = border;
-                }
+            e->visible = edges[i]->faces[0]->visible;
+            if( edges[i]->faces[0]->visible != edges[i]->faces[1]->visible){
+                e->visible = border;
             }
 
-            edges[i]->v1->visible = v;
-            edges[i]->v2->visible = v;
+        }
+
+        for (int i = 0; i < edges.size(); i++)
+        {
+            if(edges[i]->visible == unsee){
+                edges[i]->v1->visible = unsee;
+                edges[i]->v1->visible = unsee;
+            }
+        }
+        
+        for (int i = 0; i < edges.size(); i++)
+        {
+            if(edges[i]->visible == see){
+                edges[i]->v1->visible = see;
+                edges[i]->v1->visible = see;
+            }
+        }
+
+        for (int i = 0; i < edges.size(); i++)
+        {
+            if(edges[i]->visible == border){
+                edges[i]->v1->visible = border;
+                edges[i]->v1->visible = border;
+            }
         }
 
     }
 
+    if(step == laststep) return;
 
     laststep = step;
-
-    if(!update) return;
 
     if(lstPolygone.size() > 0){
         projet->GetScene()->RemoveObjectScene(lstPolygone);
@@ -149,7 +183,15 @@ void LineRenderer3D::CreateConvexShape(){
         projet->GetScene()->AddObjectScene(Vpoint);
         Vpoint->SetPosition(vertices[i]->position);
         Vpoint->SetScale(glm::vec3({.5f,.5f,.5f}));
-        Vpoint->SetMaterial(projet->GetMaterials()[projet->GetMaterials().size()-1]);
+        if(vertices[i]->visible == unsee){
+            Vpoint->SetMaterial(projet->GetMaterials()[projet->GetMaterials().size()-1]);
+        }
+        else if (vertices[i]->visible == see){
+            Vpoint->SetMaterial(projet->GetMaterials()[projet->GetMaterials().size()-2]);
+        }
+        else if (vertices[i]->visible == border){
+            Vpoint->SetMaterial(projet->GetMaterials()[projet->GetMaterials().size()-3]);
+        }
         lstPolygone.push_back(Vpoint);
     }
     
@@ -171,7 +213,15 @@ void LineRenderer3D::CreateConvexShape(){
         Line->SetRotation(glm::vec3(ax, ay, az));
         projet->GetScene()->AddObjectScene(Line);
         Line->SetScale(glm::vec3(0.2,0.2f,glm::length(b - a)));
-        Line->SetMaterial(projet->GetMaterials()[projet->GetMaterials().size() - 1]);
+         if(edges[i]->visible == unsee){
+            Line->SetMaterial(projet->GetMaterials()[projet->GetMaterials().size()-1]);
+        }
+        else if (edges[i]->visible == see){
+            Line->SetMaterial(projet->GetMaterials()[projet->GetMaterials().size()-2]);
+        }
+        else if (edges[i]->visible == border){
+            Line->SetMaterial(projet->GetMaterials()[projet->GetMaterials().size()-3]);
+        }
         lstPolygone.push_back(Line);
     }
     

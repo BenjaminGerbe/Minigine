@@ -141,6 +141,8 @@ int main(int, char**){
     PBRMaterial* PBRmat = new PBRMaterial(pbrShader,"PBR Material");
 
     red->SetColor(1.0,0.0,0.0);
+    bleu->SetColor(0.0,0.0,1.0);
+    violet->SetColor(1.0,0.0,1.0);
     projet.AddMaterial(mat);
     projet.AddMaterial(PBRmat);
     projet.AddMaterial(mat_water);
