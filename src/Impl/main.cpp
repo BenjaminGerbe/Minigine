@@ -134,18 +134,34 @@ int main(int, char**){
     Shader* pbrShader = new Shader("PBR.vs.glsl","PBR.fs.glsl");
     Shader* waterShader = new Shader("Watervs2.glsl","Waterfs.glsl");
     Material* mat = new Material(shader,"Default Material");
-    Material* red = new Material(shader,"Red");
-    Material* violet = new Material(shader,"Violet");
-    Material* bleu = new Material(shader,"Bleu");
+    PBRMaterial* green = new PBRMaterial(pbrShader,"Green");
+    PBRMaterial* red = new PBRMaterial(pbrShader,"Red");
+    PBRMaterial* violet = new PBRMaterial(pbrShader,"Violet");
+    PBRMaterial* bleu = new PBRMaterial(pbrShader,"Bleu");
+    PBRMaterial* none = new PBRMaterial(pbrShader,"None");
     WaterMaterial* mat_water = new WaterMaterial(waterShader,"Water Material");
     PBRMaterial* PBRmat = new PBRMaterial(pbrShader,"PBR Material");
 
-    red->SetColor(1.0,0.0,0.0);
-    bleu->SetColor(0.0,0.0,1.0);
-    violet->SetColor(1.0,0.0,1.0);
+    green->SetDiffuse(0.0,1.0,0.0);
+    green->SetAmbiante(0.0,0.90,0.0);
+
+    red->SetDiffuse(1.0,0.0,0.0);
+    red->SetAmbiante(0.90,0.0,0.0);
+
+    none->SetDiffuse(1.0,1.0,1.0);
+    none->SetAmbiante(0.90,0.90,0.90);
+
+    bleu->SetDiffuse(0.0,0.0,1.0);
+    bleu->SetAmbiante(0.0,0.0,0.90);
+
+    violet->SetDiffuse(1.0,0.0,1.0);
+    violet->SetAmbiante(0.90,0.0,0.90);
+
     projet.AddMaterial(mat);
     projet.AddMaterial(PBRmat);
     projet.AddMaterial(mat_water);
+    projet.AddMaterial(green);
+    projet.AddMaterial(none);
     projet.AddMaterial(violet);
     projet.AddMaterial(bleu);
     projet.AddMaterial(red);

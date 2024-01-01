@@ -46,6 +46,7 @@ struct Face{
     Edge* e2;
     Edge* e3;
      Visible visible;
+    glm::vec3 centerPosition;
 
      Edge* operator[](int i){
         if (i == 0){
@@ -58,7 +59,7 @@ struct Face{
             return e3;
         }
 
-        return e1;
+        return nullptr;
      }
 };
 

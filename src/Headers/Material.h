@@ -109,13 +109,25 @@ class PBRMaterial: public Material{
        return *this;
     }
 
+    void SetDiffuse(float r,float g,float b){
+        DiffuseColor[0] = r;
+        DiffuseColor[1] = g;
+        DiffuseColor[2] = b;
+    }
+
+    void SetAmbiante(float r,float g,float b){
+        Ambiante[0] = r;
+        Ambiante[1] = g;
+        Ambiante[2] = b;
+    }
+
     virtual void Editor(){
         ImGui::ColorPicker3("Ambiante Color",Ambiante);
         ImGui::ColorPicker3("DiffuseColor",DiffuseColor);
     }
 
     virtual void ApplyParameter(){
-        glUniform3fv(glGetUniformLocation(shader->GetIDX(), "color"), 1,&color[0]); 
+            glUniform3fv(glGetUniformLocation(shader->GetIDX(), "color"), 1,&color[0]); 
         glUniform3fv(glGetUniformLocation(shader->GetIDX(), "u_AmbianteColor"), 1,&Ambiante[0]); 
         glUniform3fv(glGetUniformLocation(shader->GetIDX(), "u_DiffuseColor"), 1,&DiffuseColor[0]); 
         return;
