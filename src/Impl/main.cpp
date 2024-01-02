@@ -32,6 +32,7 @@
 #include "../Headers/Shader.h"
 #include "../Headers/Material.h"
 #include "../data.h"
+#include "../MiniML/src/MiniML.cpp"
 
 #define TINYOBJLOADER_IMPLEMENTATION 
 #include "../tinyobj/tiny_obj_loader.h"
@@ -122,6 +123,9 @@ int main(int, char**){
     Projet& projet = *(new Projet());
     projet.AddScene(scene);
     projet.SetAppState(&app);
+
+    std::cout << " ==" <<  std::endl;
+    MiniML::say_hello();
 
     if(err == 1){
         return 1;

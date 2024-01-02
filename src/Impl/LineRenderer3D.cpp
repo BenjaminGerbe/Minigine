@@ -5,7 +5,7 @@
 
 void LineRenderer3D::GeneratePoint(){
     //std::srand(static_cast<unsigned int>(std::time(nullptr)));
-    std::srand(static_cast<unsigned int>(2));
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
     for (size_t i = 0; i < nombrePoint; i++)
     {
         Object* Point = new Object(*projet->GetCube());

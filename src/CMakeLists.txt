@@ -16,8 +16,6 @@ file(GLOB_RECURSE Ressources
      "*.obj"
 )
 
-
-
 # glew
 include_directories(../libs/GLEW/include)
 link_directories(../libs/GLEW/lib/Release/WIN32)
@@ -30,6 +28,9 @@ link_directories(../libs/GLFW/lib-static-ucrt )
 include_directories(../libs/yaml-cpp/include)     
 link_directories(../libs/yaml-cpp/build/Debug)
 
+# MiniML 
+include_directories(../libs/MiniML/src)
+link_directories(../libs/MiniML/build/Debug)
 
 #glm
 include_directories(../libs/GLM)     
