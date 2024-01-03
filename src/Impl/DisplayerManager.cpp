@@ -1,4 +1,5 @@
 #include "../Headers/DisplayerManager.h"
+#include "MiniML.hpp"
 
 bool isToDelete(RenderContextDisplay *element){
     return !element->GetOpen();
@@ -438,6 +439,91 @@ void DisplayerManager::RenderAllRenderWindows(int width,int height,Projet* proje
     }
 }
 
+void DisplayerManager::MiniMLWindows(){
+    if(openMiniMLSettings){
+        static float mk_size = ImPlot::GetStyle().MarkerSize;
+        static float mk_weight = ImPlot::GetStyle().MarkerWeight;
+        ImGui::DragFloat("Marker Size",&mk_size,0.1f,2.0f,10.0f,"%.2f px");
+        ImGui::DragFloat("Marker Weight", &mk_weight,0.05f,0.5f,3.0f,"%.2f px");
+
+        ImGui::Begin("MiniMLSettings",&openMiniMLSettings);
+        if (network != nullptr && ImPlot::BeginPlot("##MarkerStyles", ImVec2(-1,0), ImPlotFlags_CanvasOnly) ) {
+
+            ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoDecorations, ImPlotAxisFlags_NoDecorations);
+            int height =((network->GetLayerSize(0)+1)*10.0f)/2.0f;
+            ImPlot::SetupAxesLimits(-10.0f, network->GetNetworkSize()*10.0f, -height,height+10.0f );
+           
+
+            int layer = 3;
+            int p = 3;
+            for (int i = 0; i < network->GetNetworkSize(); i++)
+            {
+                int size = network->GetLayerSize(i);
+                if(i == network->GetLayer().size() -2 || i == 0){
+                    size++;
+                }
+
+                for (int j = 0; j < size; j++)
+                {
+                    ImS8 xs[2] = {(i)*(10),((i)+1)*(10)};
+                    ImS8 ys[2] = {(size-j)*(10) - (size*10.0)/2.0f,(size-j)*(10)-(size*10.0)/2.0f};
+
+                    
+
+                    ImGui::PushID(i*j);
+                    ImPlot::SetNextMarkerStyle(1, 30.0, ImVec4(.3,0.3,0.7,1.0), 0.5f);
+                    ImPlot::PlotLine("##Filled",xs, ys, 1);
+                    ImGui::PopID();
+
+                    int sizeNbh = network->GetLayerSize(i+1);
+                    if((i+1) == network->GetLayer().size() -2 || (i+1) == 0){
+                        sizeNbh++;
+                    }                        
+
+                    for (int k = 0; k < network->GetLayerSize(i+1); k++)
+                    {
+                        ys[1] = (sizeNbh-k)*(10) - (sizeNbh*10.0)/2.0f;
+                        ImPlot::SetNextLineStyle( ImVec4(1.0,0.0,0.0,1.0));
+                        ImPlot::PlotLine("##Filled",xs, ys, 2);
+                        glm::vec2 v(xs[1] - xs[0],ys[1] - ys[0]);
+                        v = glm::normalize(v);
+                        std::string w = std::to_string(network->GetWeight(i+1,k,j));
+                        ImPlot::PlotText(w.c_str(), xs[0] +v.x*2.0f, ys[0]+v.y*2.0f);
+                    }
+                    
+
+
+                    std::string s;
+                    if(i > 0 && i < network->GetNetworkSize() -1){
+                        s = "H";
+                    }
+                    else if(i==0){
+                        s = "I";
+                    }
+                    else{
+                        s = "O";
+                    }
+                    s = s+std::to_string(j);
+
+                    if(j > network->GetLayerSize(i)-1){
+                        s = "B";
+                    }
+
+                    ImPlot::PlotText(s.c_str(), xs[0], ys[0]);
+                }
+                
+            }
+            
+            ImPlot::EndPlot();
+        }
+        
+        if(ImGui::Button("Create Network")){
+            network = MiniML::setupXor(3,3,1);
+        }
+        ImGui::End();
+    }
+}
+
 void DisplayerManager::RenderSceneViewOption(){
     if(!openSceneViewOption)
         return;
@@ -529,6 +615,7 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
                 if (ImGui::MenuItem("Scene View Option",NULL)) {
                     openSceneViewOption = true;
                 }
+                
                 ImGui::EndMenu();
             }
             
@@ -542,6 +629,8 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
                 
                 ImGui::EndMenu();
             }
+
+
 
             if (ImGui::BeginMenu("Objects"))
             {
@@ -561,6 +650,18 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
 
                 ImGui::EndMenu();
             }
+
+            
+            if (ImGui::BeginMenu("MiniML"))
+            {
+                if (ImGui::MenuItem("Settings",NULL)) {
+                    openMiniMLSettings = true;
+                }
+                
+                
+                ImGui::EndMenu();
+            }
+
             ImGui::EndMainMenuBar();
         }
 

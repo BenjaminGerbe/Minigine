@@ -44,6 +44,9 @@ include_directories(../libs/stb_load)
 # tiny obj
 include_directories(../libs/tinyobj)
 
+# imgui
+include_directories(../libs/imgui)
+
 
 set(ICON_FILE "${CMAKE_SOURCE_DIR}/Minigine.ico")
 configure_file(${ICON_FILE} ${CMAKE_BINARY_DIR}/Minigine.ico COPYONLY)

@@ -19,8 +19,10 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "implot.h"
 
 // my Headers include
+
 #include "../Headers/GLShader.h"
 #include "../Headers/ApplicationState.h"
 #include "../Headers/Scene.h"
@@ -32,7 +34,6 @@
 #include "../Headers/Shader.h"
 #include "../Headers/Material.h"
 #include "../data.h"
-#include "../MiniML/src/MiniML.cpp"
 
 #define TINYOBJLOADER_IMPLEMENTATION 
 #include "../tinyobj/tiny_obj_loader.h"
@@ -125,7 +126,6 @@ int main(int, char**){
     projet.SetAppState(&app);
 
     std::cout << " ==" <<  std::endl;
-    MiniML::say_hello();
 
     if(err == 1){
         return 1;
@@ -214,6 +214,7 @@ int main(int, char**){
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImPlot::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.FontGlobalScale = 1.7f;
     io.ConfigWindowsMoveFromTitleBarOnly = true;
@@ -291,10 +292,11 @@ int main(int, char**){
         displayerManager.SceneEditor(&projet);
         displayerManager.ObjectEditor(&projet);
         displayerManager.RenderGameView(&gameView,&projet);
+        displayerManager.MiniMLWindows();
 
        // ImGui::ShowStyleEditor();
         ImGui::ShowDemoWindow();
-        
+        ImPlot::ShowDemoWindow();
 
         displayerManager.RenderAppOptions(&projet);
         displayerManager.MachineState(&projet);
@@ -310,6 +312,7 @@ int main(int, char**){
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
+    ImPlot::DestroyContext();
     ImGui::DestroyContext();
 
     return 0;

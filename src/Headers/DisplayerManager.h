@@ -21,11 +21,15 @@
 #include <ext/scalar_constants.hpp> // glm::pi
 #include <gtc/type_ptr.hpp>
 
+
 // imgui include
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
+#include "implot.h"
+
+class Network;
 
 class DisplayerManager{
     std::vector<RenderContextDisplay*> RenderContextDisplays;
@@ -40,8 +44,11 @@ class DisplayerManager{
     bool openSceneEditor;
     bool openObjectView;
     bool openSceneViewOption;
+    bool openMiniMLSettings;
     int selectedObjects;
     int selectedSceneView;
+    Network* network;
+
 
     public :
     DisplayerManager(){
@@ -53,6 +60,7 @@ class DisplayerManager{
         openSceneEditor = true;
         openSceneViewOption = true;
         rcGameView = new RenderContextGame();
+        network = nullptr;
     }
 
     DisplayerManager(DisplayerManager& copy){
@@ -64,6 +72,7 @@ class DisplayerManager{
         openSceneEditor = copy.openSceneEditor;
         openSceneViewOption = copy.openSceneEditor;
         rcGameView = copy.rcGameView; 
+        network = nullptr;
     }
 
     DisplayerManager operator=(DisplayerManager& copy){
@@ -75,7 +84,7 @@ class DisplayerManager{
         openSceneEditor = copy.openSceneEditor;
         openSceneViewOption = copy.openSceneEditor;
         rcGameView = copy.rcGameView; 
-
+        this->network = copy.network;
         return *this;
     }
     
@@ -93,6 +102,7 @@ class DisplayerManager{
     void RenderAppOptions(Projet* projet);
     void RenderAllRenderWindows(int width,int height,Projet* projet);
     void RenderSceneViewOption();
+    void MiniMLWindows();
     void RenderGameView(GameView* GameView,Projet* projet);
 
 };

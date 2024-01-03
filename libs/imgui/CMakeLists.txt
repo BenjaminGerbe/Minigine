@@ -20,6 +20,11 @@ add_library(
         imstb_rectpack.h
         imstb_textedit.h
         imstb_truetype.h
+        implot.h
+        implot.cpp
+        implot_demo.cpp
+        implot_internal.h
+        implot_items.cpp
         )
 
 target_include_directories(imgui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
