@@ -1,0 +1,3 @@
+[submodule "libs/MiniML"]
+	path = libs/MiniML
+	url = https://github.com/LaGerbe-Bohu/MiniML
