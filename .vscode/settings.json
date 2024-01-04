@@ -84,6 +84,7 @@
         "complex": "cpp",
         "condition_variable": "cpp",
         "future": "cpp",
-        "numeric": "cpp"
+        "numeric": "cpp",
+        "core": "cpp"
     }
 }

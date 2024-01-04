@@ -452,17 +452,12 @@ void DisplayerManager::MiniMLWindows(){
             ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoDecorations, ImPlotAxisFlags_NoDecorations);
             int height =((network->GetLayerSize(0)+1)*10.0f)/2.0f;
             ImPlot::SetupAxesLimits(-10.0f, network->GetNetworkSize()*10.0f, -height,height+10.0f );
-           
 
             int layer = 3;
             int p = 3;
             for (int i = 0; i < network->GetNetworkSize(); i++)
             {
                 int size = network->GetLayerSize(i);
-                if(i == network->GetLayer().size() -2 || i == 0){
-                    size++;
-                }
-
                 for (int j = 0; j < size; j++)
                 {
                     ImS8 xs[2] = {(i)*(10),((i)+1)*(10)};
@@ -475,14 +470,9 @@ void DisplayerManager::MiniMLWindows(){
                     ImPlot::PlotLine("##Filled",xs, ys, 1);
                     ImGui::PopID();
 
-                    int sizeNbh = network->GetLayerSize(i+1);
-                    if((i+1) == network->GetLayer().size() -2 || (i+1) == 0){
-                        sizeNbh++;
-                    }                        
-
-                    for (int k = 0; k < network->GetLayerSize(i+1); k++)
+                    for (int k = 0; k < network->GetLayerRealSize(i+1); k++)
                     {
-                        ys[1] = (sizeNbh-k)*(10) - (sizeNbh*10.0)/2.0f;
+                        ys[1] = (network->GetLayerSize(i+1)-k)*(10) - (network->GetLayerSize(i+1)*10.0)/2.0f;
                         ImPlot::SetNextLineStyle( ImVec4(1.0,0.0,0.0,1.0));
                         ImPlot::PlotLine("##Filled",xs, ys, 2);
                         glm::vec2 v(xs[1] - xs[0],ys[1] - ys[0]);
@@ -490,8 +480,6 @@ void DisplayerManager::MiniMLWindows(){
                         std::string w = std::to_string(network->GetWeight(i+1,k,j));
                         ImPlot::PlotText(w.c_str(), xs[0] +v.x*2.0f, ys[0]+v.y*2.0f);
                     }
-                    
-
 
                     std::string s;
                     if(i > 0 && i < network->GetNetworkSize() -1){
@@ -516,10 +504,52 @@ void DisplayerManager::MiniMLWindows(){
             
             ImPlot::EndPlot();
         }
-        
+
         if(ImGui::Button("Create Network")){
-            network = MiniML::setupXor(3,3,1);
+            network = MiniML::setupXor(2,1,1);
         }
+
+        if(ImGui::Button("Train")){
+            Eigen::MatrixXd(2,0);
+            std::vector<std::vector<float>> input;
+            std::vector<float> output;
+            input.push_back({0,1});
+            output.push_back(1);
+            input.push_back({1,1});
+            output.push_back(0);
+            input.push_back({1,0});
+            output.push_back(1);
+            input.push_back({0,0});
+            output.push_back(0);
+            network->backPropagation(input,output,0.01f,50);
+            std::vector<float>v({0,1});
+            std::cout << network->simulate({0,1}) << std::endl;
+
+           
+            
+
+        }
+
+        const int sizex = 2;
+        const int sizey = 2;
+        static double values2[sizex*sizey];
+        srand((unsigned int)(ImGui::GetTime()*1000000));
+        for (int i = 0; i < sizex; ++i)
+            for (int j = 0; j < sizey; j++)
+            {
+                values2[(i*sizey)+j] = ((float)(i+j))/(sizex*sizey);
+            }
+            
+
+        if (ImPlot::BeginPlot("##Heatmap2",ImVec2(225,225))) {
+            ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoDecorations, ImPlotAxisFlags_NoDecorations);
+            ImPlot::SetupAxesLimits(0,1,0,1);
+            ImPlot::PlotHeatmap("heat1",values2,sizex,sizey,0,1,nullptr);
+            ImPlot::EndPlot();
+        }
+        
+
+
         ImGui::End();
     }
 }
