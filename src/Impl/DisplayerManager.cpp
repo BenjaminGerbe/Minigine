@@ -509,7 +509,7 @@ void DisplayerManager::MiniMLWindows(){
             network = MiniML::setupXor(2,1,1);
         }
 
-        if(ImGui::Button("Train")){
+        if(ImGui::Button("Train") && network != nullptr){
             Eigen::MatrixXd(2,0);
             std::vector<std::vector<float>> input;
             std::vector<float> output;
@@ -530,24 +530,31 @@ void DisplayerManager::MiniMLWindows(){
 
         }
 
-        const int sizex = 2;
-        const int sizey = 2;
-        static double values2[sizex*sizey];
-        srand((unsigned int)(ImGui::GetTime()*1000000));
-        for (int i = 0; i < sizex; ++i)
+        if(network != nullptr){
+            const int sizex = 100;
+            const int sizey = 100;
+            static double values2[sizex*sizey];
+            srand((unsigned int)(ImGui::GetTime()*1000000));
+            std::vector<float>v({0,1});
             for (int j = 0; j < sizey; j++)
-            {
-                values2[(i*sizey)+j] = ((float)(i+j))/(sizex*sizey);
-            }
-            
+                for (int i = 0; i < sizex; ++i)
+                {
 
-        if (ImPlot::BeginPlot("##Heatmap2",ImVec2(225,225))) {
-            ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoDecorations, ImPlotAxisFlags_NoDecorations);
-            ImPlot::SetupAxesLimits(0,1,0,1);
-            ImPlot::PlotHeatmap("heat1",values2,sizex,sizey,0,1,nullptr);
-            ImPlot::EndPlot();
+                    float x = ((float)i)/sizex;
+                    float y = ((float)j)/sizey;
+                    values2[(j*sizex)+i] =network->simulate({x,y});
+                }
+                
+            ImPlot::PushColormap(ImPlotColormap_BrBG);
+            if (ImPlot::BeginPlot("##Heatmap2",ImVec2(500,500))) {
+                ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoDecorations, ImPlotAxisFlags_NoDecorations);
+                ImPlot::SetupAxesLimits(0,1,0,1);
+                ImPlot::PlotHeatmap("heat1",values2,sizex,sizey,0,1,nullptr);
+                ImPlot::EndPlot();
+            }
+            ImPlot::PopColormap();
         }
-        
+
 
 
         ImGui::End();
