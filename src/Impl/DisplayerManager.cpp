@@ -509,6 +509,46 @@ void DisplayerManager::MiniMLWindows(){
         if(id == 2){
             input.clear();
             output.clear();
+            // input.push_back({0,0});
+            // output.push_back(0);
+
+            // input.push_back({1,0});
+            // output.push_back(0);
+
+            // input.push_back({1,1});
+            // output.push_back(0);
+
+            // input.push_back({0,1});
+            // output.push_back(0);
+
+            // input.push_back({.25,.25});
+            // output.push_back(0);
+
+            // input.push_back({.25,1.f-.25});
+            // output.push_back(0);
+
+            // input.push_back({1.f-.25,.25});
+            // output.push_back(0);
+
+            // input.push_back({1.f-.25,1.f-.25});
+            // output.push_back(0);
+
+
+
+            // input.push_back({0.5,1});
+            // output.push_back(1);
+
+            // input.push_back({1,.5});
+            // output.push_back(1);
+
+            //  input.push_back({0.5,0});
+            // output.push_back(1);
+
+            // input.push_back({0,.5});
+            // output.push_back(1);
+
+            // input.push_back({.5,.5});
+            // output.push_back(1);
             for (float i = 0.0; i <= 1.0; i+=0.05f)
             {
                 for (float j = 0.0; j <= 1.0; j+=0.05f)
@@ -533,7 +573,7 @@ void DisplayerManager::MiniMLWindows(){
         std::vector<float>v({0,1});
       
         if(ImGui::Button("Create Network")){
-            network = MiniML::setupXor(2,nbHidden,1);
+            network = MiniML::setupXor(2,nbHidden,heightHidden,1);
             heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
             updateHeat = true;
         }
@@ -555,7 +595,7 @@ void DisplayerManager::MiniMLWindows(){
         
         if(Trainning && network != nullptr){
             Eigen::MatrixXd(2,0);
-            network->backPropagation(input,output,0.01f,100);
+            network->backPropagation(input,output,0.01f,500);
             std::vector<float>v({0,1});
         //    std::cout << network->simulate({0,0}) << " "<< network->simulate({1,1}) << network->simulate({0,1}) << std::endl;
             heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
@@ -565,7 +605,11 @@ void DisplayerManager::MiniMLWindows(){
         
 
         ImGui::SameLine();
-        ImGui::DragInt("Hidden",&nbHidden);
+        ImGui::PushItemWidth(200);
+        ImGui::InputInt("Hidden",&nbHidden);
+        ImGui::SameLine();
+        ImGui::InputInt("Height Hidden",&heightHidden);
+        ImGui::PopItemWidth();
         ImGui::SameLine();
         ImGui::Checkbox("Plot",&Plot);
         

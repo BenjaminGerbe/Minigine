@@ -48,6 +48,7 @@ class DisplayerManager{
     int selectedObjects;
     int selectedSceneView;
     int nbHidden;
+    int heightHidden;
     float* heatMapMiniML;
     Network* network;
 
