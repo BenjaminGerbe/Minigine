@@ -48,6 +48,7 @@ class DisplayerManager{
     int selectedObjects;
     int selectedSceneView;
     int nbHidden;
+    float* heatMapMiniML;
     Network* network;
 
 
@@ -60,6 +61,7 @@ class DisplayerManager{
         openObjectView = true;
         openSceneEditor = true;
         openSceneViewOption = true;
+        heatMapMiniML = new float[100*100];
         rcGameView = new RenderContextGame();
         network = nullptr;
     }

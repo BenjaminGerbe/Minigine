@@ -439,6 +439,18 @@ void DisplayerManager::RenderAllRenderWindows(int width,int height,Projet* proje
     }
 }
 
+float* UpdateHeatMap(Network* network,int sizex,int sizey,float* v){
+     for (int j = 0; j < sizey; j++)
+        for (int i = 0; i < sizex; i++)
+        {
+            float x = ((float)i)/sizex;
+            float y = ((float)j)/sizey;
+            v[(j*sizex)+i] = network->simulate({x,1.0f-y});
+          
+        }
+    return v;
+}
+
 void DisplayerManager::MiniMLWindows(){
     if(openMiniMLSettings){
         ImGui::Begin("MiniMLSettings",&openMiniMLSettings);
@@ -461,6 +473,11 @@ void DisplayerManager::MiniMLWindows(){
                 id = 1;
             }
 
+            if (ImGui::Selectable("Cross", current == "Cross")){
+                current = "Cross";
+                id = 2;
+            }
+
             ImGui::EndCombo();
         }
 
@@ -480,14 +497,32 @@ void DisplayerManager::MiniMLWindows(){
         if(id == 1){
             input.clear();
             output.clear();
-            input.push_back({0,1});
+            input.push_back({.25,.8});
             output.push_back(0);
-            input.push_back({1,1});
+            input.push_back({0.8,.5});
             output.push_back(1);
-            input.push_back({1,0});
+            input.push_back({.1,.6});
             output.push_back(0);
-            input.push_back({0,0});
-            output.push_back(1);
+  
+        }
+
+        if(id == 2){
+            input.clear();
+            output.clear();
+            for (float i = 0.0; i <= 1.0; i+=0.05f)
+            {
+                for (float j = 0.0; j <= 1.0; j+=0.05f)
+                {
+                    input.push_back({i,j});
+                    if((i > 0.40 && i < 0.6) || (j > 0.4 && j < 0.6)){
+                        output.push_back(1);
+                    }else{
+                        output.push_back(0);
+                    }
+                }
+            }
+            
+  
         }
         
         static bool updateHeat = false;
@@ -495,38 +530,36 @@ void DisplayerManager::MiniMLWindows(){
         static bool Plot = false;
         const int sizex = 100;
         const int sizey = 100;
-        static double values2[sizex*sizey];
         std::vector<float>v({0,1});
       
         if(ImGui::Button("Create Network")){
             network = MiniML::setupXor(2,nbHidden,1);
+            heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
+            updateHeat = true;
         }
 
         ImGui::SameLine();
-
         
         if(ImGui::Button("Train")){
             Trainning = !Trainning;
         }
 
+        ImGui::SameLine();
+        if(ImGui::Button("one Train")){
+            network->backPropagation(input,output,0.001f,100000000);
+            heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
+            updateHeat = true;
+        }
+
+
         
         if(Trainning && network != nullptr){
             Eigen::MatrixXd(2,0);
-            network->backPropagation(input,output,.1f,1000);
+            network->backPropagation(input,output,0.01f,100);
             std::vector<float>v({0,1});
-            std::cout << network->simulate({0,1}) << std::endl;
+        //    std::cout << network->simulate({0,0}) << " "<< network->simulate({1,1}) << network->simulate({0,1}) << std::endl;
+            heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
             updateHeat = true;
-            if(Plot){
-                for (int j = 0; j < sizey; j++)
-                    for (int i = 0; i < sizex; i++)
-                    {
-
-                        float x = ((float)i)/sizex;
-                        float y = ((float)j)/sizey;
-                        values2[(i*sizey)+j] = network->simulate({x,y});
-                    }
-
-            }
         }
 
         
@@ -600,7 +633,7 @@ void DisplayerManager::MiniMLWindows(){
             
             int size = network->GetError()[0].size()-1;
             if(network->GetError()[0][size] < 0.005f){
-                Trainning = false;
+              //  Trainning = false;
             }
 
             ImPlot::PushColormap(ImPlotColormap_Jet);
@@ -608,20 +641,20 @@ void DisplayerManager::MiniMLWindows(){
             ImS8 x[2] = {0.0f,0.0f};
             ImS8 y[2] =  {0.0f,0.0f};
 
-            if (ImPlot::BeginPlot("##Heatmap2",ImVec2(500,500))) {
+            if (Plot && ImPlot::BeginPlot("##Heatmap2",ImVec2(500,500))) {
                 ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoDecorations, ImPlotAxisFlags_NoDecorations);
                 ImPlot::SetupAxesLimits(0,1,0,1);
-                ImPlot::PlotHeatmap("heatman",values2,sizex,sizey,0.f,1.f,nullptr);
+                ImPlot::PlotHeatmap("heatman",&heatMapMiniML[0],sizex,sizey,0.f,1.f,nullptr);
 
                 for (int i = 0; i < input.size(); i++)
                 {
                     float x = input[i][0];
                     float y = input[i][1];
 
-                    if( output[i]  == 1){
+                    if( output[i]  == 0){
                         ImPlot::SetNextMarkerStyle(ImPlotMarker_Circle, 10,ImVec4(0.0,0.0,1.0,1.0));
                     }
-                    else if(output[i] == 0 ){
+                    else if(output[i] == 1 ){
                         ImPlot::SetNextMarkerStyle(ImPlotMarker_Circle, 10,ImVec4(1.0,0.0,0.0,1.0));
                     }
                     else{
@@ -638,6 +671,9 @@ void DisplayerManager::MiniMLWindows(){
 
             if (ImPlot::BeginPlot("Error",ImVec2(1000,500))) {
                 ImPlot::SetupAxesLimits(0,100,-.25f,1);
+                float t = network->GetError()[1][network->GetError()[1].size()-1];
+                ImPlot::SetupAxisLimits(ImAxis_X1,0, t, ImGuiCond_Always);
+                ImPlot::SetupAxisLimits(ImAxis_Y1,0,1);
                 ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
                 ImPlot::PlotShaded("Error",&network->GetError()[1][0],&network->GetError()[0][0],network->GetError()[0].size(), -INFINITY);
                 ImPlot::PopStyleVar();
