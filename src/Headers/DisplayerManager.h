@@ -47,6 +47,7 @@ class DisplayerManager{
     bool openMiniMLSettings;
     int selectedObjects;
     int selectedSceneView;
+    int nbHidden;
     Network* network;
 
 

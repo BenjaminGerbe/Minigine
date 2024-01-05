@@ -441,13 +441,102 @@ void DisplayerManager::RenderAllRenderWindows(int width,int height,Projet* proje
 
 void DisplayerManager::MiniMLWindows(){
     if(openMiniMLSettings){
-        static float mk_size = ImPlot::GetStyle().MarkerSize;
-        static float mk_weight = ImPlot::GetStyle().MarkerWeight;
-        ImGui::DragFloat("Marker Size",&mk_size,0.1f,2.0f,10.0f,"%.2f px");
-        ImGui::DragFloat("Marker Weight", &mk_weight,0.05f,0.5f,3.0f,"%.2f px");
-
         ImGui::Begin("MiniMLSettings",&openMiniMLSettings);
-        if (network != nullptr && ImPlot::BeginPlot("##MarkerStyles", ImVec2(-1,0), ImPlotFlags_CanvasOnly) ) {
+
+
+        static int id = 0;
+        static char* current;
+        std::vector<std::vector<float>> input;
+        std::vector<float> output;
+
+        if (ImGui::BeginCombo("Input/ouput", current))
+        {
+            if (ImGui::Selectable("Xor", current == "Xor")){
+                current = "Xor";
+                id = 0;
+            }
+
+            if (ImGui::Selectable("Linear Simple", current == "Linear Simple")){
+                current = "Linear Simple";
+                id = 1;
+            }
+
+            ImGui::EndCombo();
+        }
+
+        if(id == 0){
+            input.clear();
+            output.clear();
+            input.push_back({0,1});
+            output.push_back(1);
+            input.push_back({1,1});
+            output.push_back(0);
+            input.push_back({1,0});
+            output.push_back(1);
+            input.push_back({0,0});
+            output.push_back(0);
+        }
+
+        if(id == 1){
+            input.clear();
+            output.clear();
+            input.push_back({0,1});
+            output.push_back(0);
+            input.push_back({1,1});
+            output.push_back(1);
+            input.push_back({1,0});
+            output.push_back(0);
+            input.push_back({0,0});
+            output.push_back(1);
+        }
+        
+        static bool updateHeat = false;
+        static bool Trainning = false;
+        static bool Plot = false;
+        const int sizex = 100;
+        const int sizey = 100;
+        static double values2[sizex*sizey];
+        std::vector<float>v({0,1});
+      
+        if(ImGui::Button("Create Network")){
+            network = MiniML::setupXor(2,nbHidden,1);
+        }
+
+        ImGui::SameLine();
+
+        
+        if(ImGui::Button("Train")){
+            Trainning = !Trainning;
+        }
+
+        
+        if(Trainning && network != nullptr){
+            Eigen::MatrixXd(2,0);
+            network->backPropagation(input,output,.1f,1000);
+            std::vector<float>v({0,1});
+            std::cout << network->simulate({0,1}) << std::endl;
+            updateHeat = true;
+            if(Plot){
+                for (int j = 0; j < sizey; j++)
+                    for (int i = 0; i < sizex; i++)
+                    {
+
+                        float x = ((float)i)/sizex;
+                        float y = ((float)j)/sizey;
+                        values2[(i*sizey)+j] = network->simulate({x,y});
+                    }
+
+            }
+        }
+
+        
+
+        ImGui::SameLine();
+        ImGui::DragInt("Hidden",&nbHidden);
+        ImGui::SameLine();
+        ImGui::Checkbox("Plot",&Plot);
+        
+        if (network != nullptr && ImPlot::BeginPlot("##MarkerStyles", ImVec2(500,500)) ) {
 
             ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoDecorations, ImPlotAxisFlags_NoDecorations);
             int height =((network->GetLayerSize(0)+1)*10.0f)/2.0f;
@@ -502,59 +591,62 @@ void DisplayerManager::MiniMLWindows(){
                 
             }
             
+            
             ImPlot::EndPlot();
         }
 
-        if(ImGui::Button("Create Network")){
-            network = MiniML::setupXor(2,1,1);
-        }
-
-        if(ImGui::Button("Train") && network != nullptr){
-            Eigen::MatrixXd(2,0);
-            std::vector<std::vector<float>> input;
-            std::vector<float> output;
-            input.push_back({0,1});
-            output.push_back(1);
-            input.push_back({1,1});
-            output.push_back(0);
-            input.push_back({1,0});
-            output.push_back(1);
-            input.push_back({0,0});
-            output.push_back(0);
-            network->backPropagation(input,output,0.01f,50);
-            std::vector<float>v({0,1});
-            std::cout << network->simulate({0,1}) << std::endl;
-
-           
+        ImGui::SameLine();
+        if(network != nullptr && updateHeat){
             
+            int size = network->GetError()[0].size()-1;
+            if(network->GetError()[0][size] < 0.005f){
+                Trainning = false;
+            }
 
-        }
+            ImPlot::PushColormap(ImPlotColormap_Jet);
 
-        if(network != nullptr){
-            const int sizex = 100;
-            const int sizey = 100;
-            static double values2[sizex*sizey];
-            srand((unsigned int)(ImGui::GetTime()*1000000));
-            std::vector<float>v({0,1});
-            for (int j = 0; j < sizey; j++)
-                for (int i = 0; i < sizex; ++i)
-                {
+            ImS8 x[2] = {0.0f,0.0f};
+            ImS8 y[2] =  {0.0f,0.0f};
 
-                    float x = ((float)i)/sizex;
-                    float y = ((float)j)/sizey;
-                    values2[(j*sizex)+i] =network->simulate({x,y});
-                }
-                
-            ImPlot::PushColormap(ImPlotColormap_BrBG);
             if (ImPlot::BeginPlot("##Heatmap2",ImVec2(500,500))) {
                 ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoDecorations, ImPlotAxisFlags_NoDecorations);
                 ImPlot::SetupAxesLimits(0,1,0,1);
-                ImPlot::PlotHeatmap("heat1",values2,sizex,sizey,0,1,nullptr);
+                ImPlot::PlotHeatmap("heatman",values2,sizex,sizey,0.f,1.f,nullptr);
+
+                for (int i = 0; i < input.size(); i++)
+                {
+                    float x = input[i][0];
+                    float y = input[i][1];
+
+                    if( output[i]  == 1){
+                        ImPlot::SetNextMarkerStyle(ImPlotMarker_Circle, 10,ImVec4(0.0,0.0,1.0,1.0));
+                    }
+                    else if(output[i] == 0 ){
+                        ImPlot::SetNextMarkerStyle(ImPlotMarker_Circle, 10,ImVec4(1.0,0.0,0.0,1.0));
+                    }
+                    else{
+                        ImPlot::SetNextMarkerStyle(ImPlotMarker_Circle, 10,ImVec4(1.0,0.0,1.0,1.0));
+                    }
+                    
+                    ImPlot::PlotScatter("Input", &x, &y, 1);
+                }
+                
+
                 ImPlot::EndPlot();
             }
             ImPlot::PopColormap();
+
+            if (ImPlot::BeginPlot("Error",ImVec2(1000,500))) {
+                ImPlot::SetupAxesLimits(0,100,-.25f,1);
+                ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
+                ImPlot::PlotShaded("Error",&network->GetError()[1][0],&network->GetError()[0][0],network->GetError()[0].size(), -INFINITY);
+                ImPlot::PopStyleVar();
+                ImPlot::PlotLine("Error", &network->GetError()[1][0],&network->GetError()[0][0],network->GetError()[0].size());
+                ImPlot::EndPlot();
+            }
         }
 
+        
 
 
         ImGui::End();
