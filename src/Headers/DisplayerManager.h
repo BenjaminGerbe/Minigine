@@ -45,11 +45,15 @@ class DisplayerManager{
     bool openObjectView;
     bool openSceneViewOption;
     bool openMiniMLSettings;
+    bool openRegression;
     int selectedObjects;
     int selectedSceneView;
     int nbHidden;
+    int nbOutput;
     int heightHidden;
     float* heatMapMiniML;
+    float learningRate;
+    bool Plot;
     Network* network;
 
 
@@ -107,6 +111,8 @@ class DisplayerManager{
     void RenderAllRenderWindows(int width,int height,Projet* projet);
     void RenderSceneViewOption();
     void MiniMLWindows();
+    void MiniMLRegression();
+    void DisplayerNetworkParameter(Network* network);
     void RenderGameView(GameView* GameView,Projet* projet);
 
 };
