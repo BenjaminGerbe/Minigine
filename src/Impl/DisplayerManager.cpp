@@ -678,6 +678,7 @@ void DisplayerManager::MiniMLWindows(){
         
         if(ImGui::Button("Train")){
             Trainning = !Trainning;
+            heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
         }
 
         ImGui::SameLine();
@@ -694,8 +695,10 @@ void DisplayerManager::MiniMLWindows(){
             network->backPropagation(input,output,learningRate,2000);
             std::vector<float>v({0,1});
         //    std::cout << network->simulate({0,0}) << " "<< network->simulate({1,1}) << network->simulate({0,1}) << std::endl;
-            heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
-            updateHeat = true;
+            if(Plot){
+                heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
+                updateHeat = true;
+            }
         }
 
         
@@ -817,6 +820,7 @@ void DisplayerManager::MiniMLRegression(){
         ImGui::SameLine();
         if(ImGui::Button("Train")){
             Trainning = !Trainning;
+            updateHeat = true;
         }
 
         ImGui::SameLine();
@@ -869,10 +873,8 @@ void DisplayerManager::MiniMLRegression(){
                 }
             }
             ImPlot::PopColormap();
-
            DisplayerError(network);
         }
-
         ImGui::End();
     }
 }
