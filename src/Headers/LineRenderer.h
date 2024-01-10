@@ -140,6 +140,7 @@ class LineRenderer:public Component{
     bool supression;
     float time;
     bool Voronoi;
+    bool AnimimateVoronoi;
     public :
     virtual void Editor();
     virtual void SetUp();

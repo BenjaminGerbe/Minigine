@@ -795,17 +795,17 @@ void DisplayerManager::MiniMLRegression(){
             if (ImGui::Selectable("None Linear Simple", current == "None Linear Simple")){
                 current = "None Linear Simple";
                 float r = (((double) rand() / (RAND_MAX)));
-                input.push_back({r});
+                input.push_back({0});
                 r = (((double) rand() / (RAND_MAX)));
-                output.push_back({r});
+                output.push_back({1});
                 r = (((double) rand() / (RAND_MAX)));
-                input.push_back({r});
+                input.push_back({1});
                 r = (((double) rand() / (RAND_MAX)));
-                output.push_back({r});
+                output.push_back({2});
                 r = (((double) rand() / (RAND_MAX)));
-                input.push_back({r});
+                input.push_back({2});
                 r = (((double) rand() / (RAND_MAX)));
-                output.push_back({r});
+                output.push_back({3});
             }
         
             ImGui::EndCombo();

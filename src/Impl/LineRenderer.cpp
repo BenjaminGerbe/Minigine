@@ -63,6 +63,27 @@ int FindSegment(std::vector<Segment*> Segments,glm::vec3 A,glm::vec3 B){
     return result;
 }
 
+int FindSegment(std::vector<Segment*> Segments,glm::vec3 A,glm::vec3 B,Segment* nor){
+    int result = -1;
+    float epsilon = std::numeric_limits<float>::epsilon();
+    for (int i = 0; i < Segments.size(); i++)
+    {
+        Segment* seg = Segments[i];
+        if(seg == nor)
+            continue;
+        if( (glm::length(seg->A-A) < epsilon &&
+            glm::length(seg->B-B) < epsilon )|| 
+            (glm::length(seg->A-B) < epsilon &&
+            glm::length(seg->B-A) < epsilon)
+            ){
+                result = i;
+        }
+    }
+
+    return result;
+}
+
+
 
 int FindTriangle(std::vector<Triangle*> tr,Segment* s){
 
@@ -207,6 +228,7 @@ void LineRenderer::SuppressionDelaunay(glm::vec3 mousePosition){
     std::vector<int> trianglesToDelete;
     std::vector<Segment*> segmentToKeep;
     std::vector<Segment*> garbage;
+    bool notClosed = false;
 
     for (int i = 0; i < trianglesPoints.size(); i++)
     {
@@ -220,6 +242,9 @@ void LineRenderer::SuppressionDelaunay(glm::vec3 mousePosition){
             if(glm::length(seg->A - s) < epsilon || glm::length(seg->B - s) < epsilon ){
                 if(std::find(trianglesToDelete.begin(), trianglesToDelete.end(), i) == trianglesToDelete.end()) {
                     trianglesToDelete.push_back(i);
+                    if(seg->visible){
+                        notClosed = true;
+                    }
                 }
                 accident = true;
             }else{
@@ -242,6 +267,18 @@ void LineRenderer::SuppressionDelaunay(glm::vec3 mousePosition){
    }
    int idx = -1;
    //CreateLine(segmentToKeep);
+
+    if(notClosed){
+        for (int i = 0; i < segmentToKeep.size(); i++)
+        {
+            int j = FindSegment(Segments,segmentToKeep[i]->A,segmentToKeep[i]->B,segmentToKeep[i]);
+            if(j < 0){
+                j = FindSegment(Segments,segmentToKeep[i]->A,segmentToKeep[i]->B);
+            }
+            Segments[j]->visible = true;
+        }
+        
+    }
     
     if(segmentToKeep.size() <= 2){
        int i = FindSegment(Segments,segmentToKeep[0]->A,segmentToKeep[0]->B);
@@ -250,7 +287,7 @@ void LineRenderer::SuppressionDelaunay(glm::vec3 mousePosition){
        Segments[i]->visible = true;
     }
 
-   while(segmentToKeep.size() >= 3){
+   while(segmentToKeep.size() >= 3 && !notClosed ){
         idx = (idx+1)%segmentToKeep.size();
         Segment* segment = segmentToKeep[idx];
         
@@ -291,7 +328,6 @@ void LineRenderer::SuppressionDelaunay(glm::vec3 mousePosition){
                         if(glm::determinant(mat) < 0 ){
                             std::swap(A,C);
                         }
-
                          
                         glm::mat4 m = glm::mat4({
                             A.x,A.y,std::pow(A.x,2)+std::pow(A.y,2),1,
@@ -314,7 +350,10 @@ void LineRenderer::SuppressionDelaunay(glm::vec3 mousePosition){
                 }
                 
                 Triangle* tr = new Triangle();
-                tr->SetSegment(0,segment);
+                Segment* s1 = new Segment();
+                s1->A = segment->A;
+                s1->B = segment->B;
+                tr->SetSegment(0,s1);
                 Segment* a = new Segment();
                 a->A = segment->B;
                 a->B = seg->A;
@@ -341,15 +380,50 @@ void LineRenderer::SuppressionDelaunay(glm::vec3 mousePosition){
                 }
             }
         }
-        for (int i = 0; i < segmentToKeep.size(); i++)
-        {
-            std::cout << "A_{"<<i << "} = (" << segmentToKeep[i]->A.x << ","<<segmentToKeep[i]->A.y << " )" <<std::endl; 
-            std::cout << "B_{"<<i << "} = (" << segmentToKeep[i]->B.x << ","<<segmentToKeep[i]->B.y << " )" <<std::endl; 
-        }
         
    }
 
+    idx = 0;
+    while(segmentToKeep.size() > 0 && notClosed && idx < segmentToKeep.size() ){
+        Segment* segment = segmentToKeep[idx];
+
+        for (int i = 0; i < segmentToKeep.size(); i++)
+        {
+            if(segment == segmentToKeep[i]) continue;
+            bool isConvex = false;
+            bool isBalanced = true;
+            Segment* seg = new Segment();
+            seg->A = segmentToKeep[i]->A;
+            seg->B = segmentToKeep[i]->B;
+            seg->visible = segmentToKeep[i]->visible;
+
+            if(glm::length(segment->A-seg->A) < epsilon ){
+                std::swap(seg->A,seg->B);
+                isConvex = true;
+            }
+
+            if(glm::length(segment->A-seg->B) < epsilon ){
+                glm::vec3 A = seg->A;
+                glm::vec3 B = segment->A;
+                glm::vec3 C = segment->B;
+
+                glm::mat3 mat({
+                    A.x,A.y,1.0,
+                    B.x,B.y,1.0,
+                    C.x,C.y,1.0,
+                });
+
+                if(glm::determinant(mat) > 0 ){
+                }
+            }
+
+        }
+
+       idx++;
+    }
+
     Segments.clear();
+
     for (int i = 0; i < trianglesPoints.size(); i++)
     {
         for (int j = 0; j < 3; j++)
@@ -377,217 +451,244 @@ void LineRenderer::TriangulationDelaunay(){
     if(lstLines.size() > 0){
         projet->GetScene()->RemoveObjectScene(lstLines);
         lstLines.clear();
-    }        
+    }
 
-    if(lstObject.size() <= 2){
-        Segment* seg = new Segment();
-        seg->A = lstObject[0]->GetPosition();
-        seg->B = lstObject[1]->GetPosition();
-        Segments.push_back(seg);
-        CreateLine(Segments);
-        return;
+    
+    if(Segments.size() > 0){
+        for(auto s:Segments){
+            delete s;
+        }   
+        Segments.clear();
+    }   
+    if(trianglesPoints.size() > 0){
+        for(auto t:trianglesPoints){
+            delete t;
+        }  
+        trianglesPoints.clear();
     }
 
     int nPoint = size-1;
-    if(trianglesPoints.size() <= 0){
-        Triangle* tr = new Triangle();
-        tr->SetSegment(0,Segments[0]);
-        glm::vec3 newPoint =  lstObject[nPoint]->GetPosition();;
-        glm::mat3 mat({
-        Segments[0]->A.x,Segments[0]->A.y,1.0,
-        newPoint.x,newPoint.y,1.0,
-        Segments[0]->B.x,Segments[0]->B.y,1.0,
-        });
 
-        if(glm::determinant(mat) > 0 ){
-            std::swap(Segments[0]->A,Segments[0]->B);
-
+    for (int nPoint = 0; nPoint < lstObject.size(); nPoint++)
+    {
+        if(nPoint < 1 ){
+            continue;
         }
 
-        Segment* seg = new Segment();
-        seg->A = Segments[0]->B;
-        seg->B = newPoint;
-        Segments.push_back(seg);
-        tr->SetSegment(1,seg);
-        seg = new Segment();
-        seg->A = newPoint;
-        seg->B = Segments[0]->A;
-        Segments.push_back(seg);
-        tr->SetSegment(2,seg);
-        trianglesPoints.push_back(tr);
-        //CreateLine(Segments);
-        return;
-    }
-
-    std::vector<Segment*> L = visibleSegment(Segments,lstObject[nPoint]->GetPosition());
-    
-    if(L.size() == 0){
-        int triangleToDelete = -1;
-        for (int i = 0; i < trianglesPoints.size(); i++)
-        {
-            if(isContainTriangle(trianglesPoints[i],lstObject[nPoint]->GetPosition())){
-                for (int k = 0; k < 3; k++)
-                {
-                    L.push_back(trianglesPoints[i]->GetSegment(k));
-                }
-                triangleToDelete = i;
-                break;
-            }
-        }
-    
-
-        Triangle* triangle = trianglesPoints[triangleToDelete];
-        trianglesPoints.erase(trianglesPoints.begin()+triangleToDelete);
-        delete triangle;
-    }
-
-    while(L.size() > 0){
-        Segment* a = L[L.size()-1];
-        L.pop_back();
-
-
-        int idxTR = FindTriangle(trianglesPoints,a);
-        glm::mat4 m;
-        Triangle* tr;
-        glm::vec3 newPoint = lstObject[nPoint]->GetPosition();
         
-        if(idxTR >= 0){
-
-            tr = trianglesPoints[idxTR];
-            glm::vec3 A = a->A;
-            glm::vec3 B;
-            glm::vec3 C = a->B;
-            glm::vec3 D = lstObject[nPoint]->GetPosition();
-           
-         
-            for (int k = 0; k < 3; k++)
-            {
-                if(glm::length(A - (*tr)[k]->A) > epsilon && glm::length(C - (*tr)[k]->A) > epsilon ){
-                    B = (*tr)[k]->A;
-                    break;
-                }
-
-                if(glm::length(A - (*tr)[k]->B) > epsilon && glm::length(C - (*tr)[k]->B) > epsilon ){
-                    B = (*tr)[k]->B;
-                    break;
-                }
+        if(nPoint <= 1 ){
+            Segment* seg = new Segment();
+            seg->A = lstObject[0]->GetPosition();
+            seg->B = lstObject[1]->GetPosition();
+            Segments.push_back(seg);
+            if(lstObject.size() <= 2){
+                CreateLine(Segments);
             }
 
+            continue;
+        }
 
+
+        if(trianglesPoints.size() <= 0){
+          
+            Triangle* tr = new Triangle();
+            tr->SetSegment(0,Segments[0]);
+            glm::vec3 newPoint =  lstObject[nPoint]->GetPosition();;
             glm::mat3 mat({
-            A.x,A.y,1.0,
-            B.x,B.y,1.0,
-            C.x,C.y,1.0,
-            });
-
-            if(glm::determinant(mat) < 0 ){
-                std::swap(A,C);
-            }
-        
-            m = glm::mat4({
-                A.x,A.y,std::pow(A.x,2)+std::pow(A.y,2),1,
-                B.x,B.y,std::pow(B.x,2)+std::pow(B.y,2),1,
-                C.x,C.y,std::pow(C.x,2)+std::pow(C.y,2),1,
-                D.x,D.y,std::pow(D.x,2)+std::pow(D.y,2),1
-            });
-
-            std::cout << glm::determinant(m) << std::endl;
-        }
-
-        if( idxTR >= 0 && glm::determinant(m)>0 ){
-            
-            trianglesPoints.erase(trianglesPoints.begin()+idxTR);
-            int idxdel = 0;
-            glm::vec3 s1 = a->A;
-            glm::vec3 s2 = a->B;
-            for (int i = 0; i < 3; i++)
-            {
-                if(!isSame(tr->GetSegment(i),a)){
-                    L.push_back(tr->GetSegment(i));
-                }
-                tr->GetSegment(i)->visible = true;
-            }
-
-            do
-            {
-                idxdel= FindSegment(Segments,s1,s2);
-                if(idxdel < 0) break;
-                Segment* s = Segments[idxdel];
-                Segments.erase(Segments.begin()+idxdel);
-                delete s;
-            } while (idxdel >= 0);
-            
-            delete tr;
-        
-        }
-        else{
-            Triangle* nTr = new Triangle();
-
-            Segment* f = new Segment();
-            f->A = a->A;
-            f->B = a->B;
-         
-
-            glm::mat3 mat({
-            f->A.x,f->A.y,1.0,
+            Segments[0]->A.x,Segments[0]->A.y,1.0,
             newPoint.x,newPoint.y,1.0,
-            f->B.x,f->B.y,1.0,
+            Segments[0]->B.x,Segments[0]->B.y,1.0,
             });
 
             if(glm::determinant(mat) > 0 ){
-                std::swap(f->A,f->B);
+                std::swap(Segments[0]->A,Segments[0]->B);
             }
 
-            nTr->SetSegment(0,f);
-            if(idxTR >= 0){
-                f->visible  = false;
-                a->visible  = false;
+            Segment* seg = new Segment();
+            seg->A = Segments[0]->B;
+            seg->B = newPoint;
+            Segments.push_back(seg);
+            tr->SetSegment(1,seg);
+            seg = new Segment();
+            seg->A = newPoint;
+            seg->B = Segments[0]->A;
+            Segments.push_back(seg);
+            tr->SetSegment(2,seg);
+            trianglesPoints.push_back(tr);
+            //CreateLine(Segments);
+            continue;
+        }
+
+        std::vector<Segment*> L = visibleSegment(Segments,lstObject[nPoint]->GetPosition());
+        
+        if(L.size() == 0){
+            int triangleToDelete = -1;
+            for (int i = 0; i < trianglesPoints.size(); i++)
+            {
+                if(isContainTriangle(trianglesPoints[i],lstObject[nPoint]->GetPosition())){
+                    for (int k = 0; k < 3; k++)
+                    {
+                        L.push_back(trianglesPoints[i]->GetSegment(k));
+                    }
+                    triangleToDelete = i;
+                    break;
+                }
             }
-            else{
-               int idxdel = 0;
+        
+
+            Triangle* triangle = trianglesPoints[triangleToDelete];
+            trianglesPoints.erase(trianglesPoints.begin()+triangleToDelete);
+            delete triangle;
+        }
+
+        while(L.size() > 0){
+            Segment* a = L[L.size()-1];
+            L.pop_back();
+
+
+            int idxTR = FindTriangle(trianglesPoints,a);
+            glm::mat4 m;
+            Triangle* tr;
+            glm::vec3 newPoint = lstObject[nPoint]->GetPosition();
+            
+            if(idxTR >= 0){
+
+                tr = trianglesPoints[idxTR];
+                glm::vec3 A = a->A;
+                glm::vec3 B;
+                glm::vec3 C = a->B;
+                glm::vec3 D = lstObject[nPoint]->GetPosition();
+            
+            
+                for (int k = 0; k < 3; k++)
+                {
+                    if(glm::length(A - (*tr)[k]->A) > epsilon && glm::length(C - (*tr)[k]->A) > epsilon ){
+                        B = (*tr)[k]->A;
+                        break;
+                    }
+
+                    if(glm::length(A - (*tr)[k]->B) > epsilon && glm::length(C - (*tr)[k]->B) > epsilon ){
+                        B = (*tr)[k]->B;
+                        break;
+                    }
+                }
+
+
+                glm::mat3 mat({
+                A.x,A.y,1.0,
+                B.x,B.y,1.0,
+                C.x,C.y,1.0,
+                });
+
+                if(glm::determinant(mat) < 0 ){
+                    std::swap(A,C);
+                }
+            
+                m = glm::mat4({
+                    A.x,A.y,std::pow(A.x,2)+std::pow(A.y,2),1,
+                    B.x,B.y,std::pow(B.x,2)+std::pow(B.y,2),1,
+                    C.x,C.y,std::pow(C.x,2)+std::pow(C.y,2),1,
+                    D.x,D.y,std::pow(D.x,2)+std::pow(D.y,2),1
+                });
+
+                std::cout << glm::determinant(m) << std::endl;
+            }
+
+            if( idxTR >= 0 && glm::determinant(m)>0 ){
+                
+                trianglesPoints.erase(trianglesPoints.begin()+idxTR);
+                int idxdel = 0;
+                glm::vec3 s1 = a->A;
+                glm::vec3 s2 = a->B;
+                for (int i = 0; i < 3; i++)
+                {
+                    if(!isSame(tr->GetSegment(i),a)){
+                        L.push_back(tr->GetSegment(i));
+                    }
+                    tr->GetSegment(i)->visible = true;
+                }
+
                 do
                 {
-                    idxdel= FindSegment(Segments,a->A,a->B);
+                    idxdel= FindSegment(Segments,s1,s2);
                     if(idxdel < 0) break;
                     Segment* s = Segments[idxdel];
                     Segments.erase(Segments.begin()+idxdel);
                     delete s;
                 } while (idxdel >= 0);
+                
+                delete tr;
+            
             }
+            else{
+                Triangle* nTr = new Triangle();
 
-            Segments.push_back(f);
+                Segment* f = new Segment();
+                f->A = a->A;
+                f->B = a->B;
+            
 
-            Segment* seg = new Segment();
-            seg->A = f->B;
-            seg->B = newPoint;
-            nTr->SetSegment(1,seg);
-            int k = FindSegment(Segments,f->B,newPoint);
-            if(k >= 0){
-                Segments[k]->visible = false;
-                seg->visible = false;
+                glm::mat3 mat({
+                f->A.x,f->A.y,1.0,
+                newPoint.x,newPoint.y,1.0,
+                f->B.x,f->B.y,1.0,
+                });
+
+                if(glm::determinant(mat) > 0 ){
+                    std::swap(f->A,f->B);
+                }
+
+                nTr->SetSegment(0,f);
+                if(idxTR >= 0){
+                    f->visible  = false;
+                    a->visible  = false;
+                }
+                else{
+                int idxdel = 0;
+                    do
+                    {
+                        idxdel= FindSegment(Segments,a->A,a->B);
+                        if(idxdel < 0) break;
+                        Segment* s = Segments[idxdel];
+                        Segments.erase(Segments.begin()+idxdel);
+                        delete s;
+                    } while (idxdel >= 0);
+                }
+
+                Segments.push_back(f);
+
+                Segment* seg = new Segment();
+                seg->A = f->B;
+                seg->B = newPoint;
+                nTr->SetSegment(1,seg);
+                int k = FindSegment(Segments,f->B,newPoint);
+                if(k >= 0){
+                    Segments[k]->visible = false;
+                    seg->visible = false;
+                }
+                Segments.push_back(seg);
+
+                seg = new Segment();
+                seg->A = newPoint;
+                seg->B = f->A;
+                nTr->SetSegment(2,seg);
+
+                k = FindSegment(Segments,f->A,newPoint);
+                if(k >= 0){
+                    Segments[k]->visible = false;
+                    seg->visible = false;
+                }
+                Segments.push_back(seg);
+
+                trianglesPoints.push_back(nTr);
             }
-            Segments.push_back(seg);
-
-            seg = new Segment();
-            seg->A = newPoint;
-            seg->B = f->A;
-            nTr->SetSegment(2,seg);
-
-            k = FindSegment(Segments,f->A,newPoint);
-            if(k >= 0){
-                Segments[k]->visible = false;
-                seg->visible = false;
-            }
-            Segments.push_back(seg);
-
-            trianglesPoints.push_back(nTr);
         }
+
     }
+    
 
     //CreateLine(Segments);
-    
-    
-    
+           
     return;
 }
 
@@ -684,7 +785,7 @@ void LineRenderer::TriangulationDelaunay(){
                 C.x,C.y,1.0,
                 B.x,B.y,1.0,
                 });
-            //
+
                 if(glm::determinant(mat) < 0 && glm::dot(dir,normal) > 0){
                     continue;
                 }
@@ -985,6 +1086,8 @@ void LineRenderer::Editor(){
     ImGui::Checkbox("SupressionDelaunay",&supression);
     ImGui::Spacing();
     ImGui::Checkbox("RenderVoronoi",&Voronoi);
+    ImGui::SameLine();
+    ImGui::Checkbox("AnimimateVoronoi",&AnimimateVoronoi);
     ImGui::Spacing();
     if(ImGui::Button("Gift Wrapping")){
         GiftWraping();
@@ -1013,7 +1116,8 @@ void LineRenderer::SetUp(){
     Delaunay = false;
     DelaunayTriangulation = true;
     supression = false;
-
+    AnimimateVoronoi = false;
+    Voronoi= false;
     time = 0.0;
     
     return;
@@ -1295,9 +1399,9 @@ void LineRenderer::Update(){
         targetMouse->SetScale(glm::vec3({.2f,.2f,.2f}));
         lstObject.push_back(targetMouse);
         std::cout << lstObject.size() << std::endl;
-        if(DelaunayTriangulation){
-            TriangulationDelaunay();
-        }
+    }
+    if(DelaunayTriangulation){
+        TriangulationDelaunay();
     }
 
     if(Voronoi){
@@ -1321,6 +1425,22 @@ void LineRenderer::Update(){
     else if(!RenderLine && lstLines.size() > 0 && !DelaunayTriangulation){
         projet->GetScene()->RemoveObjectScene(lstLines);
         lstLines.clear();
+    }
+
+    if(AnimimateVoronoi){
+
+        for (int i = 0; i < lstObject.size(); i++) {
+            std::srand(static_cast<unsigned>(std::time(nullptr))*i);
+            glm::vec3 pos = lstObject[i]->GetPosition();
+            float x1 = static_cast<float>(std::rand()) / RAND_MAX;
+            float x2 = static_cast<float>(std::rand()) / RAND_MAX;
+            std::cout << x1 << std::endl;
+            glm::vec3 center = -glm::normalize(pos);
+            pos += glm::vec3(std::cos(x1*glm::pi<float>()), std::sin(x2*glm::pi<float>()), 0.0f) * 0.02f;
+            pos -= -center*(0.02f*static_cast<float>(std::rand()) / RAND_MAX);
+            lstObject[i]->SetPosition(pos);
+        }
+        
     }
 
     return;

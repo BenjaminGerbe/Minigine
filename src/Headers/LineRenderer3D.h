@@ -7,6 +7,7 @@
     
 class Edge;
 class Face;
+class Tetrahede;
 
 enum Visible{
     none,
@@ -45,7 +46,8 @@ struct Face{
     Edge* e1;
     Edge* e2;
     Edge* e3;
-     Visible visible;
+    Visible visible;
+    std::vector<Tetrahede*>  lstTetrahede;
     glm::vec3 centerPosition;
 
      Edge* operator[](int i){
@@ -63,6 +65,12 @@ struct Face{
      }
 };
 
+struct Tetrahede{
+    Face* f1;
+    Face* f2;
+    Face* f3;
+};
+
 
 class LineRenderer3D: public Component{
 
@@ -74,9 +82,12 @@ class LineRenderer3D: public Component{
     std::vector<Face*> faces;
     std::vector<Edge*> edges;
     std::vector<Vertex*> vertices;
+    std::vector<Tetrahede*> tetrahedes;
     bool update;
     int step = 0;
+    int stepTriangulation = 0;
     int laststep;
+    int laststepTriangulation;
     int lastIdx;
 
     public :
@@ -114,6 +125,7 @@ class LineRenderer3D: public Component{
     void GeneratePoint();
 
     void CreateConvexShape();
+    void TriangulationDelaunay();
 
     LineRenderer3D operator=(const LineRenderer3D& copy){
         return *this;
