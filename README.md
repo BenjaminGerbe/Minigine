@@ -1,4 +1,4 @@
-# Minigine
+# Minigine :heart:
 
 Minigine is a Mini Engine coding in cpp with the opengl api. 
 There's nothing innovatif it's only for educational purpose.
