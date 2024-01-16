@@ -26,7 +26,7 @@ link_directories(../libs/GLFW/lib-static-ucrt )
 
 # yaml-cpp
 include_directories(../libs/yaml-cpp/include)     
-link_directories(../libs/yaml-cpp/build/Debug)
+link_directories(../libs/yaml-cpp/lib/Debug)
 
 # MiniML 
 include_directories(../libs/MiniML/src)
@@ -66,5 +66,5 @@ endforeach()
 
 set_source_files_properties("Headers/data.h" PROPERTIES COMPILE_FLAGS "-w")
 
-target_link_libraries( ${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARY} yaml-cppd.lib imgui glfw3dll glew32s opengl32)
+target_link_libraries( ${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARY} yaml-cppd imgui glfw3dll glew32s opengl32)
 
