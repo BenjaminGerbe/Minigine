@@ -7,6 +7,7 @@ There's nothing innovatif it's only for educational purpose.
 clone the project and use cmake to generate the build in x86. Only x86 will work beceause the precompile libs are in x86 !!
 ```
 mkdir build
+cd build
 cmake -G [your generator] -A win32 ..
 cmake --build .
 ```
