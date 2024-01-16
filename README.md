@@ -4,7 +4,7 @@ Minigine is a Mini Engine coding in cpp with the opengl api.
 There's nothing innovatif it's only for educational purpose.
 
 # How to build 
-clone the project and use cmake to generate the build in x86. Only x86 will work beceause the precompile lib are in x86 !!
+clone the project and use cmake to generate the build in x86. Only x86 will work beceause the precompile libs are in x86 !!
 ```
 mkdir build
 cmake -G [your generator] -A win32 ..
