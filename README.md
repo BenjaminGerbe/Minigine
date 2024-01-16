@@ -11,5 +11,5 @@ cmake -G [your generator] -A win32 ..
 cmake --build .
 ```
 
-[!IMPORTANT]
+> [!IMPORTANT]
 > You need to copy past the glfw3.dll (in libs GLFW/lib-static-ucrt) and the yaml-cppd.dll (in the libs/yaml-cpp/lib/debug) in the source project near the .exe otherwise the project won't open.
