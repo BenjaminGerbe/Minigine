@@ -33,7 +33,7 @@ include_directories(../libs/MiniML/src)
 link_directories(../libs/MiniML/build/Debug)
 
 #glm
-include_directories(../libs/GLM)     
+include_directories(../libs/GLM/glm)     
 
 #TinyXML2
 include_directories(../libs/tinyxml2)
