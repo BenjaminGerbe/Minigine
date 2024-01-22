@@ -6,10 +6,10 @@ There's nothing innovatif it's only for educational purpose.
 # How to build 
 clone the project and use cmake to generate the build in x86. Only x86 will work beceause the precompile libs are in x86 !!
 ```
+git submodule update
 mkdir build
 cd build
 cmake -G [your generator] -A win32 ..
-git submodule update
 cmake --build . --config [Release/Debug]
 ```
 
