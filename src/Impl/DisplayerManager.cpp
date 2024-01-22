@@ -440,7 +440,7 @@ void DisplayerManager::RenderAllRenderWindows(int width,int height,Projet* proje
 }
 
 float* UpdateHeatMap(Network* network,int sizex,int sizey,float* v){
-    int size = network->GetLayerSize(network->GetNetworkSize()-1);
+    int size = MiniML::GetLayerSize(network,MiniML::GetNetworkSize(network)-1);
      for (int j = 0; j < sizey; j++)
         for (int i = 0; i < sizex; i++)
         {
@@ -449,7 +449,8 @@ float* UpdateHeatMap(Network* network,int sizex,int sizey,float* v){
             float valeur = 0.0f;
             for (int k = 0; k < size; k++)
             {
-                valeur += network->simulate({x,1.0f-y})[k];
+                float values[] = {x, 1.0f - y};
+                valeur += MiniML::SimulateNetwork(network,&values[0],3)[k];
             }
             v[(j*sizex)+i] = valeur/size;
         }
@@ -461,14 +462,14 @@ void DisplayNetwork(Network* network){
     if (network != nullptr && ImPlot::BeginPlot("##MarkerStyles", ImVec2(500,500)) ) {
 
             ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoDecorations, ImPlotAxisFlags_NoDecorations);
-            int height =((network->GetLayerSize(0)+1)*10.0f)/2.0f;
-            ImPlot::SetupAxesLimits(-10.0f, network->GetNetworkSize()*10.0f, -height,height+10.0f );
+            int height =((MiniML::GetLayerSize(network,0)+1)*10.0f)/2.0f;
+            ImPlot::SetupAxesLimits(-10.0f, MiniML::GetNetworkSize(network)*10.0f, -height,height+10.0f );
 
             int layer = 3;
             int p = 3;
-            for (int i = 0; i < network->GetNetworkSize(); i++)
+            for (int i = 0; i < MiniML::GetNetworkSize(network); i++)
             {
-                int size = network->GetLayerSize(i);
+                int size = MiniML::GetLayerSize(network,i);
                 for (int j = 0; j < size; j++)
                 {
                     ImS8 xs[2] = {(i)*(10),((i)+1)*(10)};
@@ -479,19 +480,19 @@ void DisplayNetwork(Network* network){
                     ImPlot::PlotLine("##Filled",xs, ys, 1);
                     ImGui::PopID();
 
-                    for (int k = 0; k < network->GetLayerRealSize(i+1); k++)
+                    for (int k = 0; k < MiniML::GetLayerRealSize(network,i+1); k++)
                     {
-                        ys[1] = (network->GetLayerSize(i+1)-k)*(10) - (network->GetLayerSize(i+1)*10.0)/2.0f;
+                        ys[1] = (MiniML::GetLayerSize(network,i+1)-k)*(10) - (MiniML::GetLayerSize(network,i+1)*10.0)/2.0f;
                         ImPlot::SetNextLineStyle( ImVec4(1.0,0.0,0.0,1.0));
                         ImPlot::PlotLine("##Filled",xs, ys, 2);
                         glm::vec2 v(xs[1] - xs[0],ys[1] - ys[0]);
                         v = glm::normalize(v);
-                        std::string w = std::to_string(network->GetWeight(i+1,k,j));
+                        std::string w = std::to_string(MiniML::GetWeight(network,i+1,k,j));
                         ImPlot::PlotText(w.c_str(), xs[0] +v.x*2.0f, ys[0]+v.y*2.0f);
                     }
 
                     std::string s;
-                    if(i > 0 && i < network->GetNetworkSize() -1){
+                    if(i > 0 && i < MiniML::GetNetworkSize(network)-1){
                         s = "H";
                     }
                     else if(i==0){
@@ -502,7 +503,7 @@ void DisplayNetwork(Network* network){
                     }
                     s = s+std::to_string(j);
 
-                    if(j > network->GetLayerSize(i)-1){
+                    if(j > MiniML::GetLayerSize(network,i)-1){
                         s = "B";
                     }
 
@@ -519,18 +520,21 @@ void DisplayNetwork(Network* network){
 void DisplayerError(Network* network){
   if (ImPlot::BeginPlot("Error",ImVec2(1000,500))) {
         ImPlot::SetupAxesLimits(0,100,-.25f,1);
-        float t = network->GetError()[1][network->GetError()[1].size()-1];
+        float* error = MiniML::GetError(network);
+        float* it = MiniML::GetIter(network);
+        int n = MiniML::GetSizeError(network);
+        float t= it[n-1];
         ImPlot::SetupAxisLimits(ImAxis_X1,0, t, ImGuiCond_Always);
         ImPlot::SetupAxisLimits(ImAxis_Y1,0,1);
         ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
-        ImPlot::PlotShaded("Error",&network->GetError()[1][0],&network->GetError()[0][0],network->GetError()[0].size(), -INFINITY);
+        ImPlot::PlotShaded("Error",&error[0],&it[0],n, -INFINITY);
         ImPlot::PopStyleVar();
-        ImPlot::PlotLine("Error", &network->GetError()[1][0],&network->GetError()[0][0],network->GetError()[0].size());
+        ImPlot::PlotShaded("Error",&error[0],&it[0],n);
         ImPlot::EndPlot();
     }
 }
 
-void DisplayerManager::DisplayerNetworkParameter(Network* network){
+void DisplayerManager::DisplayerNetworkParameter(){
     ImGui::PushItemWidth(150);
     ImGui::InputInt("Hidden",&nbHidden);
     ImGui::SameLine();
@@ -669,7 +673,7 @@ void DisplayerManager::MiniMLWindows(){
 
       
         if(ImGui::Button("Create Network")){
-            network = MiniML::setupXor(2,nbHidden,heightHidden,nbOutput,false);
+            network = (Network*)MiniML::SetUpNetwork(2,nbHidden,heightHidden,nbOutput,false);
             heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
             updateHeat = true;
         }
@@ -683,7 +687,25 @@ void DisplayerManager::MiniMLWindows(){
 
         ImGui::SameLine();
         if(ImGui::Button("one Train")){
-            network->backPropagation(input,output,0.001f,100000);
+            std::vector<float> in;
+            for (int i = 0; i < input.size(); i++)
+            {
+                for (int j = 0; j < input[i].size(); j++)
+                {
+                    in.push_back(input[i][j]);
+                }
+            }
+
+            std::vector<float> oute;
+            for (int i = 0; i < output.size(); i++)
+            {
+                for (int j = 0; j < output[i].size(); j++)
+                {
+                    oute.push_back(output[i][j]);
+                }
+            }
+
+            MiniML::BackPropagation(network,&in[0],input.size(),&oute[0],output.size(),0.001f,100000);
             heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
             updateHeat = true;
         }
@@ -691,10 +713,26 @@ void DisplayerManager::MiniMLWindows(){
 
         
         if(Trainning && network != nullptr){
-            Eigen::MatrixXd(2,0);
-            network->backPropagation(input,output,learningRate,2000);
-            std::vector<float>v({0,1});
-        //    std::cout << network->simulate({0,0}) << " "<< network->simulate({1,1}) << network->simulate({0,1}) << std::endl;
+            
+            std::vector<float> in;
+            for (int i = 0; i < input.size(); i++)
+            {
+                for (int j = 0; j < input[i].size(); j++)
+                {
+                    in.push_back(input[i][j]);
+                }
+            }
+
+            std::vector<float> oute;
+            for (int i = 0; i < output.size(); i++)
+            {
+                for (int j = 0; j < output[i].size(); j++)
+                {
+                    oute.push_back(output[i][j]);
+                }
+            }
+
+            MiniML::BackPropagation(network,&in[0],input.size(),&oute[0],output.size(),0.001f,2000);
             if(Plot){
                 heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
                 updateHeat = true;
@@ -704,16 +742,12 @@ void DisplayerManager::MiniMLWindows(){
         
 
         ImGui::SameLine();
-        DisplayerNetworkParameter(network);
+        DisplayerNetworkParameter();
         DisplayNetwork(network);
 
         ImGui::SameLine();
         if(network != nullptr && updateHeat){
             
-            int size = network->GetError()[0].size()-1;
-            if(network->GetError()[0][size] < 0.005f){
-              //  Trainning = false;
-            }
 
             ImPlot::PushColormap(ImPlotColormap_Jet);
 
@@ -766,117 +800,117 @@ void DisplayerManager::MiniMLWindows(){
 
 
 void DisplayerManager::MiniMLRegression(){
-    if(openRegression){
-        ImGui::Begin("Regression",&openRegression);
-        static int id = 0;
-        static char* current;
-        static std::vector<std::vector<float>> input;
-        static std::vector<std::vector<float>> output;
-        static bool updateHeat = false;
-        static bool Trainning = false;
+    // if(openRegression){
+    //     ImGui::Begin("Regression",&openRegression);
+    //     static int id = 0;
+    //     static char* current;
+    //     static std::vector<std::vector<float>> input;
+    //     static std::vector<std::vector<float>> output;
+    //     static bool updateHeat = false;
+    //     static bool Trainning = false;
 
-        if (ImGui::BeginCombo("Input/ouput", current))
-        {
-            input.clear();
-            output.clear();
-            Trainning = false;
-            if (ImGui::Selectable("Linear Simple", current == "Linear Simple")){
-                current = "Linear Simple";
-                float r = (((double) rand() / (RAND_MAX)));
-                input.push_back({r});
-                r = (((double) rand() / (RAND_MAX)));
-                output.push_back({r});
-                r = (((double) rand() / (RAND_MAX)));
-                input.push_back({r});
-                r = (((double) rand() / (RAND_MAX)));
-                output.push_back({r});
-            }
+    //     if (ImGui::BeginCombo("Input/ouput", current))
+    //     {
+    //         input.clear();
+    //         output.clear();
+    //         Trainning = false;
+    //         if (ImGui::Selectable("Linear Simple", current == "Linear Simple")){
+    //             current = "Linear Simple";
+    //             float r = (((double) rand() / (RAND_MAX)));
+    //             input.push_back({r});
+    //             r = (((double) rand() / (RAND_MAX)));
+    //             output.push_back({r});
+    //             r = (((double) rand() / (RAND_MAX)));
+    //             input.push_back({r});
+    //             r = (((double) rand() / (RAND_MAX)));
+    //             output.push_back({r});
+    //         }
 
-            if (ImGui::Selectable("None Linear Simple", current == "None Linear Simple")){
-                current = "None Linear Simple";
-                float r = (((double) rand() / (RAND_MAX)));
-                input.push_back({0});
-                r = (((double) rand() / (RAND_MAX)));
-                output.push_back({1});
-                r = (((double) rand() / (RAND_MAX)));
-                input.push_back({1});
-                r = (((double) rand() / (RAND_MAX)));
-                output.push_back({2});
-                r = (((double) rand() / (RAND_MAX)));
-                input.push_back({2});
-                r = (((double) rand() / (RAND_MAX)));
-                output.push_back({3});
-            }
+    //         if (ImGui::Selectable("None Linear Simple", current == "None Linear Simple")){
+    //             current = "None Linear Simple";
+    //             float r = (((double) rand() / (RAND_MAX)));
+    //             input.push_back({0});
+    //             r = (((double) rand() / (RAND_MAX)));
+    //             output.push_back({1});
+    //             r = (((double) rand() / (RAND_MAX)));
+    //             input.push_back({1});
+    //             r = (((double) rand() / (RAND_MAX)));
+    //             output.push_back({2});
+    //             r = (((double) rand() / (RAND_MAX)));
+    //             input.push_back({2});
+    //             r = (((double) rand() / (RAND_MAX)));
+    //             output.push_back({3});
+    //         }
         
-            ImGui::EndCombo();
-        }
+    //         ImGui::EndCombo();
+    //     }
 
 
       
-        if(ImGui::Button("Create Network")){
-            network = MiniML::setupXor(1,nbHidden,heightHidden,nbOutput,true);
-            updateHeat = true;
-        }
-        ImGui::SameLine();
-        if(ImGui::Button("Train")){
-            Trainning = !Trainning;
-            updateHeat = true;
-        }
+    //     if(ImGui::Button("Create Network")){
+    //         network = MiniML::setupXor(1,nbHidden,heightHidden,nbOutput,true);
+    //         updateHeat = true;
+    //     }
+    //     ImGui::SameLine();
+    //     if(ImGui::Button("Train")){
+    //         Trainning = !Trainning;
+    //         updateHeat = true;
+    //     }
 
-        ImGui::SameLine();
-        if(ImGui::Button("one Train")){
-            network->backPropagation(input,output,0.001f,100000);
-            updateHeat = true;
-        }
+    //     ImGui::SameLine();
+    //     if(ImGui::Button("one Train")){
+    //         network->backPropagation(input,output,0.001f,100000);
+    //         updateHeat = true;
+    //     }
         
-        if(Trainning && network != nullptr){
-            Eigen::MatrixXd(2,0);
-            network->backPropagation(input,output,learningRate,2000);
-            updateHeat = true;
-        }
+    //     if(Trainning && network != nullptr){
+    //         Eigen::MatrixXd(2,0);
+    //         network->backPropagation(input,output,learningRate,2000);
+    //         updateHeat = true;
+    //     }
 
-        ImGui::SameLine();
-        DisplayerNetworkParameter(network);
+    //     ImGui::SameLine();
+    //     DisplayerNetworkParameter(network);
 
-        DisplayNetwork(network);
+    //     DisplayNetwork(network);
 
-        ImGui::SameLine();
-        if(network != nullptr && updateHeat){
+    //     ImGui::SameLine();
+    //     if(network != nullptr && updateHeat){
             
-            int size = network->GetError()[0].size()-1;
-            if(network->GetError()[0][size] < 0.005f){
-              //  Trainning = false;
-            }
+    //         int size = network->GetError()[0].size()-1;
+    //         if(network->GetError()[0][size] < 0.005f){
+    //           //  Trainning = false;
+    //         }
 
-            ImPlot::PushColormap(ImPlotColormap_Jet);
+    //         ImPlot::PushColormap(ImPlotColormap_Jet);
 
-            ImS8 x[2] = {0.0f,0.0f};
-            ImS8 y[2] =  {0.0f,0.0f};
+    //         ImS8 x[2] = {0.0f,0.0f};
+    //         ImS8 y[2] =  {0.0f,0.0f};
 
-            if (Plot){
-                static float xs1[1001], ys1[1001];
-                for (int i = 0; i < 1001; ++i) {
-                    xs1[i] = i * 0.001f;
-                    ys1[i] = network->simulate({xs1[i]})[0];
-                }
+    //         if (Plot){
+    //             static float xs1[1001], ys1[1001];
+    //             for (int i = 0; i < 1001; ++i) {
+    //                 xs1[i] = i * 0.001f;
+    //                 ys1[i] = network->simulate({xs1[i]})[0];
+    //             }
 
-                if (ImPlot::BeginPlot("Line Plots",ImVec2(500,500))) {
-                    ImPlot::SetupAxisLimits(0,1,0,1);
-                    ImPlot::SetNextLineStyle(ImVec4(1.0,0.0,0.0,1.0));
-                    ImPlot::PlotLine("Network(x)", xs1, ys1, 1001);
-                    for (int i = 0; i < input.size(); i++)
-                    {
-                        ImPlot::SetNextMarkerStyle(ImPlotMarker_Circle, 10,ImVec4(0.0,1.0,1.0,1.0));
-                        ImPlot::PlotScatter("Input", &input[i][0], &output[i][0], 1);
-                    }
-                    ImPlot::EndPlot();
-                }
-            }
-            ImPlot::PopColormap();
-           DisplayerError(network);
-        }
-        ImGui::End();
-    }
+    //             if (ImPlot::BeginPlot("Line Plots",ImVec2(500,500))) {
+    //                 ImPlot::SetupAxisLimits(0,1,0,1);
+    //                 ImPlot::SetNextLineStyle(ImVec4(1.0,0.0,0.0,1.0));
+    //                 ImPlot::PlotLine("Network(x)", xs1, ys1, 1001);
+    //                 for (int i = 0; i < input.size(); i++)
+    //                 {
+    //                     ImPlot::SetNextMarkerStyle(ImPlotMarker_Circle, 10,ImVec4(0.0,1.0,1.0,1.0));
+    //                     ImPlot::PlotScatter("Input", &input[i][0], &output[i][0], 1);
+    //                 }
+    //                 ImPlot::EndPlot();
+    //             }
+    //         }
+    //         ImPlot::PopColormap();
+    //        DisplayerError(network);
+    //     }
+    //     ImGui::End();
+    // }
 }
 
 void DisplayerManager::RenderSceneViewOption(){

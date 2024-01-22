@@ -1436,8 +1436,8 @@ void LineRenderer::Update(){
             float x2 = static_cast<float>(std::rand()) / RAND_MAX;
             std::cout << x1 << std::endl;
             glm::vec3 center = -glm::normalize(pos);
-            pos += glm::vec3(std::cos(x1*glm::pi<float>()), std::sin(x2*glm::pi<float>()), 0.0f) * 0.02f;
-            pos -= -center*(0.02f*static_cast<float>(std::rand()) / RAND_MAX);
+            pos += glm::vec3(std::cos(x1*glm::pi<float>()), std::sin(x2*glm::pi<float>()), 0.0f) * 0.1f;
+            pos -= -center*(0.1f*static_cast<float>(std::rand()) / RAND_MAX);
             lstObject[i]->SetPosition(pos);
         }
         

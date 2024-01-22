@@ -28,7 +28,6 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
 #include "implot.h"
-
 class Network;
 
 class DisplayerManager{
@@ -55,7 +54,6 @@ class DisplayerManager{
     float learningRate;
     bool Plot;
     Network* network;
-
 
     public :
     DisplayerManager(){
@@ -112,7 +110,7 @@ class DisplayerManager{
     void RenderSceneViewOption();
     void MiniMLWindows();
     void MiniMLRegression();
-    void DisplayerNetworkParameter(Network* network);
+    void DisplayerNetworkParameter();
     void RenderGameView(GameView* GameView,Projet* projet);
 
 };

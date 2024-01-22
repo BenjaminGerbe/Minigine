@@ -5,9 +5,9 @@
 #include "imgui_impl_opengl3.h"
 #include "Object.h"
     
-class Edge;
-class Face;
-class Tetrahede;
+struct Edge;
+struct Face;
+struct Tetrahede;
 
 enum Visible{
     none,
@@ -63,12 +63,44 @@ struct Face{
 
         return nullptr;
      }
+
 };
 
 struct Tetrahede{
     Face* f1;
     Face* f2;
     Face* f3;
+    Face* f4;
+
+    Face* operator[](int i){
+        if(i == 0){
+            return f1;
+        }
+        else if(i == 1){
+            return f2;
+        }
+        else if(i == 2){
+            return f3;
+        }
+        else {
+            return f4;
+        }
+    }
+
+    void SetFace(int i,Face* f){
+        if(i == 0){
+            f1 = f;
+        }
+        else if(i == 1){
+            f2 = f;
+        }
+        else if(i == 2){
+            f3 = f;
+        }
+        else{
+            f4 = f;
+        }
+    }
 };
 
 
@@ -89,6 +121,7 @@ class LineRenderer3D: public Component{
     int laststep;
     int laststepTriangulation;
     int lastIdx;
+    int lastIdxTriangulation;
 
     public :
     virtual void Editor();
@@ -111,6 +144,8 @@ class LineRenderer3D: public Component{
         return comp;
     }
 
+
+
     LineRenderer3D(std::string id,int i,YAML::Node& yamlFile,Object* obj):Component(id,i,yamlFile,obj){
         this->headerName = "LineRenderer3D";
     }
@@ -123,10 +158,9 @@ class LineRenderer3D: public Component{
         ID = c_LineRenderer3D;
     }
     void GeneratePoint();
-
+    void CreateBone();
     void CreateConvexShape();
     void TriangulationDelaunay();
-
     LineRenderer3D operator=(const LineRenderer3D& copy){
         return *this;
     }
