@@ -55,7 +55,7 @@ class DisplayerManager{
     float learningRate;
     bool Plot;
     Network* network;
-
+    GLuint heatMapID;
 
     public :
     DisplayerManager(){
@@ -66,9 +66,16 @@ class DisplayerManager{
         openObjectView = true;
         openSceneEditor = true;
         openSceneViewOption = true;
-        heatMapMiniML = new float[100*100];
+        heatMapMiniML = new float[300*100];
         rcGameView = new RenderContextGame();
         network = nullptr;
+
+        glGenTextures(1,&heatMapID);
+        glBindTexture(GL_TEXTURE_2D,heatMapID);
+        glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,0,0,0,GL_RGB,GL_UNSIGNED_BYTE,(float*)(0));
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D,0);
     }
 
     DisplayerManager(DisplayerManager& copy){
@@ -102,6 +109,7 @@ class DisplayerManager{
         }
     }
 
+    float* UpdateHeatMap(Network* network,int sizex,int sizey,float* v);
     void ObjectEditor(Projet* projet);
     void AddRenderContextDisplay(RenderContextDisplay* renderWindow);
     void SceneViewParameter();

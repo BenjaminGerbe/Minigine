@@ -58,7 +58,7 @@ bool GLShader::LoadVertexShader(const char* filename)
 	fin.close();	// non obligatoire ici
 	delete[] buffer;
 	// 5. 
-	// verifie le status de la compilation
+	// verifie le status de la compilation	
 	return ValidateShader(m_VertexShader);
 }
 

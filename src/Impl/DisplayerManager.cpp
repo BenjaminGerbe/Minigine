@@ -439,20 +439,28 @@ void DisplayerManager::RenderAllRenderWindows(int width,int height,Projet* proje
     }
 }
 
-float* UpdateHeatMap(Network* network,int sizex,int sizey,float* v){
+
+float* DisplayerManager::UpdateHeatMap(Network* network,int sizex,int sizey,float* v){
     int size = network->GetLayerSize(network->GetNetworkSize()-1);
+    std::vector<float> value;
      for (int j = 0; j < sizey; j++)
         for (int i = 0; i < sizex; i++)
         {
-            float x = ((float)i)/sizex;
-            float y = ((float)j)/sizey;
-            float valeur = 0.0f;
-            for (int k = 0; k < size; k++)
+            for (int K = 0; K < 3; K++)
             {
-                valeur += network->simulate({x,1.0f-y})[k];
+                float x = ((float)i)/sizex;
+                float y = ((float)j)/sizey;
+        
+              value.push_back(network->simulate({x,1.0f-y})[K]);
             }
-            v[(j*sizex)+i] = valeur/size;
+
         }
+
+    glBindTexture(GL_TEXTURE_2D,this->heatMapID);
+    glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,100,100,0,GL_RGB,GL_FLOAT,&value[0]);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D,0);
     return v;
 }
 
@@ -643,15 +651,15 @@ void DisplayerManager::MiniMLWindows(){
                         input.push_back({i,j});
                         if((cos((i)*4*glm::pi<float>() + glm::pi<float>()/2.0f ) > 0)){
                             if((sin((j)*4*glm::pi<float>() + glm::pi<float>()/2.0f ) > 0)){
-                                output.push_back({0});
+                                output.push_back({0,1,0});
                             }else{
-                                output.push_back({1});
+                                output.push_back({1,0,0});
                             }
                         }else{
                             if((sin((j)*4*glm::pi<float>() + glm::pi<float>()/2.0f ) > 0)){
-                                output.push_back({1});
+                                output.push_back({1,0,0});
                             }else{
-                                output.push_back({.5});
+                                output.push_back({0,0,1});
                             }
                         }
 
@@ -669,7 +677,7 @@ void DisplayerManager::MiniMLWindows(){
 
       
         if(ImGui::Button("Create Network")){
-            network = MiniML::setupXor(2,nbHidden,heightHidden,nbOutput,false);
+            network = MiniML::SetUpNetwork(2,nbHidden,heightHidden,nbOutput,false);
             heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
             updateHeat = true;
         }
@@ -723,19 +731,33 @@ void DisplayerManager::MiniMLWindows(){
             if (Plot && ImPlot::BeginPlot("##Heatmap2",ImVec2(500,500))) {
                 ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoDecorations, ImPlotAxisFlags_NoDecorations);
                 ImPlot::SetupAxesLimits(0,1,0,1);
-                ImPlot::PlotHeatmap("heatman",&heatMapMiniML[0],sizex,sizey,0.f,1.f,nullptr);
-
+                //ImPlot::PlotHeatmap("heatman",&heatMapMiniML[0],300,sizey,0.f,1.f,nullptr);
+                static ImVec2 bmin(0,0);
+                static ImVec2 bmax(1,1);
+                static ImVec2 uv0(0,0);
+                static ImVec2 uv1(1,1);
+                ImPlot::PlotImage("heatmap",(void*)(intptr_t)this->heatMapID, bmin, bmax, uv0,uv1);
                 for (int i = 0; i < input.size(); i++)
                 {
                     float x = input[i][0];
                     float y = input[i][1];
                     float v = 0;
-                    for (int k = 0; k < output[i].size(); k++)
-                    {
-                        v+= output[i][k];
-                    }
-                    v/=output[i].size();
+                    // for (int k = 0; k < output[i].size(); k++)
+                    // {
+                    //     v+= output[i][k];
+                    // }
+                    /*v/=output[i].size();*/
 
+                    if(output[i][0] == 1){
+                        v = 1;
+                    }
+                    else if(output[i][1] == 1){
+                        v = 0;
+                    }
+                    else{
+                        v= 0.5f;
+                    }
+                    
                     if( v == 0){
                         ImPlot::SetNextMarkerStyle(ImPlotMarker_Circle, 10,ImVec4(0.0,0.0,1.0,1.0));
                     }
