@@ -17,7 +17,10 @@ file(GLOB_RECURSE Ressources
      "src/*.png"
      "src/*.jpg"
      "src/*.obj"
+     "imgui.ini"
 )
+
+add_subdirectory(libs/MiniML)
 
 # glew
 include_directories(libs/GLEW/include)
@@ -53,9 +56,11 @@ configure_file(${ICON_FILE} ${CMAKE_BINARY_DIR}/Minigine.ico COPYONLY)
 set(CMAKE_RC_COMPILER_INIT "windres")
 enable_language(RC)
 
+# to have minigine icon
 include_directories(${PROJECT_SOURCE_DIR})
 add_executable ( ${CMAKE_PROJECT_NAME} ${Classes} "${CMAKE_SOURCE_DIR}/resources.rc")
 
+# copy ressources to the destination file
 foreach(Ressources_file ${Ressources})
     add_custom_command(
         TARGET ${CMAKE_PROJECT_NAME} PRE_BUILD
@@ -65,6 +70,4 @@ foreach(Ressources_file ${Ressources})
 endforeach()
 
 set_source_files_properties("Headers/data.h" PROPERTIES COMPILE_FLAGS "-w")
-
 target_link_libraries(${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARY} yaml-cppd MiniML imgui glfw3dll glew32s opengl32)
-
