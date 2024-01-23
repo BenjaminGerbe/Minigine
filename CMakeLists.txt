@@ -19,7 +19,7 @@ file(GLOB_RECURSE Ressources
      "src/*.obj"
      "imgui.ini"
 )
-
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 add_subdirectory(libs/MiniML)
 
 # glew
@@ -32,11 +32,11 @@ link_directories(libs/GLFW/lib-static-ucrt )
 
 # yaml-cppZ
 include_directories(libs/yaml-cpp/include)     
-link_directories(libs/yaml-cpp/lib/Debug)
+link_directories(libs/yaml-cpp/lib)
 
 # MiniML 
 include_directories(libs/MiniML/include)
-link_directories(libs/MiniML/build/Release)
+link_directories(libs/MiniML/lib)
 
 #glm
 include_directories(libs/GLM/glm)     
@@ -70,4 +70,4 @@ foreach(Ressources_file ${Ressources})
 endforeach()
 
 set_source_files_properties("Headers/data.h" PROPERTIES COMPILE_FLAGS "-w")
-target_link_libraries(${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARY} yaml-cppd MiniML imgui glfw3dll glew32s opengl32)
+target_link_libraries(${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARY} yaml-cpp MiniML imgui glfw3dll glew32s opengl32)
