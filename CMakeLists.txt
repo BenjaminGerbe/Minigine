@@ -27,12 +27,12 @@ link_directories(libs/GLEW/lib/Release/WIN32)
 include_directories(libs/GLFW/include)     
 link_directories(libs/GLFW/lib-static-ucrt )
 
-# yaml-cpp
+# yaml-cppZ
 include_directories(libs/yaml-cpp/include)     
 link_directories(libs/yaml-cpp/lib/Debug)
 
 # MiniML 
-include_directories(libs/MiniML/build/Release)
+include_directories(libs/MiniML/include)
 link_directories(libs/MiniML/build/Release)
 
 #glm
@@ -66,5 +66,5 @@ endforeach()
 
 set_source_files_properties("Headers/data.h" PROPERTIES COMPILE_FLAGS "-w")
 
-target_link_libraries(${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARY} yaml-cppd MiniMLdll imgui glfw3dll glew32s opengl32)
+target_link_libraries(${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARY} yaml-cppd MiniML imgui glfw3dll glew32s opengl32)
 
