@@ -450,7 +450,7 @@ float* UpdateHeatMap(Network* network,int sizex,int sizey,float* v){
             for (int k = 0; k < size; k++)
             {
                 float values[] = {x, 1.0f - y};
-                valeur += MiniML::SimulateNetwork(network,&values[0],3)[k];
+                valeur += MiniML::SimulateNetwork(network,&values[0],2)[k];
             }
             v[(j*sizex)+i] = valeur/size;
         }

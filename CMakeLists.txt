@@ -51,14 +51,14 @@ include_directories(libs/tinyobj)
 include_directories(libs/imgui)
 link_directories(libs/imgui/lib)
 
-set(ICON_FILE "${CMAKE_SOURCE_DIR}/Minigine.ico")
+set(ICON_FILE "${CMAKE_SOURCE_DIR}/src/Ressources/Minigine.ico")
 configure_file(${ICON_FILE} ${CMAKE_BINARY_DIR}/Minigine.ico COPYONLY)
 set(CMAKE_RC_COMPILER_INIT "windres")
 enable_language(RC)
 
 # to have minigine icon
 include_directories(${PROJECT_SOURCE_DIR})
-add_executable ( ${CMAKE_PROJECT_NAME} ${Classes} "${CMAKE_SOURCE_DIR}/resources.rc")
+add_executable ( ${CMAKE_PROJECT_NAME} ${Classes} "${CMAKE_SOURCE_DIR}/src/Ressources/resources.rc")
 
 # copy ressources to the destination file
 foreach(Ressources_file ${Ressources})
