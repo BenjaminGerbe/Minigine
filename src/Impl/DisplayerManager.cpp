@@ -39,7 +39,7 @@ void DisplayerManager::MachineState(Projet* projet){
         if ( currentTime -appState->GetLastTime() >= 1.0 ){ // If last prinf() was more than 1 sec ago
  
             appState->SetLastTime(appState->GetLastTime()+1);
-            fpsCounter.push_back((appState->GetFrames()));
+            fpsCounter.push_back(1000.0f/((float)appState->GetFrames()));
             fpsCounter.erase(fpsCounter.begin());
             fps = appState->GetFrames();
             appState->SetFrames(0);
