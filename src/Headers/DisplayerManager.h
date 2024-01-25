@@ -28,6 +28,7 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
 #include "implot.h"
+#include "MiniMLDisplay.h"
 class Network;
 
 class DisplayerManager{
@@ -39,6 +40,7 @@ class DisplayerManager{
     RenderContextDisplay* renderContextDisplay;
     std::vector<float> memoryUsage;
     std::vector<float> fpsCounter;
+    std::vector<MiniMLDisplay*> MLDisplays;
     bool openMachineState;
     bool openSceneEditor;
     bool openObjectView;
@@ -56,6 +58,7 @@ class DisplayerManager{
     Network* network;
 
     public :
+
     DisplayerManager(){
         selectedSceneView = -1;
         memoryUsage = std::vector<float>(500);
@@ -70,15 +73,7 @@ class DisplayerManager{
     }
 
     DisplayerManager(DisplayerManager& copy){
-        selectedSceneView = copy.selectedObjects;
-        memoryUsage = copy.memoryUsage;
-        fpsCounter = copy.fpsCounter;
-        openMachineState = copy.openMachineState;
-        openObjectView = copy.openMachineState;
-        openSceneEditor = copy.openSceneEditor;
-        openSceneViewOption = copy.openSceneEditor;
-        rcGameView = copy.rcGameView; 
-        network = nullptr;
+        operator=(copy);
     }
 
     DisplayerManager operator=(DisplayerManager& copy){
@@ -91,12 +86,16 @@ class DisplayerManager{
         openSceneViewOption = copy.openSceneEditor;
         rcGameView = copy.rcGameView; 
         this->network = copy.network;
+        this->MLDisplays = copy.MLDisplays;
         return *this;
     }
     
     ~DisplayerManager(){
         for (size_t i = 0; i < RenderContextDisplays.size(); i++) {
             delete RenderContextDisplays[i];
+        }
+         for (size_t i = 0; i < MLDisplays.size(); i++) {
+            delete MLDisplays[i];
         }
     }
 
@@ -109,7 +108,6 @@ class DisplayerManager{
     void RenderAllRenderWindows(int width,int height,Projet* projet);
     void RenderSceneViewOption();
     void MiniMLWindows();
-    void MiniMLRegression();
     void DisplayerNetworkParameter();
     void RenderGameView(GameView* GameView,Projet* projet);
 

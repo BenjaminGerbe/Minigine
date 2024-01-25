@@ -293,7 +293,6 @@ int main(int, char**){
         displayerManager.ObjectEditor(&projet);
         displayerManager.RenderGameView(&gameView,&projet);
         displayerManager.MiniMLWindows();
-        displayerManager.MiniMLRegression();
 
        // ImGui::ShowStyleEditor();
         ImGui::ShowDemoWindow();
