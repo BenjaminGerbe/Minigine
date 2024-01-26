@@ -1,4 +1,8 @@
 #pragma once
+// glew and glfw include
+#include "GL/glew.h"
+#include "GLFW/glfw3.h"
+
 // imgui include
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -19,6 +23,7 @@ class Network;
 class MiniMLDisplay{
     Network* network;
     int nbOutput;
+    int nbInput;
     float* heatMapMiniML;
     int nbHidden;
     int heightHidden;
@@ -35,6 +40,8 @@ class MiniMLDisplay{
     float** input;
     float** output;
     bool updateHeat;
+    GLuint texID;
+
     public : 
     bool open;
     int GetID(){
@@ -57,6 +64,13 @@ class MiniMLDisplay{
         input  = nullptr;
         output = nullptr;
         this->id = id;
+        texID = id + 99;
+        glGenTextures(1,&texID);
+        glBindTexture(GL_TEXTURE_2D,texID);
+        glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,sizex,sizey,0,GL_RGB,GL_UNSIGNED_BYTE,(void*)0);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D,0);
     }
 
     MiniMLDisplay(MiniMLDisplay& copy){
@@ -79,12 +93,13 @@ class MiniMLDisplay{
 
     ~MiniMLDisplay(){
         delete heatMapMiniML;
+        glDeleteBuffers(1,&texID);
     }
 
     void DisplayerNetworkParameter(){
 
-        if(ImGui::Button("Create Network")){
-            network = (Network*)MiniML::SetUpNetwork(2,nbHidden,heightHidden,nbOutput,regression);
+        if(ImGui::Button("Create Network") && nbInput > 0){
+            network = (Network*)MiniML::SetUpNetwork(nbInput,nbHidden,heightHidden,nbOutput,regression);
             heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
             updateHeat = true;
         }
@@ -108,9 +123,6 @@ class MiniMLDisplay{
         ImGui::InputInt("Hidden",&nbHidden);
         ImGui::SameLine();
         ImGui::InputInt("Height Hidden",&heightHidden);
-        ImGui::SameLine();
-        ImGui::InputInt("Output",&nbOutput);
-        nbOutput = std::max<int>(1,nbOutput);
         ImGui::PopItemWidth();
         ImGui::Checkbox("Plot",&Plot);
         ImGui::SameLine();
@@ -136,19 +148,26 @@ class MiniMLDisplay{
 
     float* UpdateHeatMap(Network* network,int sizex,int sizey,float* v){
         int size = MiniML::GetLayerSize(network,MiniML::GetNetworkSize(network)-1);
+        std::vector<float> value;
         for (int j = 0; j < sizey; j++)
             for (int i = 0; i < sizex; i++)
             {
                 float x = ((float)i)/sizex;
                 float y = ((float)j)/sizey;
-                float valeur = 0.0f;
-                for (int k = 0; k < size; k++)
+                for (int k = 0; k < 3; k++)
                 {
                     float values[] = {x, 1.0f - y};
-                    valeur += MiniML::SimulateNetwork(network,&values[0],2)[k];
+                    value.push_back(MiniML::SimulateNetwork(network,&values[0],2)[k%size]);
                 }
-                v[(j*sizex)+i] = valeur/size;
+
             }
+
+        glBindTexture(GL_TEXTURE_2D,this->texID);
+        glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,sizex,sizey,0,GL_RGB,GL_FLOAT,&value[0]);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+        glBindTexture(GL_TEXTURE_2D,0);
+
         return v;
     }
 
@@ -218,7 +237,8 @@ class MiniMLDisplay{
             Trainning = false;
             if (ImGui::Selectable("Linear Simple", current == "Linear Simple")){
                 current = "Linear Simple";
-
+                nbOutput = 1;
+                nbInput = 1;
                 float r = (((double) rand() / (RAND_MAX)));
                 data.insert(data.end(),{r});
                 r = (((double) rand() / (RAND_MAX)));
@@ -235,6 +255,8 @@ class MiniMLDisplay{
 
             if (ImGui::Selectable("None Linear Simple", current == "None Linear Simple")){
                 current = "None Linear Simple";
+                 nbOutput = 1;
+                nbInput = 1;
                 float r = (((double) rand() / (RAND_MAX)));
                 data.insert(data.end(),{r});
                 r = (((double) rand() / (RAND_MAX)));
@@ -291,6 +313,8 @@ class MiniMLDisplay{
             Trainning = false;
             if (ImGui::Selectable("Xor", current == "Xor")){
                 current = "Xor";
+                nbInput = 2;
+                nbOutput = 1;
                 data.insert(data.end(),{0,1,1});
                 data.insert(data.end(),{1,1,0});
                 data.insert(data.end(),{1,0,1});
@@ -299,6 +323,8 @@ class MiniMLDisplay{
 
             if (ImGui::Selectable("Linear Simple", current == "Linear Simple")){
                 current = "Linear Simple";
+                nbInput = 2;
+                nbOutput = 1;
                 data.insert(data.end(),{.25f,.8f,0});
                 data.insert(data.end(),{0.8f,.5f,1.0f});
                 data.insert(data.end(),{.1,.6,0.0});
@@ -306,6 +332,8 @@ class MiniMLDisplay{
 
             if (ImGui::Selectable("Cross", current == "Cross")){
                 current = "Cross";
+                nbInput = 2;
+                nbOutput = 1;
                 for (float i = 0.0; i <= 1.05f; i+=0.05f)
                 {
                     for (float j = 0.0; j <= 1.05f; j+=0.05f)
@@ -322,12 +350,14 @@ class MiniMLDisplay{
 
             if (ImGui::Selectable("3 classes", current == "3 classes")){
                 current = "3 classes";
+                nbInput = 2;
+                nbOutput = 3;
                 int k = 30;
                 while(k > 0){
                     float x = (((double) rand() / (RAND_MAX)))*0.45f;
                     float y = (((double) rand() / (RAND_MAX)))*0.50f;
                     data.insert(data.end(),{x,y});
-                    data.insert(data.end(),{1,0});
+                    data.insert(data.end(),{1,0,0});
                     k--;
                 }
                 k = 30;
@@ -335,7 +365,7 @@ class MiniMLDisplay{
                     float x = (((double) rand() / (RAND_MAX)));
                     float y = (((double) rand() / (RAND_MAX)))*0.45f;
                     data.insert(data.end(),{x,1.0f-y});
-                    data.insert(data.end(),{1,1});
+                    data.insert(data.end(),{0,1,0});
                     k--;
                 }
 
@@ -344,13 +374,15 @@ class MiniMLDisplay{
                     float x = (((double) rand() / (RAND_MAX)))*0.45f;
                     float y = (((double) rand() / (RAND_MAX)))*0.5f;
                     data.insert(data.end(),{0.55f+ x,y});
-                    data.insert(data.end(),{0,0});
+                    data.insert(data.end(),{0,0,1});
                     k--;
                 }
             }
 
             if (ImGui::Selectable("3 cross", current == "3 cross")){
                 current = "3 cross";
+                nbInput = 2;
+                nbOutput = 3;
                 for (float i = 0.0; i <= 1.05f; i+=0.05f)
                 {
                     for (float j = 0.0; j <= 1.05f; j+=0.05f)
@@ -358,15 +390,15 @@ class MiniMLDisplay{
                         data.insert(data.end(),{i,j});
                         if((cos((i)*4*glm::pi<float>() + glm::pi<float>()/2.0f ) > 0)){
                             if((sin((j)*4*glm::pi<float>() + glm::pi<float>()/2.0f ) > 0)){
-                                data.insert(data.end(),{0});
+                                data.insert(data.end(),{0,0,1});
                             }else{
-                                data.insert(data.end(),{1});
+                                data.insert(data.end(),{1,0,0});
                             }
                         }else{
                             if((sin((j)*4*glm::pi<float>() + glm::pi<float>()/2.0f ) > 0)){
-                                data.insert(data.end(),{1});
+                                data.insert(data.end(),{1,0,0});
                             }else{
-                                data.insert(data.end(),{.5});
+                                data.insert(data.end(),{0,1,0});
                             }
                         }
                     }
@@ -398,8 +430,6 @@ class MiniMLDisplay{
 
     void PlotClassification(){
         if(network != nullptr && updateHeat){
-            
-
             ImPlot::PushColormap(ImPlotColormap_Jet);
 
             ImS8 x[2] = {0.0f,0.0f};
@@ -409,27 +439,25 @@ class MiniMLDisplay{
             inputsize > 0) {
                 ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoDecorations, ImPlotAxisFlags_NoDecorations);
                 ImPlot::SetupAxesLimits(0,1,0,1);
-                ImPlot::PlotHeatmap("heatman",&heatMapMiniML[0],sizex,sizey,0.f,1.f,nullptr);
-
+                //ImPlot::PlotHeatmap("heatman",&heatMapMiniML[0],sizex,sizey,0.f,1.f,nullptr);
+                static ImVec2 bmin(0,0);
+                static ImVec2 bmax(1,1);
+                static ImVec2 uv0(0,0);
+                static ImVec2 uv1(1,1);
+                ImPlot::PlotImage("heatmap",(void*)(intptr_t)this->texID, bmin, bmax, uv0,uv1);
                 for (int i = 0; i < inputsize; i++)
                 {
                     float x = input[i][0];
                     float y = input[i][1];
-                    float v = 0;
-                    for (int k = 0; k < nbOutput; k++)
-                    {
-                        v+= output[i][k];
-                    }
-                    v/=(float)nbOutput;
 
-                    if( v == 0){
+                    if(output[i][0] == 0 && (nbOutput > 1 && output[i][2] == 1)){
                         ImPlot::SetNextMarkerStyle(ImPlotMarker_Circle, 10,ImVec4(0.0,0.0,1.0,1.0));
                     }
-                    else if(v == 1 ){
+                    else if(output[i][0] == 1){
                         ImPlot::SetNextMarkerStyle(ImPlotMarker_Circle, 10,ImVec4(1.0,0.0,0.0,1.0));
                     }
-                    else{
-                        ImPlot::SetNextMarkerStyle(ImPlotMarker_Circle, 10,ImVec4(0.0,1.0,1.0,1.0));
+                    else if(output[i][1] == 1){
+                        ImPlot::SetNextMarkerStyle(ImPlotMarker_Circle, 10,ImVec4(0.0,1.0,0.0,1.0));
                     }
                     
                     ImPlot::PlotScatter("Input", &x, &y, 1);
