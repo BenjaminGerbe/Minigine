@@ -80,7 +80,7 @@ class MiniMLDisplay{
 
     ~MiniMLDisplay(){
         delete heatMapMiniML;
-    //    glDeleteBuffers(1,&texID);
+        glDeleteTextures(1,&texID);
         if(input != nullptr){
             delete input;
         }
