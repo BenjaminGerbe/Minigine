@@ -441,7 +441,7 @@ void DisplayerManager::MiniMLWindows(){
     for (int i = MLDisplays.size()-1; i >=0 ; i--)
     {
         if(!MLDisplays[i]->GetOpen()){
-            //delete MLDisplays[i]; -- DELETE NOT WORKING HAVE TO FIX THAT
+            delete MLDisplays[i]; 
             MLDisplays.erase(MLDisplays.begin()+i);
         }
         else{

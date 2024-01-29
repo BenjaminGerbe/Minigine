@@ -52,7 +52,6 @@ class MiniMLDisplay{
         input  = nullptr;
         output = nullptr;
         this->id = id;
-        texID = id + 99;
         glGenTextures(1,&texID);
         glBindTexture(GL_TEXTURE_2D,texID);
         glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,sizex,sizey,0,GL_RGB,GL_UNSIGNED_BYTE,(void*)0);
@@ -81,7 +80,7 @@ class MiniMLDisplay{
 
     ~MiniMLDisplay(){
         delete heatMapMiniML;
-        glDeleteBuffers(1,&texID);
+    //    glDeleteBuffers(1,&texID);
         if(input != nullptr){
             delete input;
         }
