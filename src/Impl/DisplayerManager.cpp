@@ -438,9 +438,15 @@ void DisplayerManager::RenderAllRenderWindows(int width,int height,Projet* proje
 }
 
 void DisplayerManager::MiniMLWindows(){
-    for (int i = 0; i < MLDisplays.size(); i++)
+    for (int i = MLDisplays.size()-1; i >=0 ; i--)
     {
-        MLDisplays[i]->RenderMiniML();
+        if(!MLDisplays[i]->GetOpen()){
+            //delete MLDisplays[i]; -- DELETE NOT WORKING HAVE TO FIX THAT
+            MLDisplays.erase(MLDisplays.begin()+i);
+        }
+        else{
+            MLDisplays[i]->RenderMiniML();
+        }
     }
     
 }
