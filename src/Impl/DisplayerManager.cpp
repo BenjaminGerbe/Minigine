@@ -581,18 +581,41 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
             
             if (ImGui::BeginMenu("MiniML"))
             {
-                if (ImGui::MenuItem("Classification",NULL)) {
-                    int id = 0;
-                    if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
-                    MLDisplays.push_back(new MiniMLDisplay(false,id+1));
-                }
+                if (ImGui::BeginMenu("MLP"))
+                {
+                    if (ImGui::MenuItem("Classification",NULL)) {
+                        int id = 0;
+                        if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
+                        MLDisplays.push_back(new MiniMLDisplay(false,false,id+1));
+                    }
 
-                if (ImGui::MenuItem("Regression",NULL)) {
-                    int id = 0;
-                    if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
-                    MLDisplays.push_back(new MiniMLDisplay(true,id+1));
+                    if (ImGui::MenuItem("Regression",NULL)) {
+                        int id = 0;
+                        if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
+                        MLDisplays.push_back(new MiniMLDisplay(true,false,id+1));
+                    }
+                    
+                    ImGui::EndMenu();
                 }
                 
+                if (ImGui::BeginMenu("Linear"))
+                {
+                    if (ImGui::MenuItem("Classification",NULL)) {
+                        int id = 0;
+                        if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
+                        MLDisplays.push_back(new MiniMLDisplay(false,true,id+1));
+                    }
+
+                    if (ImGui::MenuItem("Regression",NULL)) {
+                        int id = 0;
+                        if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
+                        MLDisplays.push_back(new MiniMLDisplay(true,true,id+1));
+                    }
+                    
+                    ImGui::EndMenu();
+                }
+
+
                 ImGui::EndMenu();
             }
 

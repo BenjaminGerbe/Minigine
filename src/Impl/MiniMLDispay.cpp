@@ -50,9 +50,11 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
 
     ImGui::SameLine();
     ImGui::PushItemWidth(150);
-    ImGui::InputInt("Hidden",&nbHidden);
-    ImGui::SameLine();
-    ImGui::InputInt("Height Hidden",&heightHidden);
+    if(!linear){
+        ImGui::InputInt("Hidden",&nbHidden);
+        ImGui::SameLine();
+        ImGui::InputInt("Height Hidden",&heightHidden);
+    }
     ImGui::PopItemWidth();
     ImGui::Checkbox("Plot",&Plot);
     ImGui::SameLine();
@@ -441,13 +443,21 @@ void MiniMLDisplay::RenderMiniML(){
         }
 
     }else{
-        if(Trainning && network != nullptr){
+        if(!linear && Trainning && network != nullptr){
             MiniML::BackPropagation(network,input,inputsize,output,inputsize,learningRate,2000);
             if(Plot && !regression){
                 heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
                 updateHeat = true;
             }
         }
+        else if(linear && Trainning && network != nullptr){
+            MiniML::LinearPropagation(network,input,inputsize,output,inputsize,learningRate,2000);
+            if(Plot && !regression){
+                heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
+                updateHeat = true;
+            }
+        }
+
         PlotClassification();
     }
 
