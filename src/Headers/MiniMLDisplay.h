@@ -29,7 +29,7 @@ class MiniMLDisplay{
     int sizex,sizey;
     int id;
     bool regression,linear,Trainning,Plot,updateHeat,open;
-    float learningRate;
+    float learningRate,interationMax;
     std::string current;
     std::vector<float> data;
     GLuint texID;
@@ -53,6 +53,7 @@ class MiniMLDisplay{
         output = nullptr;
         this->id = id;
         this->linear = linear;
+        this->interationMax = 1000;
         glGenTextures(1,&texID);
         glBindTexture(GL_TEXTURE_2D,texID);
         glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,sizex,sizey,0,GL_RGB,GL_UNSIGNED_BYTE,(void*)0);
@@ -77,6 +78,7 @@ class MiniMLDisplay{
         this->Plot = copy.Plot;
         this->regression = copy.regression;
         this->linear = copy.linear;
+        this->interationMax = copy.interationMax;
         return (*this);
     }
 

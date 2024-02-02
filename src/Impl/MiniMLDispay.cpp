@@ -42,7 +42,12 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
 
     ImGui::SameLine();
     if(ImGui::Button("one Train")){
-        MiniML::BackPropagation(network,input,inputsize,output,inputsize,0.001f,100000);
+        if(!linear){
+            MiniML::BackPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
+        }
+        else{
+            MiniML::LinearPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
+        }
         heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
         updateHeat = true;
     }
@@ -52,13 +57,18 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
     ImGui::PushItemWidth(150);
     if(!linear){
         ImGui::InputInt("Hidden",&nbHidden);
+        nbHidden = std::max<int>(0,nbHidden);
         ImGui::SameLine();
         ImGui::InputInt("Height Hidden",&heightHidden);
+        heightHidden = std::max<int>(0,heightHidden);
     }
-    ImGui::PopItemWidth();
+  
     ImGui::Checkbox("Plot",&Plot);
     ImGui::SameLine();
     ImGui::InputFloat("LearningRate",&learningRate);
+    ImGui::SameLine();
+    ImGui::InputFloat("IterationMax",&interationMax);
+    ImGui::PopItemWidth();
 }
 
 void MiniMLDisplay::DisplayerError(Network* network){
@@ -147,18 +157,20 @@ void MiniMLDisplay::DisplayerError(Network* network){
                 current = "Linear Simple";
                 nbOutput = 1;
                 nbInput = 1;
-                float r = (((double) rand() / (RAND_MAX)));
-                data.insert(data.end(),{r});
-                r = (((double) rand() / (RAND_MAX)));
-                data.insert(data.end(),{r});
-                r = (((double) rand() / (RAND_MAX)));
-                data.insert(data.end(),{r});
-                r = (((double) rand() / (RAND_MAX)));
-                data.insert(data.end(),{r});
-                r = (((double) rand() / (RAND_MAX)));
-                data.insert(data.end(),{r});
-                r = (((double) rand() / (RAND_MAX)));
-                data.insert(data.end(),{r});
+                // float r = (((double) rand() / (RAND_MAX)));
+                // data.insert(data.end(),{r});
+                // r = (((double) rand() / (RAND_MAX)));
+                // data.insert(data.end(),{r});
+                // r = (((double) rand() / (RAND_MAX)));
+                // data.insert(data.end(),{r});
+                // r = (((double) rand() / (RAND_MAX)));
+                // data.insert(data.end(),{r});
+                // r = (((double) rand() / (RAND_MAX)));
+                // data.insert(data.end(),{r});
+                // r = (((double) rand() / (RAND_MAX)));
+                data.insert(data.end(),{0.25,.25});
+                data.insert(data.end(),{.5,.5});
+                data.insert(data.end(),{.75,.75});
             }
 
             if (ImGui::Selectable("None Linear Simple", current == "None Linear Simple")){
@@ -194,18 +206,18 @@ void MiniMLDisplay::DisplayerError(Network* network){
             if(data.size() > 0){
                 if(input != nullptr) delete input;
                 if(output != nullptr) delete output;
-                int lineSize = nbOutput+2;
+                int lineSize = nbOutput+nbInput;
                 inputsize = data.size()/lineSize;
                 input = new float*[inputsize];
                 output = new float*[inputsize];
                 for (int i = 0; i < inputsize; i++)
                 {
-                    input[i] = new float[2];
+                    input[i] = new float[nbInput];
                     output[i] = new float[nbOutput];
                     for (int j = 0; j < lineSize; j++)
                     {
                         if(j < lineSize - nbOutput) input[i][j] = data[i*lineSize + j];
-                        else output[i][j-(lineSize - nbOutput)] = data[i*lineSize + j];
+                        else output[i][j-(nbInput)] = data[i*lineSize + j];
                     }
                 }
             }
@@ -316,18 +328,18 @@ void MiniMLDisplay::SetUpTestCaseClassification(){
         if(data.size() > 0){
             if(input != nullptr) delete input;
             if(output != nullptr) delete output;
-            int lineSize = nbOutput+2;
+            int lineSize = nbOutput+nbInput;
             inputsize = data.size()/lineSize;
             input = new float*[inputsize];
             output = new float*[inputsize];
             for (int i = 0; i < inputsize; i++)
             {
-                input[i] = new float[2];
+                input[i] = new float[nbInput];
                 output[i] = new float[nbOutput];
                 for (int j = 0; j < lineSize; j++)
                 {
                     if(j < lineSize - nbOutput) input[i][j] = data[i*lineSize + j];
-                    else output[i][j-(lineSize - nbOutput)] = data[i*lineSize + j];
+                    else output[i][j-(nbInput)] = data[i*lineSize + j];
                 }
             }
         }
@@ -437,21 +449,25 @@ void MiniMLDisplay::RenderMiniML(){
     ImGui::SameLine();
     if(regression){
         PlotRegression();
-        if(Trainning && network != nullptr){
-            MiniML::BackPropagation(network,input,inputsize,output,inputsize,learningRate,100000);
+        if(!linear && Trainning && network != nullptr){
+            MiniML::BackPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
+            updateHeat = true;
+        }
+        else if(linear && Trainning && network != nullptr){
+            MiniML::LinearPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
             updateHeat = true;
         }
 
     }else{
         if(!linear && Trainning && network != nullptr){
-            MiniML::BackPropagation(network,input,inputsize,output,inputsize,learningRate,2000);
+            MiniML::BackPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
             if(Plot && !regression){
                 heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
                 updateHeat = true;
             }
         }
         else if(linear && Trainning && network != nullptr){
-            MiniML::LinearPropagation(network,input,inputsize,output,inputsize,learningRate,2000);
+            MiniML::LinearPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
             if(Plot && !regression){
                 heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
                 updateHeat = true;
