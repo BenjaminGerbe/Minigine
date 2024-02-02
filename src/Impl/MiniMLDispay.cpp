@@ -229,6 +229,15 @@ void MiniMLDisplay::SetUpTestCaseClassification(){
             data.insert(data.end(),{0,0,0});
         }
 
+        // Wip chess
+        if (ImGui::Selectable("TestRawDataChess", current == "TestRawDataChess"))
+        {
+            //current = "TestRawDataChess";
+            //nbInput = 768;
+            //nbOutput = 1;
+            //data.insert(data.end(), )
+        }
+
         if (ImGui::Selectable("Linear Simple", current == "Linear Simple")){
             current = "Linear Simple";
             nbInput = 2;

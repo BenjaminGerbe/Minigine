@@ -22,6 +22,9 @@ file(GLOB_RECURSE Ressources
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 add_subdirectory(libs/MiniML)
 
+# Needed to bypass weird compilation error
+add_definitions(-D GLM_ENABLE_EXPERIMENTAL)
+
 # glew
 include_directories(libs/GLEW/include)
 link_directories(libs/GLEW/lib/Release/WIN32)
