@@ -42,12 +42,13 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
 
     ImGui::SameLine();
     if(ImGui::Button("one Train")){
-        if(!linear){
+        if(type == NetworkType::MLP){
             MiniML::BackPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
         }
-        else{
+        else if(type == NetworkType::Linear){
             MiniML::LinearPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
         }
+
         heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
         updateHeat = true;
     }
@@ -55,7 +56,7 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
 
     ImGui::SameLine();
     ImGui::PushItemWidth(150);
-    if(!linear){
+    if(type == NetworkType::MLP){
         ImGui::InputInt("Hidden",&nbHidden);
         nbHidden = std::max<int>(0,nbHidden);
         ImGui::SameLine();
@@ -143,7 +144,6 @@ void MiniMLDisplay::DisplayerError(Network* network){
                 
             }
             
-            
             ImPlot::EndPlot();
         }
 }
@@ -157,20 +157,18 @@ void MiniMLDisplay::DisplayerError(Network* network){
                 current = "Linear Simple";
                 nbOutput = 1;
                 nbInput = 1;
-                // float r = (((double) rand() / (RAND_MAX)));
-                // data.insert(data.end(),{r});
-                // r = (((double) rand() / (RAND_MAX)));
-                // data.insert(data.end(),{r});
-                // r = (((double) rand() / (RAND_MAX)));
-                // data.insert(data.end(),{r});
-                // r = (((double) rand() / (RAND_MAX)));
-                // data.insert(data.end(),{r});
-                // r = (((double) rand() / (RAND_MAX)));
-                // data.insert(data.end(),{r});
-                // r = (((double) rand() / (RAND_MAX)));
-                data.insert(data.end(),{0.25,.25});
-                data.insert(data.end(),{.5,.5});
-                data.insert(data.end(),{.75,.75});
+                float r = (((double) rand() / (RAND_MAX)));
+                data.insert(data.end(),{r});
+                r = (((double) rand() / (RAND_MAX)));
+                data.insert(data.end(),{r});
+                r = (((double) rand() / (RAND_MAX)));
+                data.insert(data.end(),{r});
+                r = (((double) rand() / (RAND_MAX)));
+                data.insert(data.end(),{r});
+                r = (((double) rand() / (RAND_MAX)));
+                data.insert(data.end(),{r});
+                r = (((double) rand() / (RAND_MAX)));
+           
             }
 
             if (ImGui::Selectable("None Linear Simple", current == "None Linear Simple")){
@@ -458,28 +456,46 @@ void MiniMLDisplay::RenderMiniML(){
     ImGui::SameLine();
     if(regression){
         PlotRegression();
-        if(!linear && Trainning && network != nullptr){
-            MiniML::BackPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
-            updateHeat = true;
-        }
-        else if(linear && Trainning && network != nullptr){
-            MiniML::LinearPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
-            updateHeat = true;
-        }
 
-    }else{
-        if(!linear && Trainning && network != nullptr){
-            MiniML::BackPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
-            if(Plot && !regression){
-                heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
+        if(Trainning && network != nullptr){
+            if(type == NetworkType::MLP){
+                MiniML::BackPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
+                updateHeat = true;
+            }
+            else if(type == NetworkType::Linear ){
+                MiniML::LinearPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
+                updateHeat = true;
+            }
+            else if(type == NetworkType::RBF ){
+                MiniML::RFBPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
                 updateHeat = true;
             }
         }
-        else if(linear && Trainning && network != nullptr){
-            MiniML::LinearPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
-            if(Plot && !regression){
-                heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
-                updateHeat = true;
+        
+
+    }else{
+        if(Trainning && network != nullptr){
+
+            if(type == NetworkType::MLP){
+                MiniML::BackPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
+                if(Plot && !regression){
+                    heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
+                    updateHeat = true;
+                }
+            }
+            else if(type == NetworkType::Linear){
+                MiniML::LinearPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
+                if(Plot && !regression){
+                    heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
+                    updateHeat = true;
+                }
+            }
+            else if(type == NetworkType::RBF){
+                MiniML::RFBPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
+                if(Plot && !regression){
+                    heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
+                    updateHeat = true;
+                }
             }
         }
 

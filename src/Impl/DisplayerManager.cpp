@@ -586,13 +586,13 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
                     if (ImGui::MenuItem("Classification",NULL)) {
                         int id = 0;
                         if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
-                        MLDisplays.push_back(new MiniMLDisplay(false,false,id+1));
+                        MLDisplays.push_back(new MiniMLDisplay(false,NetworkType::MLP,id+1));
                     }
 
                     if (ImGui::MenuItem("Regression",NULL)) {
                         int id = 0;
                         if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
-                        MLDisplays.push_back(new MiniMLDisplay(true,false,id+1));
+                        MLDisplays.push_back(new MiniMLDisplay(true,NetworkType::MLP,id+1));
                     }
                     
                     ImGui::EndMenu();
@@ -603,13 +603,30 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
                     if (ImGui::MenuItem("Classification",NULL)) {
                         int id = 0;
                         if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
-                        MLDisplays.push_back(new MiniMLDisplay(false,true,id+1));
+                        MLDisplays.push_back(new MiniMLDisplay(false,NetworkType::Linear,id+1));
                     }
 
                     if (ImGui::MenuItem("Regression",NULL)) {
                         int id = 0;
                         if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
-                        MLDisplays.push_back(new MiniMLDisplay(true,true,id+1));
+                        MLDisplays.push_back(new MiniMLDisplay(true,NetworkType::Linear,id+1));
+                    }
+                    
+                    ImGui::EndMenu();
+                }
+
+                if (ImGui::BeginMenu("RBF"))
+                {
+                    if (ImGui::MenuItem("Classification",NULL)) {
+                        int id = 0;
+                        if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
+                        MLDisplays.push_back(new MiniMLDisplay(false,NetworkType::RBF,id+1));
+                    }
+
+                    if (ImGui::MenuItem("Regression",NULL)) {
+                        int id = 0;
+                        if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
+                        MLDisplays.push_back(new MiniMLDisplay(true,NetworkType::RBF,id+1));
                     }
                     
                     ImGui::EndMenu();
