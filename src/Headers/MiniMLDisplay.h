@@ -30,7 +30,7 @@ class MiniMLDisplay{
     float** input;
     float* heatMapMiniML;
     float** output;
-    int nbOutput,nbInput,nbHidden,heightHidden,inputsize;
+    int nbOutput,nbInput,nbHidden,heightHidden,inputsize,kvalue;
     int sizex,sizey;
     int id;
     bool regression,Trainning,Plot,updateHeat,open;
@@ -60,6 +60,7 @@ class MiniMLDisplay{
         this->id = id;
         this->interationMax = 1000;
         this->type = type;
+        this->kvalue=0;
         glGenTextures(1,&texID);
         glBindTexture(GL_TEXTURE_2D,texID);
         glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,sizex,sizey,0,GL_RGB,GL_UNSIGNED_BYTE,(void*)0);
@@ -85,6 +86,7 @@ class MiniMLDisplay{
         this->regression = copy.regression;
         this->type = type;
         this->interationMax = copy.interationMax;
+        this->kvalue=copy.kvalue;
         return (*this);
     }
 
