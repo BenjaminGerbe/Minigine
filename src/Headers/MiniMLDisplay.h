@@ -32,6 +32,7 @@ class MiniMLDisplay{
     float learningRate,interationMax;
     std::string current;
     std::vector<float> data;
+    std::vector<float> storedBoards;
     GLuint texID;
 
     public : 
