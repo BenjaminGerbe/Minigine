@@ -15,10 +15,10 @@ float* MiniMLDisplay::UpdateHeatMap(Network* network,int sizex,int sizey,float* 
             {
                 float values[] = {x, 1.0f - y};
                 if(this->type == NetworkType::RBF){
-                    value.push_back(MiniML::RBFSimulate(network,&values[0],2,0.1f)[k%size]);
+                    value.push_back(MiniML::RBFSimulate(network,&values[0],nbInput,0.1f)[k%size]);
                 }
                 else{
-                    value.push_back(MiniML::SimulateNetwork(network,&values[0],2)[k%size]);
+                    value.push_back(MiniML::SimulateNetwork(network,&values[0],nbInput)[k%size]);
                 }
             }
 
@@ -38,7 +38,7 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
 
     if(ImGui::Button("Create Network") && nbInput > 0){
         if(this->type == NetworkType::RBF){
-            network = (Network*)MiniML::SetUpNetwork(data.size(),nbHidden,heightHidden,nbOutput,regression);
+            network = (Network*)MiniML::SetUpNetwork(data.size()/(nbInput+nbOutput),nbHidden,heightHidden,nbOutput,regression);
         }
         else{
             network = (Network*)MiniML::SetUpNetwork(nbInput,nbHidden,heightHidden,nbOutput,regression);
@@ -65,6 +65,9 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
         else if(type == NetworkType::Linear){
             MiniML::LinearPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
         }
+        else if(type == NetworkType::RBF){
+            MiniML::RBFPropagation(network,input,inputsize,nbInput,output,inputsize,learningRate,interationMax);
+        }
 
         if(Plot && !regression){
             heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
@@ -86,7 +89,14 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
   
     ImGui::Checkbox("Plot",&Plot);
     ImGui::SameLine();
-    ImGui::InputFloat("LearningRate",&learningRate);
+    if(this->type != NetworkType::RBF){
+        ImGui::InputFloat("LearningRate",&learningRate);
+    }else{
+        ImGui::InputFloat("influenceZone",&learningRate);
+        ImGui::SameLine();
+        ImGui::InputInt("Kvalue",&this->kvalue);
+    }
+    
     ImGui::SameLine();
     ImGui::InputFloat("IterationMax",&interationMax);
     ImGui::PopItemWidth();
@@ -124,8 +134,8 @@ void MiniMLDisplay::DisplayerError(Network* network){
                 int size = MiniML::GetLayerSize(network,i);
                 for (int j = 0; j < size; j++)
                 {
-                    ImS8 xs[2] = {(i)*(10),((i)+1)*(10)};
-                    ImS8 ys[2] = {(size-j)*(10) - (size*10.0)/2.0f,(size-j)*(10)-(size*10.0)/2.0f};
+                    ImS8 xs[2] = {(i)*(20),((i)+1)*(20)};
+                    ImS8 ys[2] = {(size-j)*(20) - (size*20.0)/2.0f,(size-j)*(20)-(size*20.0)/2.0f};
 
                     ImGui::PushID(i*j);
                     ImPlot::SetNextMarkerStyle(1, 30.0, ImVec4(.3,0.3,0.7,1.0), 0.5f);
@@ -562,7 +572,7 @@ void MiniMLDisplay::RenderMiniML(){
     }
 
     DisplayerNetworkParameter();
-  //  DisplayNetwork(network);
+   DisplayNetwork(network);
 
     ImGui::SameLine();
     if(regression){
@@ -578,7 +588,7 @@ void MiniMLDisplay::RenderMiniML(){
                 updateHeat = true;
             }
             else if(type == NetworkType::RBF ){
-                MiniML::RBFPropagation(network,input,inputsize,inputsize,output,inputsize,learningRate,interationMax);
+                MiniML::RBFPropagation(network,input,inputsize,nbInput,output,inputsize,learningRate,interationMax);
                 updateHeat = true;
             }
         }
@@ -602,7 +612,7 @@ void MiniMLDisplay::RenderMiniML(){
                 }
             }
             else if(type == NetworkType::RBF){
-                MiniML::RBFPropagation(network,input,inputsize,inputsize,output,inputsize,learningRate,interationMax);
+                MiniML::RBFPropagation(network,input,inputsize,nbInput,output,inputsize,learningRate,interationMax);
                 if(Plot && !regression){
                     heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
                     updateHeat = true;
