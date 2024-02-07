@@ -66,7 +66,7 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
             MiniML::LinearPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
         }
         else if(type == NetworkType::RBF){
-            MiniML::RBFPropagation(network,input,inputsize,nbInput,output,inputsize,learningRate,interationMax);
+            MiniML::RBFPropagation(network,input,inputsize,nbInput,output,inputsize,learningRate,this->kvalue, interationMax);
         }
 
         if(Plot && !regression){
@@ -588,7 +588,7 @@ void MiniMLDisplay::RenderMiniML(){
                 updateHeat = true;
             }
             else if(type == NetworkType::RBF ){
-                MiniML::RBFPropagation(network,input,inputsize,nbInput,output,inputsize,learningRate,interationMax);
+                MiniML::RBFPropagation(network,input,inputsize,nbInput,output,inputsize,learningRate,this->kvalue,interationMax);
                 updateHeat = true;
             }
         }
@@ -612,7 +612,7 @@ void MiniMLDisplay::RenderMiniML(){
                 }
             }
             else if(type == NetworkType::RBF){
-                MiniML::RBFPropagation(network,input,inputsize,nbInput,output,inputsize,learningRate,interationMax);
+                MiniML::RBFPropagation(network,input,inputsize,nbInput,output,inputsize,learningRate,this->kvalue,interationMax);
                 if(Plot && !regression){
                     heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
                     updateHeat = true;
