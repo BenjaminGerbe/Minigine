@@ -28,9 +28,11 @@ class Network;
 class MiniMLDisplay{
     Network* network;
     float** input;
+    float** inputBoards;
     float* heatMapMiniML;
     float** output;
-    int nbOutput,nbInput,nbHidden,heightHidden,inputsize,kvalue;
+    float** outputBoards;
+    int nbOutput,nbInput,nbHidden,heightHidden,inputsize,inputsizeboard,kvalue;
     int sizex,sizey;
     int id;
     bool regression,Trainning,Plot,updateHeat,open;
@@ -38,6 +40,8 @@ class MiniMLDisplay{
     std::string current;
     std::vector<float> data;
     std::vector<float> storedBoards;
+    std::vector<float> storedBoardIT;
+    std::vector<float> errorBoards;
     GLuint texID;
     NetworkType type;
 
@@ -58,10 +62,14 @@ class MiniMLDisplay{
         inputsize = 0;
         input  = nullptr;
         output = nullptr;
+        inputBoards = nullptr;
+        outputBoards = nullptr;
         this->id = id;
         this->interationMax = 1000;
         this->type = type;
         this->kvalue=0;
+        storedBoardIT.push_back(0);
+        errorBoards.push_back(0);
         glGenTextures(1,&texID);
         glBindTexture(GL_TEXTURE_2D,texID);
         glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,sizex,sizey,0,GL_RGB,GL_UNSIGNED_BYTE,(void*)0);

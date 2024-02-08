@@ -14,7 +14,12 @@ float* MiniMLDisplay::UpdateHeatMap(Network* network,int sizex,int sizey,float* 
             for (int k = 0; k < 3; k++)
             {
                 float values[] = {x, 1.0f - y};
-                value.push_back(MiniML::SimulateNetwork(network,&values[0],2)[k%size]);
+                if(this->type == NetworkType::RBF){
+                    value.push_back(MiniML::RBFSimulate(network,&values[0],nbInput,0.1f)[k%size]);
+                }
+                else{
+                    value.push_back(MiniML::SimulateNetwork(network,&values[0],nbInput)[k%size]);
+                }
             }
 
         }
@@ -110,31 +115,8 @@ void MiniMLDisplay::DisplayerError(Network* network){
                 ImPlot::PlotShaded("Error",it,error,n, -INFINITY);
                 ImPlot::PopStyleVar();
                 ImPlot::PlotLine("Error", it,error,n);
-                static int counter = 0;
-                static float lastValue;
-                if(storedBoards.size() > 0){
-                    if(Trainning){
-                        counter--;
-                        float error =0;
-                        if(counter <= 0){
-                            counter = 10;
-                            float error =0;
-                            for (int i = 0; i < inputsizeboard; i++)
-                            {
-                                error+= std::abs(outputBoards[i][0] - MiniML::SimulateNetwork(network,inputBoards[i],nbInput)[0]);
-                            }
-                            lastValue = error/(float)inputsizeboard;
-                            errorBoards.push_back(error/(float)inputsizeboard);
-                        }
-                        else{
-                            errorBoards.push_back(lastValue);
-                        }
-                    }
-                  
-                    ImPlot::PlotLine("Error2", it,&errorBoards[0],n);
-                }
-            ImPlot::EndPlot();
-        }
+                ImPlot::EndPlot();
+            }
     }
 
 
@@ -152,8 +134,8 @@ void MiniMLDisplay::DisplayerError(Network* network){
                 int size = MiniML::GetLayerSize(network,i);
                 for (int j = 0; j < size; j++)
                 {
-                    double xs[2] = {(i)*(10),((i)+1)*(10)};
-                    double ys[2] = {(size-j)*(10) - (size*10.0)/2.0f,(size-j)*(10)-(size*10.0)/2.0f};
+                    ImS8 xs[2] = {(i)*(20),((i)+1)*(20)};
+                    ImS8 ys[2] = {(size-j)*(20) - (size*20.0)/2.0f,(size-j)*(20)-(size*20.0)/2.0f};
 
                     ImGui::PushID(i*j);
                     ImPlot::SetNextMarkerStyle(1, 30.0, ImVec4(.3,0.3,0.7,1.0), 0.5f);
@@ -218,38 +200,35 @@ void MiniMLDisplay::DisplayerError(Network* network){
                 r = (((double) rand() / (RAND_MAX)));
            
             }
-            
-            // Dataset needs to be 10k to use gamesStored correctly
-            if (ImGui::Selectable("ReadJsonGame", current == "ReadJsonGame"))
+              // Wip chess
+            if (ImGui::Selectable("TestRawDataChess", current == "TestRawDataChess"))
             {
-                current = "ReadJsonGame";
+                current = "TestRawDataChess";
                 nbInput = 768;
                 nbOutput = 1;
-                // Amount of games to keep stored and not added to our data
-                int gamesStored = 2000;
 
                 std::ifstream file("games.json");
                 nlohmann::json j;
                 file >> j;
 
-                int counter = 0;
-
                 for (auto& element : j) {
                     nlohmann::json turns = element["turns"];
+
                     for (auto& turn : turns) {
                         std::vector<int> board_state = turn["board_state"];
                         std::string evaluation = turn["evaluation"];
                         int evaluation_int = 0;
 
-                        // Checkmate handling
+                        // Rare case of checkmate handling
                         if (evaluation[0] == '#') {
                             char sign = evaluation[1];
+                            int number = std::stoi(evaluation.substr(2));
 
                             if (sign == '+') {
-                                evaluation_int = 2000; // Positive checkmate
+                                evaluation_int = INT_MAX - number; // Positive checkmate
                             }
                             else if (sign == '-') {
-                                evaluation_int = -2000; // Negative checkmate
+                                evaluation_int = INT_MIN + number; // Negative checkmate
                             }
                             else {
                                 std::cerr << "Invalid sign after #." << std::endl;
@@ -259,21 +238,16 @@ void MiniMLDisplay::DisplayerError(Network* network){
                             evaluation_int = std::stoi(evaluation);
                         }
 
-                        counter++;
                         evaluation_int = std::clamp(evaluation_int,-2000,2000);
-                        if (counter <= 10000 - gamesStored) {
-                            data.insert(data.end(), board_state.begin(), board_state.end());
-                            data.push_back(evaluation_int);
-                        }
-                        else {
-                            storedBoards.insert(storedBoards.end(), board_state.begin(), board_state.end());
-                            storedBoards.push_back(evaluation_int);
-                        }
 
+                        std::cout << "Evaluation is " << evaluation_int << std::endl;
+
+                        data.insert(data.end(), board_state.begin(), board_state.end());
+                        data.push_back(evaluation_int);
                     }
                 }
-            }
 
+            }
 
             if (ImGui::Selectable("None Linear Simple", current == "None Linear Simple")){
                 current = "None Linear Simple";
@@ -383,20 +357,89 @@ void MiniMLDisplay::SetUpTestCaseClassification(){
                         evaluation_int = std::stoi(evaluation);
                     }
 
+<<<<<<< HEAD
+                    data.insert(data.end(), board_state.begin(), board_state.end());
+                    data.push_back(std::tanh(evaluation_int));
+=======
+                    //std::cout << "Evaluation is " << evaluation_int << std::endl;
+
                     counter++;
-                    evaluation_int = std::clamp(evaluation_int,-2000,2000);
+
                     if (counter <= 10000 - gamesStored) {
                         data.insert(data.end(), board_state.begin(), board_state.end());
-                        data.push_back( std::tanh(evaluation_int));
+                        data.push_back(evaluation_int);
                     }
                     else {
                         storedBoards.insert(storedBoards.end(), board_state.begin(), board_state.end());
-                        storedBoards.push_back(std::tanh(evaluation_int));
+                        storedBoards.push_back(evaluation_int);
                     }
 
+                    //std::cout << counter << std::endl;
+                    //std::cout << data.size() << std::endl;
+                    //std::cout << stored.size() << std::endl;
+>>>>>>> 2e13d5d31256b862fccfdfccc3abcc69b2f165ed
                 }
             }
         }
+
+<<<<<<< HEAD
+        
+        }
+=======
+
+        // Picking randomly from the dataset
+        /*if (ImGui::Selectable("ReadRandomChessBoards", current == "ReadRandomChessBoards"))
+        {
+            current = "ReadRandomChessBoards";
+            nbInput = 768;
+            nbOutput = 1;
+            int maxTurns = 1000;
+
+            std::ifstream file("games.json");
+            nlohmann::json j;
+            file >> j;
+
+            std::srand(std::time(nullptr));
+
+            for (int i = 0; i < maxTurns; i++)
+            {
+                int game_index = std::rand() % j.size();
+
+                nlohmann::json turns = j[game_index]["turns"];
+                int turn_index = std::rand() % turns.size();
+
+                std::vector<int> board_state = turns[turn_index]["board_state"];
+                std::string evaluation = turns[turn_index]["evaluation"];
+                int evaluation_int = 0;
+
+                // Checkmate handling
+                if (evaluation[0] == '#') {
+                    char sign = evaluation[1];
+
+                    if (sign == '+') {
+                        evaluation_int = 2000; // Positive checkmate
+                    }
+                    else if (sign == '-') {
+                        evaluation_int = -2000; // Negative checkmate
+                    }
+                    else {
+                        std::cerr << "Invalid sign after #." << std::endl;
+                    }
+                }
+                else {
+                    evaluation_int = std::stoi(evaluation);
+                }
+
+                //std::cout << "Evaluation is " << evaluation_int << std::endl;
+
+                data.insert(data.end(), board_state.begin(), board_state.end());
+                data.push_back(evaluation_int);
+
+                //std::cout << incrementation << std::endl;
+                //std::cout << data.size() << std::endl;
+            }
+        }*/
+>>>>>>> 2e13d5d31256b862fccfdfccc3abcc69b2f165ed
 
         if (ImGui::Selectable("Linear Simple", current == "Linear Simple")){
             current = "Linear Simple";
@@ -497,25 +540,6 @@ void MiniMLDisplay::SetUpTestCaseClassification(){
                 {
                     if(j < lineSize - nbOutput) input[i][j] = data[i*lineSize + j];
                     else output[i][j-(nbInput)] = data[i*lineSize + j];
-                }
-            }
-
-            if(storedBoards.size()){
-                if(inputBoards != nullptr) delete inputBoards;
-                if(outputBoards != nullptr) delete outputBoards;
-                int lineSize = nbOutput+nbInput;
-                inputsizeboard = storedBoards.size()/lineSize;
-                inputBoards = new float*[inputsizeboard];
-                outputBoards = new float*[inputsizeboard];
-                for (int i = 0; i < inputsizeboard; i++)
-                {
-                    inputBoards[i] = new float[nbInput];
-                    outputBoards[i] = new float[nbOutput];
-                    for (int j = 0; j < lineSize; j++)
-                    {
-                        if(j < lineSize - nbOutput) inputBoards[i][j] = storedBoards[i*lineSize + j];
-                        else outputBoards[i][j-(nbInput)] = storedBoards[i*lineSize + j];
-                    }
                 }
             }
         }
@@ -626,7 +650,7 @@ void MiniMLDisplay::RenderMiniML(){
     }
 
     DisplayerNetworkParameter();
-    //DisplayNetwork(network);
+   DisplayNetwork(network);
 
     ImGui::SameLine();
     if(regression){
