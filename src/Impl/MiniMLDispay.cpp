@@ -91,13 +91,13 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
         ImGui::SameLine();
         ImGui::InputInt("Kvalue",&this->kvalue);
     }
-    
     ImGui::SameLine();
     ImGui::InputFloat("IterationMax",&interationMax);
     ImGui::PopItemWidth();
 }
 
 void MiniMLDisplay::DisplayerError(Network* network){
+    
         if (ImPlot::BeginPlot("Error",ImVec2(1000,500))) {
                 ImPlot::SetupAxesLimits(0,100,-.25f,1);
                 float* error = MiniML::GetError(network);
@@ -117,7 +117,7 @@ void MiniMLDisplay::DisplayerError(Network* network){
                         counter--;
                         float error =0;
                         if(counter <= 0){
-                            counter = 10;
+                            counter = 100;
                             float error =0;
                             for (int i = 0; i < inputsizeboard; i++)
                             {
@@ -235,42 +235,43 @@ void MiniMLDisplay::DisplayerError(Network* network){
                 int counter = 0;
 
                 for (auto& element : j) {
-                    nlohmann::json turns = element["turns"];
-                    for (auto& turn : turns) {
-                        std::vector<int> board_state = turn["board_state"];
-                        std::string evaluation = turn["evaluation"];
-                        int evaluation_int = 0;
+                    //nlohmann::json turns = element["turns"];
+                    std::cout << element["evaluation"] << std::endl;
+                    // for (auto& turn : turns) {
+                    //     std::vector<int> board_state = turn["board_state"];
+                    //     std::string evaluation = turn["evaluation"];
+                    //     int evaluation_int = 0;
 
-                        // Checkmate handling
-                        if (evaluation[0] == '#') {
-                            char sign = evaluation[1];
+                    //     // Checkmate handling
+                    //     if (evaluation[0] == '#') {
+                    //         char sign = evaluation[1];
 
-                            if (sign == '+') {
-                                evaluation_int = 2000; // Positive checkmate
-                            }
-                            else if (sign == '-') {
-                                evaluation_int = -2000; // Negative checkmate
-                            }
-                            else {
-                                std::cerr << "Invalid sign after #." << std::endl;
-                            }
-                        }
-                        else {
-                            evaluation_int = std::stoi(evaluation);
-                        }
+                    //         if (sign == '+') {
+                    //             evaluation_int = 2000; // Positive checkmate
+                    //         }
+                    //         else if (sign == '-') {
+                    //             evaluation_int = -2000; // Negative checkmate
+                    //         }
+                    //         else {
+                    //             std::cerr << "Invalid sign after #." << std::endl;
+                    //         }
+                    //     }
+                    //     else {
+                    //         evaluation_int = std::stoi(evaluation);
+                    //     }
 
-                        counter++;
-                        evaluation_int = std::clamp(evaluation_int,-2000,2000);
-                        if (counter <= 10000 - gamesStored) {
-                            data.insert(data.end(), board_state.begin(), board_state.end());
-                            data.push_back(evaluation_int);
-                        }
-                        else {
-                            storedBoards.insert(storedBoards.end(), board_state.begin(), board_state.end());
-                            storedBoards.push_back(evaluation_int);
-                        }
+                    //     counter++;
+                    //     evaluation_int = std::clamp(evaluation_int,-2000,2000);
+                    //     if (counter <= 10000 - gamesStored) {
+                    //         data.insert(data.end(), board_state.begin(), board_state.end());
+                    //         data.push_back(evaluation_int);
+                    //     }
+                    //     else {
+                    //         storedBoards.insert(storedBoards.end(), board_state.begin(), board_state.end());
+                    //         storedBoards.push_back(evaluation_int);
+                    //     }
 
-                    }
+                    // }
                 }
             }
 
@@ -350,51 +351,72 @@ void MiniMLDisplay::SetUpTestCaseClassification(){
             nbInput = 768;
             nbOutput = 1;
             // Amount of games to keep stored and not added to our data
-            int gamesStored = 2000;
-
+            int gamesStored = 10000;
             std::ifstream file("games.json");
             nlohmann::json j;
             file >> j;
 
+            if(input != nullptr){
+                delete input;
+            }
+            if(output != nullptr){
+                delete output;
+            }
+
             int counter = 0;
+            int lineSize = nbOutput+nbInput;
+            inputsize = (40000);
+            int idx = 0;
+            input = new float*[inputsize];
+            output = new float*[inputsize];
+            for (int i = 0; i < 40000; i++)
+            {
+                input[i] = new float[nbInput];
+                output[i] = new float[nbOutput];
+           
+            }
+            
 
             for (auto& element : j) {
-                nlohmann::json turns = element["turns"];
-                for (auto& turn : turns) {
-                    std::vector<int> board_state = turn["board_state"];
-                    std::string evaluation = turn["evaluation"];
-                    int evaluation_int = 0;
+                std::vector<int> board_state = element["board_state"];
+                std::string evaluation = element["evaluation"];
+                int evaluation_int = 0;
 
-                    // Checkmate handling
-                    if (evaluation[0] == '#') {
-                        char sign = evaluation[1];
+                // Checkmate handling
+                if (evaluation[0] == '#') {
+                    char sign = evaluation[1];
 
-                        if (sign == '+') {
-                            evaluation_int = 2000; // Positive checkmate
-                        }
-                        else if (sign == '-') {
-                            evaluation_int = -2000; // Negative checkmate
-                        }
-                        else {
-                            std::cerr << "Invalid sign after #." << std::endl;
-                        }
+                    if (sign == '+') {
+                        evaluation_int = 2000; // Positive checkmate
+                    }
+                    else if (sign == '-') {
+                        evaluation_int = -2000; // Negative checkmate
                     }
                     else {
-                        evaluation_int = std::stoi(evaluation);
-                    }
+                        std::cerr << "Invalid sign after #." << std::endl;
 
-                    counter++;
-                    evaluation_int = std::clamp(evaluation_int,-2000,2000);
-                    if (counter <= 10000 - gamesStored) {
-                        data.insert(data.end(), board_state.begin(), board_state.end());
-                        data.push_back( std::tanh(evaluation_int));
                     }
-                    else {
-                        storedBoards.insert(storedBoards.end(), board_state.begin(), board_state.end());
-                        storedBoards.push_back(std::tanh(evaluation_int));
-                    }
-
                 }
+                else {
+                    evaluation_int = std::stoi(evaluation);
+                }
+
+                counter++;
+                evaluation_int = std::clamp(evaluation_int,-2000,2000);
+                if (counter <= 50000 - gamesStored) {
+                  
+                    for (int k = 0; k < nbInput; k++)
+                    {
+                        input[idx][k] = board_state[k];
+                    }
+                    output[idx][0] = std::tanh(evaluation_int);
+                    idx++;
+                }
+                else {
+                    storedBoards.insert(storedBoards.end(), board_state.begin(), board_state.end());
+                    storedBoards.push_back(std::tanh(evaluation_int));
+                }
+
             }
         }
 
@@ -499,23 +521,23 @@ void MiniMLDisplay::SetUpTestCaseClassification(){
                     else output[i][j-(nbInput)] = data[i*lineSize + j];
                 }
             }
+        }
 
-            if(storedBoards.size()){
-                if(inputBoards != nullptr) delete inputBoards;
-                if(outputBoards != nullptr) delete outputBoards;
-                int lineSize = nbOutput+nbInput;
-                inputsizeboard = storedBoards.size()/lineSize;
-                inputBoards = new float*[inputsizeboard];
-                outputBoards = new float*[inputsizeboard];
-                for (int i = 0; i < inputsizeboard; i++)
+        if(storedBoards.size()){
+            if(inputBoards != nullptr) delete inputBoards;
+            if(outputBoards != nullptr) delete outputBoards;
+            int lineSize = nbOutput+nbInput;
+            inputsizeboard = storedBoards.size()/lineSize;
+            inputBoards = new float*[inputsizeboard];
+            outputBoards = new float*[inputsizeboard];
+            for (int i = 0; i < inputsizeboard; i++)
+            {
+                inputBoards[i] = new float[nbInput];
+                outputBoards[i] = new float[nbOutput];
+                for (int j = 0; j < lineSize; j++)
                 {
-                    inputBoards[i] = new float[nbInput];
-                    outputBoards[i] = new float[nbOutput];
-                    for (int j = 0; j < lineSize; j++)
-                    {
-                        if(j < lineSize - nbOutput) inputBoards[i][j] = storedBoards[i*lineSize + j];
-                        else outputBoards[i][j-(nbInput)] = storedBoards[i*lineSize + j];
-                    }
+                    if(j < lineSize - nbOutput) inputBoards[i][j] = storedBoards[i*lineSize + j];
+                    else outputBoards[i][j-(nbInput)] = storedBoards[i*lineSize + j];
                 }
             }
         }
@@ -626,7 +648,7 @@ void MiniMLDisplay::RenderMiniML(){
     }
 
     DisplayerNetworkParameter();
-    //DisplayNetwork(network);
+  //  DisplayNetwork(network);
 
     ImGui::SameLine();
     if(regression){
