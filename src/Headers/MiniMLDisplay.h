@@ -32,11 +32,11 @@ class MiniMLDisplay{
     float* heatMapMiniML;
     float** output;
     float** outputBoards;
-    int nbOutput,nbInput,nbHidden,heightHidden,inputsize,inputsizeboard,kvalue;
+    int nbOutput,nbInput,nbHidden,heightHidden,inputsize,inputsizeboard,kvalue,interationMax;
     int sizex,sizey;
     int id;
-    bool regression,Trainning,Plot,updateHeat,open;
-    float learningRate,interationMax;
+    bool regression,Trainning,Plot,updateHeat,open,NetworkVisualiseur;
+    double learningRate;
     std::string current;
     std::vector<float> data;
     std::vector<float> storedBoards;

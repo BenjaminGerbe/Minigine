@@ -70,9 +70,17 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
 
         updateHeat = true;
     }
-    
 
     ImGui::SameLine();
+    if(ImGui::Button("Save Weigts")){
+        MiniML::SaveWeights(network,"weight_save");
+    }
+    
+    ImGui::SameLine();
+    if(ImGui::Button("Load Weigts")){
+        MiniML::LoadWeights(network,"weight_save");
+    }
+
     ImGui::PushItemWidth(150);
     if(type == NetworkType::MLP){
         ImGui::InputInt("Hidden",&nbHidden);
@@ -84,15 +92,17 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
   
     ImGui::Checkbox("Plot",&Plot);
     ImGui::SameLine();
+    ImGui::Checkbox("NetworkVisualiseur",&NetworkVisualiseur);
+    ImGui::SameLine();
     if(this->type != NetworkType::RBF){
-        ImGui::InputFloat("LearningRate",&learningRate);
+        ImGui::InputDouble("LearningRate",&learningRate);
     }else{
-        ImGui::InputFloat("influenceZone",&learningRate);
+        ImGui::InputDouble("influenceZone",&learningRate);
         ImGui::SameLine();
         ImGui::InputInt("Kvalue",&this->kvalue);
     }
     ImGui::SameLine();
-    ImGui::InputFloat("IterationMax",&interationMax);
+    ImGui::InputInt("IterationMax",&interationMax);
     ImGui::PopItemWidth();
 }
 
@@ -226,52 +236,72 @@ void MiniMLDisplay::DisplayerError(Network* network){
                 nbInput = 768;
                 nbOutput = 1;
                 // Amount of games to keep stored and not added to our data
-                int gamesStored = 2000;
-
+                int gamesStored = 10000;
                 std::ifstream file("games.json");
                 nlohmann::json j;
                 file >> j;
 
+                if(input != nullptr){
+                    delete input;
+                }
+                if(output != nullptr){
+                    delete output;
+                }
+
                 int counter = 0;
+                int lineSize = nbOutput+nbInput;
+                inputsize = (40000);
+                int idx = 0;
+                input = new float*[inputsize];
+                output = new float*[inputsize];
+                for (int i = 0; i < 40000; i++)
+                {
+                    input[i] = new float[nbInput];
+                    output[i] = new float[nbOutput];
+            
+                }
+                
 
                 for (auto& element : j) {
-                    //nlohmann::json turns = element["turns"];
-                    std::cout << element["evaluation"] << std::endl;
-                    // for (auto& turn : turns) {
-                    //     std::vector<int> board_state = turn["board_state"];
-                    //     std::string evaluation = turn["evaluation"];
-                    //     int evaluation_int = 0;
+                    std::vector<int> board_state = element["board_state"];
+                    std::string evaluation = element["evaluation"];
+                    int evaluation_int = 0;
 
-                    //     // Checkmate handling
-                    //     if (evaluation[0] == '#') {
-                    //         char sign = evaluation[1];
+                    // Checkmate handling
+                    if (evaluation[0] == '#') {
+                        char sign = evaluation[1];
 
-                    //         if (sign == '+') {
-                    //             evaluation_int = 2000; // Positive checkmate
-                    //         }
-                    //         else if (sign == '-') {
-                    //             evaluation_int = -2000; // Negative checkmate
-                    //         }
-                    //         else {
-                    //             std::cerr << "Invalid sign after #." << std::endl;
-                    //         }
-                    //     }
-                    //     else {
-                    //         evaluation_int = std::stoi(evaluation);
-                    //     }
+                        if (sign == '+') {
+                            evaluation_int = 2000; // Positive checkmate
+                        }
+                        else if (sign == '-') {
+                            evaluation_int = -2000; // Negative checkmate
+                        }
+                        else {
+                            std::cerr << "Invalid sign after #." << std::endl;
 
-                    //     counter++;
-                    //     evaluation_int = std::clamp(evaluation_int,-2000,2000);
-                    //     if (counter <= 10000 - gamesStored) {
-                    //         data.insert(data.end(), board_state.begin(), board_state.end());
-                    //         data.push_back(evaluation_int);
-                    //     }
-                    //     else {
-                    //         storedBoards.insert(storedBoards.end(), board_state.begin(), board_state.end());
-                    //         storedBoards.push_back(evaluation_int);
-                    //     }
+                        }
+                    }
+                    else {
+                        evaluation_int = std::stoi(evaluation);
+                    }
 
-                    // }
+                    counter++;
+                    evaluation_int = std::clamp(evaluation_int,-2000,2000);
+                    if (counter <= 50000 - gamesStored) {
+                    
+                        for (int k = 0; k < nbInput; k++)
+                        {
+                            input[idx][k] = board_state[k];
+                        }
+                        output[idx][0] = (evaluation_int);
+                        idx++;
+                    }
+                    else {
+                        storedBoards.insert(storedBoards.end(), board_state.begin(), board_state.end());
+                        storedBoards.push_back(evaluation_int);
+                    }
+
                 }
             }
 
@@ -648,9 +678,11 @@ void MiniMLDisplay::RenderMiniML(){
     }
 
     DisplayerNetworkParameter();
-  //  DisplayNetwork(network);
+    if(NetworkVisualiseur){
+        DisplayNetwork(network);
+        ImGui::SameLine();
+    }
 
-    ImGui::SameLine();
     if(regression){
         PlotRegression();
 
