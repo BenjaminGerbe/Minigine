@@ -127,24 +127,20 @@ void MiniMLDisplay::DisplayerError(Network* network){
                         counter--;
                         float error =0;
                         if(counter <= 0){
-                            counter = 100;
+                            counter = 1;
                             auto start = std::chrono::system_clock::now();
                             float error =0;
-                            #pragma omp parallel for reduction(+:error)
-                            for (int i = 0; i < inputsizeboard; i++)
+                            auto startTime = clock();
+                            //#pragma omp parallel for reduction(+:error)
+                            for (int i = 0; i < this->interationMax; i++)
                             {
-                                error+= std::abs(outputBoards[i][0] - MiniML::SimulateNetwork(network,inputBoards[i],nbInput)[0]);
+                                int idx =rand()%(storedBoards.size()/(nbInput+nbOutput));
+                                error+= std::abs( MiniML::SimulateNetwork(network,inputBoards[idx],nbInput)[0] - outputBoards[idx][0] );
                             }
-                            lastValue = error/(float)inputsizeboard;
-                            errorBoards.push_back(error/(float)inputsizeboard);
+                            lastValue = error/(float)interationMax;
+                            errorBoards.push_back(error/(float)interationMax);
                             auto end = std::chrono::system_clock::now();
-
-                            std::chrono::duration<double> elapsed_seconds = end-start;
-                            std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-                        
-                            std::cout << "finished computation at " << std::ctime(&end_time)
-                                    << "elapsed time: " << elapsed_seconds.count() << "s"
-                                    << std::endl;
+                            printf("Elpase Time : %.3lf sec \n", (clock() - startTime) / 1000.);
                         }
                         else{
                             errorBoards.push_back(lastValue);
@@ -246,7 +242,7 @@ void MiniMLDisplay::DisplayerError(Network* network){
                 nbInput = 768;
                 nbOutput = 1;
                 // Amount of games to keep stored and not added to our data
-                int gamesStored = 10000;
+                int gamesStored = 50000;
                 std::ifstream file("games.json");
                 nlohmann::json j;
                 file >> j;
@@ -260,11 +256,11 @@ void MiniMLDisplay::DisplayerError(Network* network){
 
                 int counter = 0;
                 int lineSize = nbOutput+nbInput;
-                inputsize = (40000);
+                inputsize = (8000);
                 int idx = 0;
                 input = new float*[inputsize];
                 output = new float*[inputsize];
-                for (int i = 0; i < 40000; i++)
+                for (int i = 0; i < 8000; i++)
                 {
                     input[i] = new float[nbInput];
                     output[i] = new float[nbOutput];
@@ -298,7 +294,7 @@ void MiniMLDisplay::DisplayerError(Network* network){
 
                     counter++;
                     evaluation_int = std::clamp(evaluation_int,-2000,2000);
-                    if (counter <= 50000 - gamesStored) {
+                    if (counter <= 10000 - gamesStored) {
                     
                         for (int k = 0; k < nbInput; k++)
                         {

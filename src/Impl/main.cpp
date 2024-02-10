@@ -113,25 +113,6 @@ void LoadProjetImage(char* path,Projet& projet){
     glBindTexture(GL_TEXTURE_2D,0);
 }
 
-
-void openMptest()
-{
-	/////////////////////////////////////////////////////////
-	printf("\nfirst case : no threading! \n ");
-	double pi = 0.0;
-	const int iterationCount = 200000000;
-	clock_t startTime = clock();
-	#pragma omp parallel for reduction(+:pi)
-    for (int i = 0; i < iterationCount; i++)
-    {
-        pi += 4 * (i % 2 ? -1 : 1) / (2.0 * i + 1.0);
-        printf("%d\n", omp_get_thread_num()); 
-    }
-	printf("Elpase Time : %.3lf sec \n", (clock() - startTime) / 1000.);
-	printf("pi = %.8f\n", pi);
-	/////////////////////////////////////////////////////////
-}
-
 int main(int, char**){
 
     std::cout << "Launch Minigine" << std::endl; 
@@ -147,7 +128,6 @@ int main(int, char**){
     if(err == 1){
         return 1;
     }
-    openMptest();
 
     //ObjState* obj = LoadObj("WaterSurfaceobj.obj");
 
