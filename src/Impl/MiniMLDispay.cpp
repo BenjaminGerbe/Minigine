@@ -387,11 +387,12 @@ void MiniMLDisplay::SetUpTestCaseClassification(){
         // Dataset needs to be 10k to use gamesStored correctly
         if (ImGui::Selectable("ReadJsonGame", current == "ReadJsonGame"))
         {
+            int gameNumberDataset = 10000;
             current = "ReadJsonGame";
             nbInput = 768;
             nbOutput = 1;
             // Amount of games to keep stored and not added to our data
-            int gamesStored = 10000;
+            int gamesStored = gameNumberDataset/5;
             std::ifstream file("games.json");
             nlohmann::json j;
             file >> j;
@@ -405,11 +406,11 @@ void MiniMLDisplay::SetUpTestCaseClassification(){
 
             int counter = 0;
             int lineSize = nbOutput+nbInput;
-            inputsize = (40000);
+            inputsize = (gameNumberDataset-gamesStored);
             int idx = 0;
             input = new float*[inputsize];
             output = new float*[inputsize];
-            for (int i = 0; i < 40000; i++)
+            for (int i = 0; i < gameNumberDataset - gamesStored; i++)
             {
                 input[i] = new float[nbInput];
                 output[i] = new float[nbOutput];
@@ -443,7 +444,7 @@ void MiniMLDisplay::SetUpTestCaseClassification(){
 
                 counter++;
                 evaluation_int = std::clamp(evaluation_int,-2000,2000);
-                if (counter <= 50000 - gamesStored) {
+                if (counter <= gameNumberDataset - gamesStored) {
                   
                     for (int k = 0; k < nbInput; k++)
                     {
