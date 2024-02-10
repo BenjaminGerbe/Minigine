@@ -22,6 +22,8 @@ file(GLOB_RECURSE Ressources
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 add_subdirectory(libs/MiniML)
 
+find_package(OpenMP REQUIRED)
+
 # Needed to bypass weird compilation error
 add_definitions(-D GLM_ENABLE_EXPERIMENTAL)
 
@@ -73,4 +75,4 @@ foreach(Ressources_file ${Ressources})
 endforeach()
 
 set_source_files_properties("Headers/data.h" PROPERTIES COMPILE_FLAGS "-w")
-target_link_libraries(${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARY} yaml-cpp MiniML imgui glfw3dll glew32s opengl32)
+target_link_libraries(${CMAKE_PROJECT_NAME} ${OPENGL_gl_LIBRARY} OpenMP::OpenMP_CXX yaml-cpp MiniML imgui glfw3dll glew32s opengl32)
