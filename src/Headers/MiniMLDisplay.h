@@ -2,7 +2,9 @@
 // glew and glfw include
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
-
+#include <omp.h>
+#include <chrono>
+#include <ctime>    
 // imgui include
 #include "imgui.h"
 #include "imgui_impl_glfw.h"

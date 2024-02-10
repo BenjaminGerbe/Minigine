@@ -128,13 +128,23 @@ void MiniMLDisplay::DisplayerError(Network* network){
                         float error =0;
                         if(counter <= 0){
                             counter = 100;
+                            auto start = std::chrono::system_clock::now();
                             float error =0;
+                            #pragma omp parallel for reduction(+:error)
                             for (int i = 0; i < inputsizeboard; i++)
                             {
                                 error+= std::abs(outputBoards[i][0] - MiniML::SimulateNetwork(network,inputBoards[i],nbInput)[0]);
                             }
                             lastValue = error/(float)inputsizeboard;
                             errorBoards.push_back(error/(float)inputsizeboard);
+                            auto end = std::chrono::system_clock::now();
+
+                            std::chrono::duration<double> elapsed_seconds = end-start;
+                            std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+                        
+                            std::cout << "finished computation at " << std::ctime(&end_time)
+                                    << "elapsed time: " << elapsed_seconds.count() << "s"
+                                    << std::endl;
                         }
                         else{
                             errorBoards.push_back(lastValue);
