@@ -117,6 +117,7 @@ void LoadProjetImage(char* path,Projet& projet){
 int main(int, char**){
 
     std::cout << "Launch Minigine" << std::endl; 
+    std::cout << std::tanh(-10) << std::endl; 
     scene = new Scene();
    // Application Setup
     app = ApplicationState((int)(1920),(int)(1080));

@@ -79,12 +79,12 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
     }
 
     ImGui::SameLine();
-    if(ImGui::Button("Save Weigts")){
+    if(ImGui::Button("Save Weigts") && network != nullptr){
         MiniML::SaveWeights(network,"weight_save");
     }
     
     ImGui::SameLine();
-    if(ImGui::Button("Load Weigts")){
+    if(ImGui::Button("Load Weigts") && network != nullptr){
         MiniML::LoadWeights(network,"weight_save");
     }
 
@@ -112,22 +112,22 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
     ImGui::InputInt("IterationMax",&interationMax);
     ImGui::PopItemWidth();
     
-    if(this->type == NetworkType::ChessDisplayer && nbInput > 1 ){
+    if(this->type == NetworkType::ChessDisplayer && nbInput > 1 && network != nullptr ){
         static ImVec2 size(600,600);
         static ImVec2 smallsize(55,55);
         static ImVec2 p(-100,-0);
         static ImVec2 uv0(0,0);
         static ImVec2 uv1(1,1);
         int idx = this->interationMax;
-        float result;
+        static float result=0;
         char buffer[64];   
         char bufferResult[64];
         sprintf(buffer, "%f", output[idx][0]);
         if(ImGui::Button("Estimate") && network != nullptr){
            result = MiniML::SimulateNetwork(network,input[idx],2)[0];
-           sprintf(bufferResult, "%f", result);
         }
-        ImGui::LabelText(buffer,"0");
+        sprintf(bufferResult, "%f", result);
+        ImGui::LabelText(buffer,bufferResult);
         ImVec2 position = ImGui::GetCursorPos();
         ImGui::Image((void*)(intptr_t)this->chessTex[0], size);
         int y=  -1;
@@ -288,7 +288,7 @@ void MiniMLDisplay::DisplayerError(Network* network){
             // Dataset needs to be 10k to use gamesStored correctly
             if (ImGui::Selectable("ReadJsonGame", current == "ReadJsonGame"))
             {
-                gameNumberDataset = 10000;
+                gameNumberDataset = 50000;
                 current = "ReadJsonGame";
                 nbInput = 768;
                 nbOutput = 1;
