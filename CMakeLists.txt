@@ -17,6 +17,7 @@ file(GLOB_RECURSE Ressources
      "src/*.png"
      "src/*.jpg"
      "src/*.obj"
+     "src/*.svg"
      "imgui.ini"
 )
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

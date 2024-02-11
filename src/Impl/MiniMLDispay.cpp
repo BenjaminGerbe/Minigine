@@ -2,6 +2,7 @@
 #include <fstream>
 #include "../Headers/json.hpp"
 #include <iostream>
+#include <string>
 
 float* MiniMLDisplay::UpdateHeatMap(Network* network,int sizex,int sizey,float* v){
     int size = MiniML::GetLayerSize(network,MiniML::GetNetworkSize(network)-1);
@@ -14,7 +15,13 @@ float* MiniMLDisplay::UpdateHeatMap(Network* network,int sizex,int sizey,float* 
             for (int k = 0; k < 3; k++)
             {
                 float values[] = {x, 1.0f - y};
-                value.push_back(MiniML::SimulateNetwork(network,&values[0],2)[k%size]);
+
+                if(this->type == NetworkType::RBF){
+                    value.push_back(MiniML::RBFSimulate(network,&values[0],nbInput,learningRate)[k%size]);
+                }
+                else{
+                    value.push_back(MiniML::SimulateNetwork(network,&values[0],2)[k%size]);
+                }
             }
 
         }
@@ -33,7 +40,7 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
 
     if(ImGui::Button("Create Network") && nbInput > 0){
         if(this->type == NetworkType::RBF){
-            network = (Network*)MiniML::SetUpNetwork(data.size()/(nbInput+nbOutput),nbHidden,heightHidden,nbOutput,regression);
+            network = (Network*)MiniML::SetUpNetwork(1,nbHidden,heightHidden,nbOutput,regression);
         }
         else{
             network = (Network*)MiniML::SetUpNetwork(nbInput,nbHidden,heightHidden,nbOutput,regression);
@@ -82,7 +89,7 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
     }
 
     ImGui::PushItemWidth(150);
-    if(type == NetworkType::MLP){
+    if(type != NetworkType::Linear){
         ImGui::InputInt("Hidden",&nbHidden);
         nbHidden = std::max<int>(0,nbHidden);
         ImGui::SameLine();
@@ -104,6 +111,53 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
     ImGui::SameLine();
     ImGui::InputInt("IterationMax",&interationMax);
     ImGui::PopItemWidth();
+    
+    if(this->type == NetworkType::ChessDisplayer && nbInput > 1 ){
+        static ImVec2 size(600,600);
+        static ImVec2 smallsize(55,55);
+        static ImVec2 p(-100,-0);
+        static ImVec2 uv0(0,0);
+        static ImVec2 uv1(1,1);
+        int idx = this->interationMax;
+        float result;
+        char buffer[64];   
+        char bufferResult[64];
+        sprintf(buffer, "%f", output[idx][0]);
+        if(ImGui::Button("Estimate") && network != nullptr){
+           result = MiniML::SimulateNetwork(network,input[idx],2)[0];
+           sprintf(bufferResult, "%f", result);
+        }
+        ImGui::LabelText(buffer,"0");
+        ImVec2 position = ImGui::GetCursorPos();
+        ImGui::Image((void*)(intptr_t)this->chessTex[0], size);
+        int y=  -1;
+        for (int x = 0; x < 64; x++)
+        {
+            input[idx];
+        
+            if(x%8 == 0){
+                y++;
+            }
+            int it = 0;
+            bool find = false;
+            while(it <12){
+                if(input[idx][(x*12)+it] == 1){
+                    find = true;
+                    break;
+                }
+                else{
+                    it++;
+                }
+            }
+            if(find){
+                ImGui::SetCursorPos(ImVec2((position.x)+x%8*(75)+10,(position.y)+y*(75)+10));
+                ImGui::Image((void*)(intptr_t)this->chessTex[it+1], smallsize);
+            }
+        }
+        
+     
+    
+    }
 }
 
 void MiniMLDisplay::DisplayerError(Network* network){
@@ -130,8 +184,6 @@ void MiniMLDisplay::DisplayerError(Network* network){
                             counter = 1;
                             auto start = std::chrono::system_clock::now();
                             float error =0;
-                            auto startTime = clock();
-                            //#pragma omp parallel for reduction(+:error)
                             for (int i = 0; i < this->interationMax; i++)
                             {
                                 int idx =rand()%(storedBoards.size()/(nbInput+nbOutput));
@@ -139,8 +191,6 @@ void MiniMLDisplay::DisplayerError(Network* network){
                             }
                             lastValue = error/(float)interationMax;
                             errorBoards.push_back(error/(float)interationMax);
-                            auto end = std::chrono::system_clock::now();
-                            printf("Elpase Time : %.3lf sec \n", (clock() - startTime) / 1000.);
                         }
                         else{
                             errorBoards.push_back(lastValue);
@@ -238,11 +288,12 @@ void MiniMLDisplay::DisplayerError(Network* network){
             // Dataset needs to be 10k to use gamesStored correctly
             if (ImGui::Selectable("ReadJsonGame", current == "ReadJsonGame"))
             {
+                gameNumberDataset = 10000;
                 current = "ReadJsonGame";
                 nbInput = 768;
                 nbOutput = 1;
                 // Amount of games to keep stored and not added to our data
-                int gamesStored = 50000;
+                int gamesStored = gameNumberDataset/5;
                 std::ifstream file("games.json");
                 nlohmann::json j;
                 file >> j;
@@ -256,11 +307,11 @@ void MiniMLDisplay::DisplayerError(Network* network){
 
                 int counter = 0;
                 int lineSize = nbOutput+nbInput;
-                inputsize = (8000);
+                inputsize = (gameNumberDataset-gamesStored);
                 int idx = 0;
                 input = new float*[inputsize];
                 output = new float*[inputsize];
-                for (int i = 0; i < 8000; i++)
+                for (int i = 0; i < gameNumberDataset - gamesStored; i++)
                 {
                     input[i] = new float[nbInput];
                     output[i] = new float[nbOutput];
@@ -294,13 +345,13 @@ void MiniMLDisplay::DisplayerError(Network* network){
 
                     counter++;
                     evaluation_int = std::clamp(evaluation_int,-2000,2000);
-                    if (counter <= 10000 - gamesStored) {
+                    if (counter <= gameNumberDataset - gamesStored) {
                     
                         for (int k = 0; k < nbInput; k++)
                         {
                             input[idx][k] = board_state[k];
                         }
-                        output[idx][0] = (evaluation_int);
+                        output[idx][0] = evaluation_int;
                         idx++;
                     }
                     else {
@@ -309,7 +360,10 @@ void MiniMLDisplay::DisplayerError(Network* network){
                     }
 
                 }
+
+                gameNumberDataset = gameNumberDataset-gamesStored;
             }
+
 
 
             if (ImGui::Selectable("None Linear Simple", current == "None Linear Simple")){
@@ -360,6 +414,25 @@ void MiniMLDisplay::DisplayerError(Network* network){
                     }
                 }
             }
+
+            if(storedBoards.size()){
+                if(inputBoards != nullptr) delete inputBoards;
+                if(outputBoards != nullptr) delete outputBoards;
+                int lineSize = nbOutput+nbInput;
+                inputsizeboard = storedBoards.size()/lineSize;
+                inputBoards = new float*[inputsizeboard];
+                outputBoards = new float*[inputsizeboard];
+                for (int i = 0; i < inputsizeboard; i++)
+                {
+                    inputBoards[i] = new float[nbInput];
+                    outputBoards[i] = new float[nbOutput];
+                    for (int j = 0; j < lineSize; j++)
+                    {
+                        if(j < lineSize - nbOutput) inputBoards[i][j] = storedBoards[i*lineSize + j];
+                        else outputBoards[i][j-(nbInput)] = storedBoards[i*lineSize + j];
+                    }
+                }
+            }
         
             ImGui::EndCombo();
         }
@@ -383,7 +456,7 @@ void MiniMLDisplay::SetUpTestCaseClassification(){
         // Dataset needs to be 10k to use gamesStored correctly
         if (ImGui::Selectable("ReadJsonGame", current == "ReadJsonGame"))
         {
-            int gameNumberDataset = 10000;
+            gameNumberDataset = 50000;
             current = "ReadJsonGame";
             nbInput = 768;
             nbOutput = 1;
@@ -455,6 +528,8 @@ void MiniMLDisplay::SetUpTestCaseClassification(){
                 }
 
             }
+
+            gameNumberDataset = gameNumberDataset-gamesStored;
         }
 
         if (ImGui::Selectable("Linear Simple", current == "Linear Simple")){
@@ -737,6 +812,7 @@ void MiniMLDisplay::RenderMiniML(){
 
         PlotClassification();
     }
+
 
 
 }

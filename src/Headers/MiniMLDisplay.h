@@ -20,11 +20,12 @@
 #include <ext/matrix_clip_space.hpp> // glm::perspective
 #include <ext/scalar_constants.hpp> // glm::pi
 #include <string>
-
+#include "Projet.h"
 enum NetworkType{
     MLP,
     Linear,
-    RBF
+    RBF,
+    ChessDisplayer
 };
 class Network;
 class MiniMLDisplay{
@@ -35,7 +36,7 @@ class MiniMLDisplay{
     float** output;
     float** outputBoards;
     int nbOutput,nbInput,nbHidden,heightHidden,inputsize,inputsizeboard,kvalue,interationMax;
-    int sizex,sizey;
+    int sizex,sizey,gameNumberDataset;
     int id;
     bool regression,Trainning,Plot,updateHeat,open,NetworkVisualiseur;
     double learningRate;
@@ -46,9 +47,10 @@ class MiniMLDisplay{
     std::vector<float> errorBoards;
     GLuint texID;
     NetworkType type;
+    std::vector<GLuint> chessTex;
 
     public : 
-    MiniMLDisplay(bool regression,NetworkType type,int id){
+    MiniMLDisplay(bool regression,NetworkType type,int id,Projet* projet){
         sizex= 100;
         sizey= 100;
         Plot = true;
@@ -78,6 +80,11 @@ class MiniMLDisplay{
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D,0);
+        int size = projet->getTexID().size();
+        for (int i = 13; i >=1; i--)
+        {
+            chessTex.push_back(projet->getTexID()[size-i]);
+        }
     }
 
     MiniMLDisplay(MiniMLDisplay& copy){

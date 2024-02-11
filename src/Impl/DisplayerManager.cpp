@@ -586,13 +586,13 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
                     if (ImGui::MenuItem("Classification",NULL)) {
                         int id = 0;
                         if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
-                        MLDisplays.push_back(new MiniMLDisplay(false,NetworkType::MLP,id+1));
+                        MLDisplays.push_back(new MiniMLDisplay(false,NetworkType::MLP,id+1,projet));
                     }
 
                     if (ImGui::MenuItem("Regression",NULL)) {
                         int id = 0;
                         if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
-                        MLDisplays.push_back(new MiniMLDisplay(true,NetworkType::MLP,id+1));
+                        MLDisplays.push_back(new MiniMLDisplay(true,NetworkType::MLP,id+1,projet));
                     }
                     
                     ImGui::EndMenu();
@@ -603,13 +603,13 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
                     if (ImGui::MenuItem("Classification",NULL)) {
                         int id = 0;
                         if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
-                        MLDisplays.push_back(new MiniMLDisplay(false,NetworkType::Linear,id+1));
+                        MLDisplays.push_back(new MiniMLDisplay(false,NetworkType::Linear,id+1,projet));
                     }
 
                     if (ImGui::MenuItem("Regression",NULL)) {
                         int id = 0;
                         if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
-                        MLDisplays.push_back(new MiniMLDisplay(true,NetworkType::Linear,id+1));
+                        MLDisplays.push_back(new MiniMLDisplay(true,NetworkType::Linear,id+1,projet));
                     }
                     
                     ImGui::EndMenu();
@@ -620,17 +620,23 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
                     if (ImGui::MenuItem("Classification",NULL)) {
                         int id = 0;
                         if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
-                        MLDisplays.push_back(new MiniMLDisplay(false,NetworkType::RBF,id+1));
+                        MLDisplays.push_back(new MiniMLDisplay(false,NetworkType::RBF,id+1,projet));
                     }
 
                     if (ImGui::MenuItem("Regression",NULL)) {
                         int id = 0;
                         if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
-                        MLDisplays.push_back(new MiniMLDisplay(true,NetworkType::RBF,id+1));
+                        MLDisplays.push_back(new MiniMLDisplay(true,NetworkType::RBF,id+1,projet));
                     }
                     
                     ImGui::EndMenu();
                 }
+
+                 if (ImGui::MenuItem("ChessVisualiseur",NULL)) {
+                    int id = 0;
+                    if(MLDisplays.size() >0) id = MLDisplays[MLDisplays.size()-1]->GetID();
+                    MLDisplays.push_back(new MiniMLDisplay(true,NetworkType::ChessDisplayer,id+1,projet));
+                 }
 
 
                 ImGui::EndMenu();

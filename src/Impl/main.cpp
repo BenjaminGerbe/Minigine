@@ -104,6 +104,7 @@ void LoadProjetImage(char* path,Projet& projet){
     if(c <= 3){
         v = GL_RGB;
     }
+
     glGenTextures(1,&texID);
     glBindTexture(GL_TEXTURE_2D,texID);
     glTexImage2D(GL_TEXTURE_2D,0,v,w,h,0,v,GL_UNSIGNED_BYTE,data);
@@ -173,6 +174,19 @@ int main(int, char**){
     LoadProjetImage("Light.png",projet);
     LoadProjetImage("brickwall.jpg",projet);
     LoadProjetImage("brickwall_normal.jpg",projet);
+    LoadProjetImage("board.png",projet);
+    LoadProjetImage("wP.png",projet);
+    LoadProjetImage("bP.png",projet);
+    LoadProjetImage("wN.png",projet);
+    LoadProjetImage("bN.png",projet);
+    LoadProjetImage("wB.png",projet);
+    LoadProjetImage("bB.png",projet);
+    LoadProjetImage("wR.png",projet);
+    LoadProjetImage("bR.png",projet);
+    LoadProjetImage("wQ.png",projet);
+    LoadProjetImage("bQ.png",projet);
+    LoadProjetImage("wK.png",projet);
+    LoadProjetImage("bK.png",projet);
 
     Mesh* m_Cube = new Mesh(verticesArray,sizeof(verticesArray),indicesArray,sizeof(indicesArray),6,"CUBE");
     Mesh* m_Dragon = new Mesh(DragonVertices,sizeof(DragonVertices),DragonIndices,sizeof(DragonIndices),8,"DRAGON");
