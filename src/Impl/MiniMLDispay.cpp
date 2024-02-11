@@ -3,6 +3,7 @@
 #include "../Headers/json.hpp"
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 float* MiniMLDisplay::UpdateHeatMap(Network* network,int sizex,int sizey,float* v){
     int size = MiniML::GetLayerSize(network,MiniML::GetNetworkSize(network)-1);
@@ -51,8 +52,10 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
         updateHeat = true;
     }
 
+
+
     ImGui::SameLine();
-    if(ImGui::Button("Train")){
+    if(this->type != NetworkType::ChessDisplayer && ImGui::Button("Train")){
         Trainning = !Trainning;
         if(Plot && !regression){
             heatMapMiniML = UpdateHeatMap(network,sizex,sizey,heatMapMiniML);
@@ -60,7 +63,7 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
     }
 
     ImGui::SameLine();
-    if(ImGui::Button("one Train")){
+    if(this->type != NetworkType::ChessDisplayer && ImGui::Button("one Train")){
         if(type == NetworkType::MLP){
             MiniML::BackPropagation(network,input,inputsize,output,inputsize,learningRate,interationMax);
         }
@@ -96,20 +99,32 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
         ImGui::InputInt("Height Hidden",&heightHidden);
         heightHidden = std::max<int>(0,heightHidden);
     }
-  
-    ImGui::Checkbox("Plot",&Plot);
-    ImGui::SameLine();
-    ImGui::Checkbox("NetworkVisualiseur",&NetworkVisualiseur);
-    ImGui::SameLine();
-    if(this->type != NetworkType::RBF){
+    if(this->type != NetworkType::ChessDisplayer){
+        ImGui::Checkbox("Plot",&Plot);
+        ImGui::SameLine();
+        ImGui::Checkbox("NetworkVisualiseur",&NetworkVisualiseur);
+        ImGui::SameLine();
+    }
+    else{
+        Plot = false;
+        NetworkVisualiseur = false;
+    }
+    if(this->type != NetworkType::RBF &&this->type != NetworkType::ChessDisplayer ){
         ImGui::InputDouble("LearningRate",&learningRate);
-    }else{
+    }else if(this->type == NetworkType::RBF ){
         ImGui::InputDouble("influenceZone",&learningRate);
         ImGui::SameLine();
         ImGui::InputInt("Kvalue",&this->kvalue);
     }
+
     ImGui::SameLine();
-    ImGui::InputInt("IterationMax",&interationMax);
+    if(this->type != NetworkType::ChessDisplayer){
+        ImGui::InputInt("IterationMax",&interationMax);
+    }
+    else{
+        ImGui::InputInt("ValueDataset",&interationMax);
+        interationMax = std::clamp<int>(interationMax,0,storedBoards.size()/(nbInput+nbOutput));
+    }
     ImGui::PopItemWidth();
     
     if(this->type == NetworkType::ChessDisplayer && nbInput > 1 && network != nullptr ){
@@ -122,9 +137,9 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
         static float result=0;
         char buffer[64];   
         char bufferResult[64];
-        sprintf(buffer, "%f", output[idx][0]);
+        sprintf(buffer, "%f", outputBoards[idx][0]);
         if(ImGui::Button("Estimate") && network != nullptr){
-           result = MiniML::SimulateNetwork(network,input[idx],2)[0];
+           result = MiniML::SimulateNetwork(network,inputBoards[idx],2)[0];
         }
         sprintf(bufferResult, "%f", result);
         ImGui::LabelText(buffer,bufferResult);
@@ -162,7 +177,7 @@ void MiniMLDisplay::DisplayerNetworkParameter(){
 
 void MiniMLDisplay::DisplayerError(Network* network){
     
-        if (ImPlot::BeginPlot("Error",ImVec2(1000,500))) {
+        if (this->type != NetworkType::ChessDisplayer && ImPlot::BeginPlot("Error",ImVec2(1000,500))) {
                 ImPlot::SetupAxesLimits(0,100,-.25f,1);
                 float* error = MiniML::GetError(network);
                 float* it = MiniML::GetIter(network);
