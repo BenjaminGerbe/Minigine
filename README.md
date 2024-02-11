@@ -15,7 +15,7 @@ cmake --build . --config [Release/Debug]
 
 > [!IMPORTANT]
 > You need to copy past the glfw3.dll (in libs GLFW/lib-static-ucrt) and the yaml-cppd.dll (in the libs/yaml-cpp/lib/debug) in the source project near the .exe otherwise the project won't open.
-> I really recommande to copy past the imgui.ini from the root of the project to the source project.
+> For testing the chessdataset please copy the game.json to the source project.
 
 # Functionalities: 
 |  |  |
