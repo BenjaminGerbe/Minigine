@@ -46,7 +46,7 @@ void DisplayerManager::MachineState(Projet* projet){
 
         char bufferFps[64];
         ret = snprintf(bufferFps, sizeof (bufferFps), "%f",  fpsCounter[fpsCounter.size()-1]);
-        ImGui::PlotLines("Fps Counter",&fpsCounter[0],25,0,bufferFps,0.0f,120.0f,ImVec2(0,65.0f));
+        ImGui::PlotLines("FrameTime (ms)",&fpsCounter[0],25,0,bufferFps,0.0f,120.0f,ImVec2(0,65.0f));
         ImGui::PopStyleColor(2);
 
     ImGui::End();
@@ -201,6 +201,12 @@ void DisplayerManager::ObjectEditor(Projet* projet){
     ImGui::End();
 
 }
+static int numOfHeapAllocations=0;
+void* operator new(size_t size)
+{
+    numOfHeapAllocations++;
+    return malloc(size);
+}
 
 void DisplayerManager::SceneEditor(Projet* projet){
     
@@ -332,7 +338,6 @@ void DisplayerManager::SceneEditor(Projet* projet){
        
     }
     ImGui::PopStyleColor(3);
-
     ImGui::End();
 };
 

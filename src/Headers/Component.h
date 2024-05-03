@@ -21,7 +21,7 @@ class Component
     ComponentID ID;
     bool open;
     char* headerName;
-
+  
     virtual void SetID(){
         ID = c_None;
     }

@@ -5,6 +5,10 @@
 #include "../Headers/Camera.h"
 #include "../Headers/LineRenderer.h"
 
+Object* Object::pool = new Object[1];
+int Object::currentIdx = 0;
+bool* Object::contain = new bool[1];
+int Object::countObjectMax = 1;
 
 void Object::DeleteComponents(){
         for(auto p : this->components){

@@ -9,6 +9,7 @@
 #include <gtc/type_ptr.hpp>
 #include <string>  
 #include <vector>
+#include <new>
 
 // imgui include
 #include "imgui.h"
@@ -44,6 +45,10 @@ class Object{
     GLuint TexID;
 
     public:
+    static Object* pool;
+    static bool* contain;
+    static int currentIdx;
+    static int countObjectMax;
 
     Object() = default;
 
@@ -56,6 +61,7 @@ class Object{
         color = ImVec4(0.85f,0.85f,0.85f,1.0f);
         TexID = 1;
         AddComponents();
+        std::cout << " call Constructor " << std::endl;
     }
 
     Object(const Object& copy){
@@ -72,23 +78,44 @@ class Object{
         CopyComponents(copy.components);
     }
 
+    void* operator new(size_t size){   
+        int idx = currentIdx;
+        if(contain[idx] == false){
+            for (size_t i = currentIdx; i < countObjectMax+currentIdx; i++)
+            {
+                int idx = i%countObjectMax;
+                if(contain[idx] == true){
+                    currentIdx = idx;
+                    break;
+                }
+            }
+            
+        }
+        contain[currentIdx] = false;
+        &pool[currentIdx];
+        int tmp = currentIdx;
+        currentIdx++;
+        currentIdx = (currentIdx)%countObjectMax;
+        return &pool[tmp];
+    }
+
+    void operator delete(void* pointer){
+        auto idx = ((Object*)(pointer)- (Object*)&pool[0]);
+        contain[idx] = true;
+        pool[idx].~Object();
+    }
+
+    static void CreatePool(int count){
+        pool = new Object[count];
+        contain = new bool[count];
+        countObjectMax = count;
+    };
+
     Object operator=(const Object& copy){
-        this->mesh = copy.mesh;
-        this->name = copy.name;
-        this->objectType = copy.objectType;
-        rotation = glm::vec3(copy.rotation);
-        position = glm::vec3(copy.position);
-        scale = glm::vec3(copy.scale);
-        this->color = copy.color;
-        //this->programShader = copy.programShader;
-        this->material = copy.material;
-        this->TexID = copy.TexID;
-        CopyComponents(copy.components);
+        return Object(copy);
     }
     
-    ~Object(){
-        DeleteComponents();
-    }
+    ~Object(){ DeleteComponents(); }
 
     void DeleteComponent(int i);
     void SetUp();

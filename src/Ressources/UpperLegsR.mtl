@@ -1,0 +1,16 @@
+# Blender MTL File: 'None'
+# Material Count: 1
+
+newmtl Ch46_body.001
+Ns 179.999996
+Ka 0.500000 0.500000 0.500000
+Kd 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Bump C:\\home\\app\\mixamo-mini\\tmp\\skins_124dc5b3-d3ab-48d4-a7a7-be83b33a50bb.fbm\\Ch46_1001_Normal.png
+map_Kd C:\\home\\app\\mixamo-mini\\tmp\\skins_124dc5b3-d3ab-48d4-a7a7-be83b33a50bb.fbm\\Ch46_1001_Diffuse.png
+map_Ks C:\\home\\app\\mixamo-mini\\tmp\\skins_124dc5b3-d3ab-48d4-a7a7-be83b33a50bb.fbm\\Ch46_1001_Specular.png
+map_Ns C:\\home\\app\\mixamo-mini\\tmp\\skins_124dc5b3-d3ab-48d4-a7a7-be83b33a50bb.fbm\\Ch46_1001_Glossiness.png

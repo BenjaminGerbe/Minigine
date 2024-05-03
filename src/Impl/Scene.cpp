@@ -96,8 +96,6 @@ void Scene::SetUp(){
 }
 
 void Scene::Render(glm::mat4* _MVP,int flags){
-
-  
         for (int i = 0; i < Objects.size(); i++)
         {
                 GLuint ID = Objects[i]->GetMesh()->GetVAO();

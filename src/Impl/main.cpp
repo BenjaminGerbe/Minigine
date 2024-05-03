@@ -34,7 +34,7 @@
 #include "../Headers/Shader.h"
 #include "../Headers/Material.h"
 #include "../data.h"
-
+#include <new>
 #define TINYOBJLOADER_IMPLEMENTATION 
 #include "../tinyobj/tiny_obj_loader.h"
 
@@ -114,10 +114,12 @@ void LoadProjetImage(char* path,Projet& projet){
     glBindTexture(GL_TEXTURE_2D,0);
 }
 
+
 int main(int, char**){
 
     std::cout << "Launch Minigine" << std::endl; 
-    std::cout << std::tanh(-10) << std::endl; 
+    Object::CreatePool(1000);
+    Component::CreatePool(1000);
     scene = new Scene();
    // Application Setup
     app = ApplicationState((int)(1920),(int)(1080));
@@ -131,6 +133,7 @@ int main(int, char**){
         return 1;
     }
 
+    
     //ObjState* obj = LoadObj("WaterSurfaceobj.obj");
 
     // Create Shader/Material
@@ -145,7 +148,8 @@ int main(int, char**){
     PBRMaterial* none = new PBRMaterial(pbrShader,"None");
     WaterMaterial* mat_water = new WaterMaterial(waterShader,"Water Material");
     PBRMaterial* PBRmat = new PBRMaterial(pbrShader,"PBR Material");
-
+    
+    
     green->SetDiffuse(0.0,1.0,0.0);
     green->SetAmbiante(0.0,0.90,0.0);
 
@@ -223,6 +227,8 @@ int main(int, char**){
     glEnable(GL_MULTISAMPLE);  
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
     
+    
+
     float i = 0;
 
     IMGUI_CHECKVERSION();
@@ -278,7 +284,6 @@ int main(int, char**){
         std::vector<LightComp*> Lights = sceneBuffer->GetLightComp();
         std::vector<CameraComp*> Cameras = sceneBuffer->GetCameras();
         int idx = 0;
-
         for (int i = 0; i < projet.GetScene()->GetObjects().size(); i++)
         {
             Object* obj = projet.GetScene()->GetObjects()[i];
@@ -300,7 +305,6 @@ int main(int, char**){
         ImGui::NewFrame();
 
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-
         displayerManager.RenderAllRenderWindows((int)(width/2.0),(int)(height/2.0),&projet);
         displayerManager.SceneEditor(&projet);
         displayerManager.ObjectEditor(&projet);
