@@ -1,7 +1,7 @@
 #include "../Headers/Camera.h"
 #include "../Headers/Projet.h"
 #include "../Headers/Scene.h"
-
+RTTI_DEFINITION_BASE(CameraComp,CameraComp)
 
 void CameraComp::Editor(){
 

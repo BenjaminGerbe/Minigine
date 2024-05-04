@@ -1,6 +1,7 @@
 #include "../Headers/Light.h"
 #include "../Headers/Projet.h"
 #include "../Headers/Scene.h"
+RTTI_DEFINITION_BASE(LightComp,LightComp)
 
 void LightComp::Editor(){
     ImGui::Spacing();

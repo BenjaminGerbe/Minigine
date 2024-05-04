@@ -1,5 +1,5 @@
 #include "../Headers/WaterComponent.h"
-
+RTTI_DEFINITION_BASE(WaterComp,WaterComp)
 void WaterComp::Editor(){
     return;
 };

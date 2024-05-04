@@ -142,6 +142,7 @@ class LineRenderer:public Component{
     bool Voronoi;
     bool AnimimateVoronoi;
     public :
+    RTTI_DECLARATION(LineRenderer)
     virtual void Editor();
     virtual void SetUp();
     virtual void Update();

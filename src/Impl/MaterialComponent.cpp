@@ -1,5 +1,6 @@
 #include "../Headers/MaterialComponent.h"
 #include "../Headers/Projet.h"
+RTTI_DEFINITION_BASE(MaterialComp,MaterialComp)
 void MaterialComp::Editor(){
 
     Projet* projet = obj->GetProjet();

@@ -21,6 +21,7 @@ class CameraComp : public Component{
     float fov;
     float size;
     public :
+    RTTI_DECLARATION(CameraComp)
     virtual void Editor();
     virtual void SetUp();
     virtual void Update();

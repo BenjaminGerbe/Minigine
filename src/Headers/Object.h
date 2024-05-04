@@ -61,7 +61,6 @@ class Object{
         color = ImVec4(0.85f,0.85f,0.85f,1.0f);
         TexID = 1;
         AddComponents();
-        std::cout << " call Constructor " << std::endl;
     }
 
     Object(const Object& copy){

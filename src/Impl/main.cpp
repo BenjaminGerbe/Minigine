@@ -41,6 +41,9 @@
 #include "../stbload/stb_image.h"
 #include "../stbload/stb_image_write.h"
 
+
+
+
 static ApplicationState app; 
 Scene* scene;
 
@@ -115,11 +118,13 @@ void LoadProjetImage(char* path,Projet& projet){
 }
 
 
+
 int main(int, char**){
 
     std::cout << "Launch Minigine" << std::endl; 
     Object::CreatePool(1000);
-    Component::CreatePool(1000);
+    
+
     scene = new Scene();
    // Application Setup
     app = ApplicationState((int)(1920),(int)(1080));
@@ -149,7 +154,8 @@ int main(int, char**){
     WaterMaterial* mat_water = new WaterMaterial(waterShader,"Water Material");
     PBRMaterial* PBRmat = new PBRMaterial(pbrShader,"PBR Material");
     
-    
+    Saver::GenerateFactory();
+
     green->SetDiffuse(0.0,1.0,0.0);
     green->SetAmbiante(0.0,0.90,0.0);
 
@@ -226,11 +232,12 @@ int main(int, char**){
     glEnable(GL_BLEND);  
     glEnable(GL_MULTISAMPLE);  
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
-    
-    
+
+    Factory fac;
+
+  
 
     float i = 0;
-
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImPlot::CreateContext();
@@ -294,7 +301,8 @@ int main(int, char**){
                 if(c->GetID() == c_Camera && std::find(Cameras.begin(),Cameras.end(),dynamic_cast<CameraComp*>(c)) == Cameras.end()){
                     sceneBuffer->AddCamera(dynamic_cast<CameraComp*>(c));
                 }
-                    c->Update();
+                
+                c->Update();
             }
         }
 

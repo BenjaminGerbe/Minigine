@@ -11,6 +11,7 @@ class WaterComp: public Component{
     Projet* projet;
 
     public :
+    RTTI_DECLARATION(WaterComp)
     virtual void Editor();
     virtual void SetUp();
     virtual void Update();

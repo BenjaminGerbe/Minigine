@@ -1,5 +1,5 @@
 #include "../Headers/MeshComponent.h"
-
+RTTI_DEFINITION_BASE(MeshComponent,MeshComponent)
 void MeshComponent::Editor(){
 
     if (ImGui::BeginCombo("Select Mesh", obj->GetMesh()->GetName())) {

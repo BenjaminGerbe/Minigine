@@ -1,5 +1,6 @@
 #include "../Headers/LineRenderer.h"
 #include "../Headers/Projet.h"
+RTTI_DEFINITION_BASE(LineRenderer,LineRenderer)
 
 void FindSegment(std::vector<Triangle*> tr,Segment* s){
 

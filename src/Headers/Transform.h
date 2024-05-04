@@ -11,7 +11,7 @@ class Transform: public Component{
     virtual void Editor();
     virtual void SetUp();
     virtual void Update();
-
+    RTTI_DECLARATION(Transform)
     Transform(Object* obj):Component(obj){
         headerName = "Transformation";
         SetID();

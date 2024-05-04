@@ -1,5 +1,6 @@
 #include "../Headers/Saver.h"
 
+
 void Saver::SaveScene(Scene* scene){
 
     YAML::Node yamlFile;
@@ -24,9 +25,8 @@ void Saver::SaveScene(Scene* scene){
             Component* Component = obj->GetComponents()[i];
             Component->Save(id,i,yamlFile);
         }
-
-
     }  
+
     std::ofstream MyFile("scene.yaml");
     MyFile  <<  yamlFile;
     MyFile.close();
@@ -47,9 +47,10 @@ Mesh* FindMesh(Projet* projet,uint32_t fileID){
             i++;
         }
     }
-
     return mesh;
 }
+
+
 
 void Saver::LoadScene(Projet* projet){
     Scene* scene = projet->GetScene();

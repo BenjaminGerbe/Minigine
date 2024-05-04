@@ -11,6 +11,7 @@ class LightComp:public Component{
     float* color;
     float intensity;
     public :
+    RTTI_DECLARATION(LightComp)
     virtual void Editor();
     virtual void SetUp();
     virtual void Update();

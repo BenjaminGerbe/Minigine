@@ -8,6 +8,7 @@
 class MaterialComp: public Component{
 
     public :
+    RTTI_DECLARATION(MaterialComp)
     virtual void Editor();
     virtual void SetUp();
     virtual void Update();

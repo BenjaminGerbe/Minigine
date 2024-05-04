@@ -124,6 +124,7 @@ class LineRenderer3D: public Component{
     int lastIdxTriangulation;
 
     public :
+    RTTI_DECLARATION(LineRenderer3D)
     virtual void Editor();
     virtual void SetUp();
     virtual void Update();

@@ -1,4 +1,5 @@
 #include "../Headers/Component.h"
+RTTI_DEFINITION_BASE(Component,Component)
 
 void Component::Editor(){
     return;

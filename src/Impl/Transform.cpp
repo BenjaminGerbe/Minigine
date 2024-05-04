@@ -1,4 +1,5 @@
 #include "../Headers/Transform.h"
+RTTI_DEFINITION_BASE(Transform,Transform)
 
 void Transform::Editor(){
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing,ImVec2(0.0f,15.0f));

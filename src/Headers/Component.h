@@ -1,6 +1,12 @@
 #pragma once
 #include "Object.h"
 #include "yaml-cpp/yaml.h"
+#include "Rtti.h"
+
+#define RTTI_DECLARATION(base) \
+ static RTTI<base> rtti;
+#define RTTI_DEFINITION_BASE(type, base) \
+ RTTI<base> base::rtti(#type);
 
 enum ComponentID{
     c_None,
@@ -25,10 +31,12 @@ class Component
     virtual void SetID(){
         ID = c_None;
     }
+
     private:
 
-
     public:
+    RTTI_DECLARATION(Component)
+
     Component()=default;
 
     Component(Object* _obj):obj(_obj){

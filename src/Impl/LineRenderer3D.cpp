@@ -2,6 +2,7 @@
 #include "../Headers/Projet.h"
 #include "gtx/projection.hpp"
 #include "gtx/vector_angle.hpp"
+RTTI_DEFINITION_BASE(LineRenderer3D,LineRenderer3D)
 
 void LineRenderer3D::GeneratePoint(){
     //std::srand(static_cast<unsigned int>(std::time(nullptr)));

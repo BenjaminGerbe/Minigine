@@ -10,6 +10,7 @@ class MeshComponent: public Component{
     Projet* projet;
 
     public :
+    RTTI_DECLARATION(MeshComponent)
     virtual void Editor();
     virtual void SetUp();
     virtual void Update();
