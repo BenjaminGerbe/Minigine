@@ -17,7 +17,8 @@ enum ComponentID{
     c_Mesh,
     c_Material,
     c_Water,
-    c_LineRenderer3D
+    c_LineRenderer3D,
+    c_Mesh_subdivision
 };
 
 class Component

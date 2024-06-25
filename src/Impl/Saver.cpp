@@ -111,6 +111,7 @@ void Saver::LoadScene(Projet* projet){
             else if(ID == c_LineRenderer3D){
                 tempObj->AddComponent(new LineRenderer3D(id,j,yamlFile,tempObj));
             }
+            
         }
         
         tempObj->SetObjectType(type);

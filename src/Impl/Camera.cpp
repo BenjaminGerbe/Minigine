@@ -19,8 +19,9 @@ void CameraComp::Editor(){
             RenderMode = 1;
         }
 
-        ImGui::EndCombo();
+       
     }
+    ImGui::EndCombo();
 
     ImGui::Spacing();
     if(RenderMode == 0){

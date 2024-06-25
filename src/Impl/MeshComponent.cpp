@@ -2,11 +2,11 @@
 RTTI_DEFINITION_BASE(MeshComponent,MeshComponent)
 void MeshComponent::Editor(){
 
-    if (ImGui::BeginCombo("Select Mesh", obj->GetMesh()->GetName())) {
+    if (ImGui::BeginCombo("Select Mesh", obj->GetMesh()->GetName().c_str())) {
         for (int n = 0; n < projet->GetPrimitive().size(); n++)
         {
-            char nbuffer[32];
-            strcpy(nbuffer,projet->GetMesh(n)->GetName());
+            char nbuffer[255];
+            strcpy(nbuffer,projet->GetMesh(n)->GetName().c_str());
         
             if (ImGui::Selectable(nbuffer)){
                 obj->SetMesh(projet->GetMesh(n));

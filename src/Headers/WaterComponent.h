@@ -17,7 +17,7 @@ class WaterComp: public Component{
     virtual void Update();
 
     WaterComp(Object* obj):Component(obj){
-        headerName = "WaterComp";
+        headerName = "WaterComp";  
         SetID();
     }
 

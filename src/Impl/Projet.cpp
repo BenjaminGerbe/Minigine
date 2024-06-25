@@ -7,6 +7,7 @@
 #include "../Headers/MeshComponent.h"
 #include "../Headers/WaterComponent.h"
 #include "../Headers/LineRenderer3D.h"
+#include "../Headers/Subdivision.h"
 
 void Projet::SetUpComponents(){
     Components.push_back(new CameraComp(objects[5]));
@@ -16,6 +17,8 @@ void Projet::SetUpComponents(){
     Components.push_back(new MaterialComp(objects[5]));
     Components.push_back(new WaterComp(objects[5]));
     Components.push_back(new LineRenderer3D(objects[5]));
+    Components.push_back(new Subdivision(objects[5]));
+
 }
 
 void Projet::SetUpDefaultObject(){

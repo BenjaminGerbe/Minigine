@@ -249,10 +249,10 @@ void DisplayerManager::SceneEditor(Projet* projet){
     if (ImGui::BeginTable("editortab", 1,ImGuiTableFlags_RowBg))
     {
         static int item_current_idx = 0;
-
+        
         for (int i = 0; i < scene->GetObjects().size(); i++)
         {   
-
+            
             int popCount= 0;
             char buff[16];
             std::strcpy(buff,scene->GetObjects()[i]->GetName());

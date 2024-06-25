@@ -26,12 +26,12 @@ class Mesh{
     float* uv;
     int lenV;
     int lenI;
-    char* name;
+    int stride =0;
+    std::string name;
     uint32_t ID;
 
     public :
-
-    Mesh(float* _vertices,int lenV,unsigned int* _indices,int lenI,int stride,char* _name):indices(_indices),vertices(_vertices),name(_name){
+    Mesh(float* _vertices,int lenV,unsigned int* _indices,int lenI,int stride,std::string _name):indices(_indices),vertices(_vertices),name(_name){
         unsigned int VBO,EBO;
         glGenBuffers(1,&VBO);
         glGenBuffers(1,&EBO);
@@ -47,16 +47,56 @@ class Mesh{
         glEnableVertexAttribArray(1);
 
         ID = std::hash<std::string>()(name);
-
+        this->stride = stride;
         this->lenV = lenV;
         this->lenI = lenI;
+    }
+
+    glm::vec3 GetVerticesValue(int idx){
+        float x = vertices[idx*stride+0];
+        float y = vertices[idx*stride+1];
+        float z = vertices[idx*stride+2];
+        return glm::vec3(x,y,z);
+    }
+
+    glm::vec3 GetNormal(int idx){
+        float x = vertices[idx*stride+3];
+        float y = vertices[idx*stride+4];
+        float z = vertices[idx*stride+5];
+        return glm::vec3(x,y,z);
+    }
+
+  
+
+    int GetNbPoint(){
+        return (lenV/sizeof(float))/stride;
+    }
+
+    float* GetVertices(){
+        return vertices;
+    }
+
+    unsigned int* GetIndices(){
+        return indices;
+    }
+
+    float* GetUV(){
+        return uv;
+    }
+
+    int GetLenV(){
+        return lenV;
+    }
+
+    int GetLenI(){
+        return lenI;
     }
 
     int TriangleToDraw(){
         return lenI;
     }
 
-    char* GetName(){
+    std::string GetName(){
         return this->name;
     }
 

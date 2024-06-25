@@ -62,7 +62,8 @@ class CameraComp : public Component{
         this->obj->GetTransformation();
      
         this->MVP[0] = obj->GetTransformation();
-        if(RenderMode == 0){
+    
+        if(RenderMode == 0 && width >0 && height > 0){
             this->MVP[1] = glm::perspectiveFov(glm::radians(fov), width, height, 0.1f, 1000.0f);
         }
         else{
