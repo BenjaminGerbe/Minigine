@@ -141,6 +141,7 @@ int main(int, char**){
     
     //ObjState* obj = LoadObj("WaterSurfaceobj.obj");
     ObjState* obj = LoadObj("Plane.obj");
+    ObjState* icoObj = LoadObj("Ico.obj");
 
     // Create Shader/Material
     Shader* shader = new Shader("frag.glsl","vs.glsl");
@@ -205,6 +206,10 @@ int main(int, char**){
     
     Mesh* m_Paysage = new Mesh(&obj->vertices[0],obj->vertices.size()*sizeof(float),
     &obj->indices[0],obj->indices.size()*(sizeof(unsigned int)),6,"Paysage");
+
+    Mesh* m_Ico = new Mesh(&icoObj->vertices[0],icoObj->vertices.size()*sizeof(float),
+    &icoObj->indices[0],icoObj->indices.size()*(sizeof(unsigned int)),6,"Ico");
+    
     Mesh* m_Plane = new Mesh(nullptr,0.0f,nullptr,0.0f,0,"BLANK");
     Mesh* m_blank = new Mesh(nullptr,0.0f,nullptr,0.0f,0,"BLANK");
 
@@ -213,6 +218,7 @@ int main(int, char**){
     projet.AddPrimitive(m_Dragon);
     projet.AddPrimitive(m_Plane);
     projet.AddPrimitive(m_Paysage);
+    projet.AddPrimitive(m_Ico);
 
     projet.SetUpDefaultObject();
     projet.SetUpComponents();
