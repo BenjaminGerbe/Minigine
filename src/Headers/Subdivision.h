@@ -7,27 +7,31 @@
 #include <array>
 
 struct Triangle_mesh;
+struct Point_mesh;
+
+typedef std::shared_ptr<Triangle_mesh> Triangle_ptr;
+typedef std::shared_ptr<Point_mesh> Point_ptr;
+
+
 
 // loop mesh structure
 struct Point_mesh {
     glm::vec3 point;
-    std::vector<Triangle_mesh*> triangles;
+    std::vector<Triangle_ptr> triangles;
     Point_mesh(glm::vec3 _point) : point(_point) {}
 };
 
 struct Triangle_mesh {
-    std::array<Point_mesh*, 3> points;
+    std::array<Point_ptr, 3> points;
     // for kobalt 
     glm::vec3 barrycenter;
-    std::vector<Triangle_mesh*> CreatedTriangles;
+    std::vector<Triangle_ptr> CreatedTriangles;
 };
 
-
-
 class Subdivision: public Component{
-    std::string SubdivisionType[3]{"loop","kobolt","Catmull"};
+    std::string SubdivisionType[4]{"loop","kobolt","Catmull","ButterFly"};
     int select_subdivision = 0;
-
+    bool smooth= false;
     int iteration;
     public :
     virtual void Editor();
@@ -57,14 +61,16 @@ class Subdivision: public Component{
     void Loop();
     void Kobalt();
     void Catmull();
+    void ButterFly();
 
-    std::vector<Triangle_mesh*>  GetTriangles(Point_mesh* a,Point_mesh* b);
-    std::vector<Point_mesh*> ComputeTriangleLeftRightVertex(Point_mesh* a,Point_mesh* b);
-    std::vector<Point_mesh*> GetAccident(Point_mesh* a);
-    std::vector<Triangle_mesh*> GetAllAdjacentTriangles(Triangle_mesh* tr);
+    std::vector<Triangle_ptr>  GetTriangles(Point_ptr a,Point_ptr b);
+    std::vector<Point_ptr> ComputeTriangleLeftRightVertex(Point_ptr a,Point_ptr b);
+    std::vector<Point_ptr> GetAccident(Point_ptr a);
+    std::vector<Triangle_ptr> GetAllAdjacentTriangles(Triangle_ptr tr);
+    Point_ptr Subdivision::GetTriangleAccident(Point_ptr a,Point_ptr b,Triangle_ptr triangle);
 
-    void CreateMesh(std::vector<Triangle_mesh*> subdivised_triangles,std::string name);
-    void ProcessTrianglesCreation(Point_mesh* p1,std::vector<Triangle_mesh*> accTr,Triangle_mesh* Current, std::vector<Triangle_mesh*> triangles,std::vector<Point_mesh*>& points,std::vector<Triangle_mesh*>& subdivised_triangles,bool inverse);
+    void CreateMesh(std::vector<Triangle_ptr> subdivised_triangles,std::string name);
+    void ProcessTrianglesCreation(Point_ptr p1,std::vector<Triangle_ptr> accTr,Triangle_ptr Current, std::vector<Triangle_ptr> triangles,std::vector<Point_ptr>& points,std::vector<Triangle_ptr>& subdivised_triangles,bool inverse);
 
     virtual void Save(std::string id,int i,YAML::Node& yamlFile){
         Component::Save(id,i,yamlFile);

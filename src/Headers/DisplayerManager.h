@@ -55,6 +55,7 @@ class DisplayerManager{
     float* heatMapMiniML;
     float learningRate;
     bool Plot;
+    bool openMeshEditor = false;
     Network* network;
 
     public :
@@ -106,6 +107,7 @@ class DisplayerManager{
     void SceneEditor(Projet* projet);
     void RenderAppOptions(Projet* projet);
     void RenderAllRenderWindows(int width,int height,Projet* projet);
+    
     void RenderSceneViewOption();
     void MiniMLWindows();
     void DisplayerNetworkParameter();

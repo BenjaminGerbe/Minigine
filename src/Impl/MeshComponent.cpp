@@ -11,9 +11,23 @@ void MeshComponent::Editor(){
             if (ImGui::Selectable(nbuffer)){
                 obj->SetMesh(projet->GetMesh(n));
             }
-
         }
         ImGui::EndCombo();
+    }
+
+    
+    if(ImGui::Button("Delete##MeshDelete")){
+
+        int selectedMesh = 0;
+        while(selectedMesh < projet->GetMeshPrimive().size()){
+            if(projet->GetMesh(selectedMesh) == obj->GetMesh()){
+                break;
+            }else{
+                selectedMesh++;
+            }
+        }
+        projet->deletMesh(selectedMesh);
+        obj->SetMesh(projet->GetMesh(0));
     }
 
     return;

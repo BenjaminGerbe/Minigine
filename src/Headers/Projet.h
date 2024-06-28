@@ -80,6 +80,16 @@ class Projet{
         return defaultPrimitive[i];
     }
 
+    void deletMesh(int i){
+        Mesh* mesh = GetMesh(i);
+        defaultPrimitive.erase(defaultPrimitive.begin()+i);
+        delete mesh;
+    }
+
+    std::vector<Mesh*> GetMeshPrimive(){
+        return defaultPrimitive;
+    }
+
     std::vector<Mesh*> GetPrimitive(){
         return this->defaultPrimitive;
     }

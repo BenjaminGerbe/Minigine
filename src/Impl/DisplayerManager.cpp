@@ -321,8 +321,6 @@ void DisplayerManager::SceneEditor(Projet* projet){
        
         }
 
-
-
         ImGui::Text("");
         hCell = ImGui::GetTextLineHeight();
         int completeLine = std::floor(((sizeY) /hCell)  - (scene->GetObjects().size()));
@@ -561,7 +559,6 @@ void DisplayerManager::RenderAppOptions(Projet* projet){
                 
                 ImGui::EndMenu();
             }
-
 
 
             if (ImGui::BeginMenu("Objects"))
